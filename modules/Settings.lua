@@ -1,4 +1,6 @@
 Panels.Settings = {
 	comicData = {},
-	imageFolder= "images/"
+	imageFolder = "images/",
+	
+	parallaxDistance = 480
 }

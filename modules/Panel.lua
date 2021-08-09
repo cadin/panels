@@ -3,7 +3,7 @@ Panels.Panel = {}
 local gfx <const> = playdate.graphics
 local ScreenHeight <const> = playdate.display.getHeight()
 local ScreenWidth <const> = playdate.display.getWidth()
-local pxDist = 480
+
 
 local function createFrameFromPartialFrame(frame) 
 	if frame.margin == nil then frame.margin = 0 end
@@ -51,6 +51,10 @@ function Panels.Panel.new(data)
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	
 	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
+
+	if not panel.parallaxDistance then
+		panel.parallaxDistance = Panels.Settings.parallaxDistance
+	end
 
 	if panel.panels then
 		for i, p in ipairs(panel.panels) do
@@ -104,8 +108,8 @@ function Panels.Panel.new(data)
 		if layers then
 			for i, layer in ipairs(layers) do 
 				local p = layer.parallax
-				local xPos = math.floor(layer.x + (pxDist * pct.x - pxDist/2) * p)
-				local yPos = math.floor(layer.y + (pxDist * pct.y - pxDist/2) * p)
+				local xPos = math.floor(layer.x + (self.parallaxDistance * pct.x - self.parallaxDistance/2) * p)
+				local yPos = math.floor(layer.y + (self.parallaxDistance * pct.y - self.parallaxDistance/2) * p)
 				local rotation = 0
 	
 				if layer.animate then 

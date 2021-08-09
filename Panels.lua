@@ -23,6 +23,7 @@ local scrollPos = 0
 local acc = 0.25
 local maxV = 4
 local velocity = 0
+local maxScroll = 0
 
 
 local function setUpPanels(seq)
