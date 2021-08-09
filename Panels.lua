@@ -4,6 +4,9 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
+local ScreenHeight <const> = playdate.display.getHeight()
+local ScreenWidth <const> = playdate.display.getWidth()
+
 
 Panels = {}
 
@@ -27,10 +30,13 @@ local maxScroll = 0
 
 local snapStrength = 1.5
 
+local panelBoundaries = {}
+
 
 local function setUpPanels(seq)
     panels = {}
     local pos = 0
+	local j = 1
 
 	for i, panel in ipairs(seq.panels) do
 		if panel.frame == nil then
@@ -52,14 +58,26 @@ local function setUpPanels(seq)
 		if seq.axis == Panels.ScrollAxis.VERTICAL then
 			p.frame.y = pos
 			pos = pos + p.frame.height
-			maxScroll = pos - playdate.display.getHeight() + p.frame.margin
+			maxScroll = pos - ScreenHeight + p.frame.margin
+			panelBoundaries[j] = - (p.frame.y - p.frame.margin)
+			j = j + 1
+			if p.frame.height > ScreenHeight then
+				panelBoundaries[j] =  -(p.frame.y + p.frame.height - ScreenHeight + p.frame.margin)
+				j = j + 1
+			end
 		else 
 			p.frame.x = pos
 			pos = pos + p.frame.width
-			maxScroll = pos - playdate.display.getWidth() + p.frame.margin
+			maxScroll = pos - ScreenWidth + p.frame.margin
+			
+			panelBoundaries[j] = - (p.frame.x - p.frame.margin)
+			j = j + 1
+			if p.frame.width > ScreenWidth then
+				panelBoundaries[j] = -(p.frame.x + p.frame.width - ScreenWidth + p.frame.margin)
+				j = j + 1
+			end
 		end
 		panels[i] = p
-		
 	end
 end
 
@@ -88,6 +106,17 @@ local function loadGame()
 end
 
 
+local function snapScrollToPanel() 
+	for i, b in ipairs(panelBoundaries) do
+		if scrollPos > b - 20 and scrollPos < b + 20 then
+			local diff = scrollPos - b
+			scrollPos = math.floor(scrollPos - (diff - (diff / snapStrength) ))
+			print(scrollPos, b, diff)
+		end
+	end
+end
+
+
 local function updateScroll() 
 	if scrollPos > 0 then
 		scrollPos = math.floor(scrollPos / snapStrength)
@@ -95,6 +124,8 @@ local function updateScroll()
 		local diff = scrollPos + maxScroll
 		scrollPos = math.floor(scrollPos - (diff - (diff / snapStrength )))
 	end
+	
+	if Panels.Settings.snapToPanels then snapScrollToPanel() end
 end
 
 local function updateComic()

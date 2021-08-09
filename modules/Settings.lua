@@ -4,8 +4,8 @@ Panels.Settings = {
 	audioFolder = "audio/",
 	
 	parallaxDistance = 480,
-	defaultFrame = {gap = 50, margin = 8}
-	
+	defaultFrame = {gap = 50, margin = 8},
+	snapToPanels = true
 }
 
 local function addSlashToFolderName(f)
