@@ -25,6 +25,8 @@ local maxV = 4
 local velocity = 0
 local maxScroll = 0
 
+local snapStrength = 1.5
+
 
 local function setUpPanels(seq)
     panels = {}
@@ -34,6 +36,8 @@ local function setUpPanels(seq)
 		if panel.frame == nil then
 			panel.frame = table.shallowcopy(seq.defaultFrame) 
 		end
+		
+		panel.axis = seq.axis
 
 		local p = Panels.Panel.new(panel)
 
@@ -71,6 +75,10 @@ local function loadSequence(num)
 			sequence.direction = Panels.ScrollDirection.LEFT_TO_RIGHT 
 		end
 	end
+	
+	if sequence.defaultFrame == nil then
+		sequence.defaultFrame = Panels.Settings.defaultFrame
+	end
 
     setUpPanels(sequence)
 end
@@ -80,7 +88,17 @@ local function loadGame()
 end
 
 
+local function updateScroll() 
+	if scrollPos > 0 then
+		scrollPos = math.floor(scrollPos / snapStrength)
+	elseif scrollPos < -maxScroll then
+		local diff = scrollPos + maxScroll
+		scrollPos = math.floor(scrollPos - (diff - (diff / snapStrength )))
+	end
+end
+
 local function updateComic()
+	updateScroll()
 
 end
 
@@ -114,10 +132,12 @@ function playdate.update()
 end
 
 function playdate.cranked(change, accChange)
-	scrollPos = scrollPos + change--accChange
+	scrollPos = scrollPos + change
 end
 
 function Panels.start()
+	validateSettings()
+	
 	sequences = Panels.Settings.comicData
 	loadGame();
 end

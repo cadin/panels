@@ -4,6 +4,8 @@ local gfx <const> = playdate.graphics
 local ScreenHeight <const> = playdate.display.getHeight()
 local ScreenWidth <const> = playdate.display.getWidth()
 
+local AxisHorizontal = Panels.ScrollAxis.HORIZONTAL
+
 
 local function createFrameFromPartialFrame(frame) 
 	if frame.margin == nil then frame.margin = 0 end
@@ -27,14 +29,12 @@ local function createFrameFromPartialFrame(frame)
 	return frame
 end
 
-local function getScrollPercentages(frame, offset)
-	local yPct = 1 - (frame.y - frame.margin + frame.height + offset.y) / (ScreenHeight + frame.height)
+local function getScrollPercentages(frame, offset, axis)
 	local xPct = 1 - (frame.x - frame.margin + frame.width + offset.x) / (ScreenWidth + frame.width)
-
+	local yPct = 1 - (frame.y - frame.margin + frame.height + offset.y) / (ScreenHeight + frame.height)
+	
 	local pct = {x = xPct, y = yPct}
-	if offset.x == 0 then pct.x = 0.5
-	elseif offset.y == 0 then pct.y = 0.5 
-	end
+	if axis == AxisHorizontal then pct.y = 0.5 else pct.x = 0.5 end
 
 	return pct
 end
@@ -96,7 +96,7 @@ function Panels.Panel.new(data)
 		local layers = self.layers
 		local frame = self.frame
 		local shake
-		local pct = getScrollPercentages(frame, offset)
+		local pct = getScrollPercentages(frame, offset, self.axis)
 	
 	
 		if self.effect then
@@ -114,7 +114,7 @@ function Panels.Panel.new(data)
 	
 				if layer.animate then 
 					local cntrlPct
-					if offset.x == 0 then cntrlPct = pct.y else cntrlPct = pct.x end
+					if self.axis == AxisHorizontal then cntrlPct = pct.x else cntrlPct = pct.y end
 					if layer.animate.x then xPos = math.floor(xPos + ((layer.animate.x - layer.x) * cntrlPct)) end
 					if layer.animate.y then yPos = math.floor(yPos + ((layer.animate.y - layer.y) * cntrlPct)) end
 					if layer.animate.rotation then rotation = layer.animate.rotation * cntrlPct end
@@ -134,8 +134,8 @@ function Panels.Panel.new(data)
 				if layer.img then 
 					layer.img:draw(xPos, yPos)
 				elseif layer.imgs then
-					local p = pct.x
-					if p == 0.5 then p = pct.y end
+					local p
+					if self.axis == AxisHorizontal then p = pct.x else p = pct.y end
 					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
 					layer.imgs[j]:draw(xPos, yPos)
 				end
