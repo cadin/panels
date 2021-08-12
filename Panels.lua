@@ -15,6 +15,7 @@ import "./modules/ScrollConstants"
 import "./modules/Effect"
 import "./modules/Panel"
 import "./modules/Color"
+import "./modules/Utils"
 
 
 local currentSeqIndex = 1
@@ -59,8 +60,11 @@ local function setUpPanels(seq)
 			p.frame.y = pos
 			pos = pos + p.frame.height
 			maxScroll = pos - ScreenHeight + p.frame.margin
-			panelBoundaries[j] = - (p.frame.y - p.frame.margin)
-			j = j + 1
+			
+			if i > 1 then 
+				panelBoundaries[j] = - (p.frame.y - p.frame.margin)
+				j = j + 1
+			end 
 			if p.frame.height > ScreenHeight then
 				panelBoundaries[j] =  -(p.frame.y + p.frame.height - ScreenHeight + p.frame.margin)
 				j = j + 1
@@ -70,8 +74,10 @@ local function setUpPanels(seq)
 			pos = pos + p.frame.width
 			maxScroll = pos - ScreenWidth + p.frame.margin
 			
-			panelBoundaries[j] = - (p.frame.x - p.frame.margin)
-			j = j + 1
+			if i > 1 then 
+				panelBoundaries[j] = - (p.frame.x - p.frame.margin)
+				j = j + 1
+			 end
 			if p.frame.width > ScreenWidth then
 				panelBoundaries[j] = -(p.frame.x + p.frame.width - ScreenWidth + p.frame.margin)
 				j = j + 1
@@ -110,8 +116,8 @@ local function snapScrollToPanel()
 	for i, b in ipairs(panelBoundaries) do
 		if scrollPos > b - 20 and scrollPos < b + 20 then
 			local diff = scrollPos - b
-			scrollPos = math.floor(scrollPos - (diff - (diff / snapStrength) ))
-			print(scrollPos, b, diff)
+			scrollPos = round(scrollPos - (diff - (diff / 1.25) ), 2)
+			-- print(scrollPos, b, diff)
 		end
 	end
 end
@@ -130,7 +136,6 @@ end
 
 local function updateComic()
 	updateScroll()
-
 end
 
 local function drawComic()
@@ -160,6 +165,7 @@ function playdate.update()
 	
 	updateComic()
 	drawComic()
+	playdate.timer.updateTimers()
 end
 
 function playdate.cranked(change, accChange)
