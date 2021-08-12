@@ -65,7 +65,6 @@ function Panels.Panel.new(data)
 	if panel.layers then
 		for i, layer in ipairs(panel.layers) do 
 			if layer.image then 
-				print("loading: " .. layer.image)
 				layer.img = gfx.image.new(Panels.Settings.imageFolder .. layer.image)
 			end
 
@@ -78,6 +77,7 @@ function Panels.Panel.new(data)
 
 			if layer.x == nil then layer.x = -panel.frame.margin end
 			if layer.y == nil then layer.y = -panel.frame.margin end
+			layer.visible = true
 		end
 	end
 
@@ -131,11 +131,34 @@ function Panels.Panel.new(data)
 					end
 				end
 				
+				
+				
 				if layer.img then 
-					layer.img:draw(xPos, yPos)
+					if layer.effect then
+						if layer.effect.type == Panels.Effect.BLINK then
+							if layer.visible then
+								layer.img:draw(xPos, yPos)
+							end
+							
+							if layer.timer == nil then
+								layer.timer = playdate.timer.new(layer.effect.durations[1]  + layer.effect.durations[2])
+								layer.timer.repeats = true
+							
+							else
+								if layer.timer.currentTime < layer.effect.durations[1] then
+									layer.visible = true
+								else 
+									layer.visible = false
+								end
+							end
+						end
+					else
+						layer.img:draw(xPos, yPos)
+					end
 				elseif layer.imgs then
 					local p
 					if self.axis == AxisHorizontal then p = pct.x else p = pct.y end
+					p = p + (self.transitionOffset or 0)
 					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
 					layer.imgs[j]:draw(xPos, yPos)
 				end
