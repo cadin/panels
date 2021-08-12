@@ -33,6 +33,9 @@ local maxScroll = 0
 local snapStrength = 1.5
 
 local panelBoundaries = {}
+local transitionOutAnimator = nil
+local transitionInAnimator = nil
+
 
 
 local function setUpPanels(seq)
@@ -88,6 +91,50 @@ local function setUpPanels(seq)
 	end
 end
 
+local function startTransitionIn(direction) 
+	local target = scrollPos
+	local start
+
+	if direction == Panels.ScrollDirection.BOTTOM_UP then
+		start = scrollPos - ScreenHeight
+	elseif direction == Panels.ScrollDirection.TOP_DOWN then 
+		start = scrollPos + ScreenHeight
+	elseif direction == Panels.ScrollDirection.LEFT_TO_RIGHT then
+		start = scrollPos + ScreenWidth
+	else 
+		start = scrollPos - ScreenWidth
+	end
+
+	scrollPos = start
+	transitionInAnimator = playdate.graphics.animator.new(1000, start, target, playdate.easingFunctions.inOutQuart)
+end
+
+local function startTransitionOut(direction)
+	local target
+	local start = scrollPos
+	
+	if direction == Panels.ScrollDirection.TOP_DOWN then
+		target = maxScroll - ScreenHeight
+	elseif direction == Panels.ScrollDirection.BOTTOM_UP then 
+		target = maxScroll + ScreenHeight
+	elseif direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
+		target = maxScroll + ScreenWidth
+	else 
+		target = -maxScroll - ScreenWidth
+	end
+	
+	transitionOutAnimator = playdate.graphics.animator.new(1000, start, target, playdate.easingFunctions.inOutQuart)
+end
+
+local function prepareScrolling(reversed) 
+	if reversed then
+		panelNum = #panels
+		scrollPos = -maxScroll
+	else
+		scrollPos = 0
+		panelNum = 1
+	end
+end
 
 local function loadSequence(num) 
 	sequence = sequences[num]
@@ -99,23 +146,51 @@ local function loadSequence(num)
 		else 
 			sequence.direction = Panels.ScrollDirection.LEFT_TO_RIGHT 
 		end
+	elseif sequence.direction == Panels.ScrollDirection.RIGHT_TO_LEFT 
+	or sequence.direction == Panels.ScrollDirection.BOTTOM_UP then
+		sequence.scrollingIsReversed = true
 	end
 	
 	if sequence.defaultFrame == nil then
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
+	
+	if sequence.advanceControl == nil then 
+		sequence.advanceControl = Panels.Input.A
+	end
 
     setUpPanels(sequence)
+	prepareScrolling(sequence.scrollingIsReversed)
+	startTransitionIn(sequence.direction)
 end
 
 local function loadGame()
 	loadSequence(currentSeqIndex)
 end
 
-
-local function nextSequence() 
-	currentSeqIndex = currentSeqIndex+1
+local function nextSequence()
+	-- TODO: detect the last sequence in the game
+	currentSeqIndex = currentSeqIndex + 1
 	loadSequence(currentSeqIndex)
+end
+
+local function updateSequenceTransition() 
+	if transitionOutAnimator then 
+		scrollPos = transitionOutAnimator:currentValue()
+		if transitionOutAnimator:ended() then
+			transitionOutAnimator = nil
+			nextSequence()
+		end
+	else
+		scrollPos = transitionInAnimator:currentValue()
+		if transitionInAnimator:ended() then
+			transitionInAnimator = nil
+		end
+	end
+end
+
+local function finishSequence() 
+	startTransitionOut(sequence.direction)
 end
 
 local function snapScrollToPanel() 
@@ -123,7 +198,6 @@ local function snapScrollToPanel()
 		if scrollPos > b - 20 and scrollPos < b + 20 then
 			local diff = scrollPos - b
 			scrollPos = round(scrollPos - (diff - (diff / 1.25) ), 2)
-			-- print(scrollPos, b, diff)
 		end
 	end
 end
@@ -140,18 +214,30 @@ local function updateScroll()
 	if Panels.Settings.snapToPanels then snapScrollToPanel() end
 end
 
+local function lastPanelIsShowing() 
+	if (sequence.scrollingIsReversed and scrollPos >= -10) 
+	or (not sequence.scrollingIsReversed and scrollPos <= -(maxScroll - 10) ) then
+		return true
+	end
+	
+	return false
+end
+
 local function checkInputs() 
-	print(scrollPos, maxScroll)
-	if scrollPos <= -(maxScroll - 10) then
+	if lastPanelIsShowing() then
 		if playdate.buttonJustPressed(sequence.advanceControl) then 
-			nextSequence()
+			finishSequence()
 		end
 	end
 end
 
 local function updateComic()
-	updateScroll()
-	checkInputs()
+	if transitionInAnimator or transitionOutAnimator then
+		updateSequenceTransition()
+	else
+		updateScroll()
+		checkInputs()
+	end
 end
 
 local function drawComic()
