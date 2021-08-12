@@ -16,6 +16,7 @@ import "./modules/Effect"
 import "./modules/Panel"
 import "./modules/Color"
 import "./modules/Utils"
+import "./modules/Input"
 
 
 local currentSeqIndex = 1
@@ -112,6 +113,11 @@ local function loadGame()
 end
 
 
+local function nextSequence() 
+	currentSeqIndex = currentSeqIndex+1
+	loadSequence(currentSeqIndex)
+end
+
 local function snapScrollToPanel() 
 	for i, b in ipairs(panelBoundaries) do
 		if scrollPos > b - 20 and scrollPos < b + 20 then
@@ -134,8 +140,18 @@ local function updateScroll()
 	if Panels.Settings.snapToPanels then snapScrollToPanel() end
 end
 
+local function checkInputs() 
+	print(scrollPos, maxScroll)
+	if scrollPos <= -(maxScroll - 10) then
+		if playdate.buttonJustPressed(sequence.advanceControl) then 
+			nextSequence()
+		end
+	end
+end
+
 local function updateComic()
 	updateScroll()
+	checkInputs()
 end
 
 local function drawComic()
