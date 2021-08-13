@@ -23,6 +23,6 @@ function validateSettings()
 	local s = Panels.Settings
 	s.imageFolder = addSlashToFolderName(s.imageFolder)
 	s.audioFolder = addSlashToFolderName(s.audioFolder)
-	
+	s.path = addSlashToFolderName(s.path)
 end
 

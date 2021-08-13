@@ -8,6 +8,14 @@ function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
 	button.x = 0
 	button.y = 0
 	
+	button.timer = playdate.timer.new(
+		50, 
+		function()
+			button:updateTimer()
+		end
+	)
+	button.timer.repeats = true
+	
 	function button:setPosition(x, y)
 		self.x = x
 		self.y = y
@@ -16,15 +24,6 @@ function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
 	function button:show()
 		if self.currentFrame == 1 then 
 			self.state = "showing"
-			if self.timer == nil then
-				self.timer = playdate.timer.new(
-					50, 
-					function()
-						self:updateTimer()
-					end
-				)
-				self.timer.repeats = true
-			end
 			self.step = 1
 			self.timer:start()
 		end
