@@ -1,11 +1,14 @@
 Panels.Settings = {
+	path = "libraries/panels/",
 	comicData = {},
 	imageFolder = "images/",
 	audioFolder = "audio/",
 	
 	parallaxDistance = 480,
 	defaultFrame = {gap = 50, margin = 8},
-	snapToPanels = true
+	snapToPanels = true,
+	sequenceTransitionDuration = 750,
+	
 }
 
 local function addSlashToFolderName(f)

@@ -2,6 +2,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
+import "CoreLibs/animation"
 
 local gfx <const> = playdate.graphics
 local ScreenHeight <const> = playdate.display.getHeight()
@@ -17,6 +18,7 @@ import "./modules/Panel"
 import "./modules/Color"
 import "./modules/Utils"
 import "./modules/Input"
+import "./modules/ButtonIndicator"
 
 
 local currentSeqIndex = 1
@@ -36,7 +38,7 @@ local panelBoundaries = {}
 local transitionOutAnimator = nil
 local transitionInAnimator = nil
 
-
+local buttonA
 
 local function setUpPanels(seq)
     panels = {}
@@ -106,7 +108,8 @@ local function startTransitionIn(direction)
 	end
 
 	scrollPos = start
-	transitionInAnimator = playdate.graphics.animator.new(1000, start, target, playdate.easingFunctions.inOutQuart)
+	transitionInAnimator = playdate.graphics.animator.new(
+		Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
 end
 
 local function startTransitionOut(direction)
@@ -123,7 +126,8 @@ local function startTransitionOut(direction)
 		target = -maxScroll - ScreenWidth
 	end
 	
-	transitionOutAnimator = playdate.graphics.animator.new(1000, start, target, playdate.easingFunctions.inOutQuart)
+	transitionOutAnimator = playdate.graphics.animator.new(
+		Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
 end
 
 local function prepareScrolling(reversed) 
@@ -168,7 +172,19 @@ local function loadGame()
 	loadSequence(currentSeqIndex)
 end
 
+local function unloadSequence()
+	for i, p in ipairs(panels) do
+		for j, l in ipairs(p.layers) do
+			if l.timer then
+				l.timer:remove()
+				l.timer = nil
+			end
+		end
+	end
+end
+
 local function nextSequence()
+	unloadSequence()
 	-- TODO: detect the last sequence in the game
 	currentSeqIndex = currentSeqIndex + 1
 	loadSequence(currentSeqIndex)
@@ -202,6 +218,15 @@ local function snapScrollToPanel()
 	end
 end
 
+local function lastPanelIsShowing() 
+	local threshold = 24
+	if (sequence.scrollingIsReversed and scrollPos >= -threshold) 
+	or (not sequence.scrollingIsReversed and scrollPos <= -(maxScroll - threshold) ) then
+		return true
+	end
+	
+	return false
+end
 
 local function updateScroll() 
 	if scrollPos > 0 then
@@ -214,18 +239,10 @@ local function updateScroll()
 	if Panels.Settings.snapToPanels then snapScrollToPanel() end
 end
 
-local function lastPanelIsShowing() 
-	if (sequence.scrollingIsReversed and scrollPos >= -10) 
-	or (not sequence.scrollingIsReversed and scrollPos <= -(maxScroll - 10) ) then
-		return true
-	end
-	
-	return false
-end
-
 local function checkInputs() 
 	if lastPanelIsShowing() then
 		if playdate.buttonJustPressed(sequence.advanceControl) then 
+			buttonA:press()
 			finishSequence()
 		end
 	end
@@ -239,6 +256,7 @@ local function updateComic()
 		checkInputs()
 	end
 end
+
 
 local function drawComic()
 	gfx.clear()
@@ -256,6 +274,15 @@ local function drawComic()
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
 		end
 	end
+	
+	if transitionOutAnimator == nil and transitionOutAnimator == nil then
+		if lastPanelIsShowing() then
+			buttonA:show()
+		else 
+			buttonA:hide()
+		end
+	end
+	buttonA:draw(ScreenWidth - 42, ScreenHeight / 2 -20)
 end
 
 
@@ -274,9 +301,15 @@ function playdate.cranked(change, accChange)
 	scrollPos = scrollPos + change
 end
 
+
 function Panels.start()
+	buttonATable = gfx.imagetable.new(Panels.Settings.path .. "assets/buttonA-table-40-40.png")
+	buttonA = Panels.ButtonIndicator.new(buttonATable, 4)
+	buttonA:show()
+
 	validateSettings()
 	
 	sequences = Panels.Settings.comicData
 	loadGame();
+
 end
