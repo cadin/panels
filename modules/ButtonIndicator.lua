@@ -5,6 +5,13 @@ function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
 	button.currentFrame = 1
 	button.step = 1
 	button.state = "hidden"
+	button.x = 0
+	button.y = 0
+	
+	function button:setPosition(x, y)
+		self.x = x
+		self.y = y
+	end
 	
 	function button:show()
 		if self.currentFrame == 1 then 
@@ -54,7 +61,7 @@ function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
 	end
 	
 	function button:draw(x, y)
-		self.imageTable:drawImage(self.currentFrame, x, y)
+		self.imageTable:drawImage(self.currentFrame, x or self.x, y or self.y)
 	end
 	
 	return button

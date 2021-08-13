@@ -38,7 +38,7 @@ local panelBoundaries = {}
 local transitionOutAnimator = nil
 local transitionInAnimator = nil
 
-local buttonA
+local buttonIndicator
 
 local function setUpPanels(seq)
     panels = {}
@@ -140,6 +140,21 @@ local function prepareScrolling(reversed)
 	end
 end
 
+local function setButtonIndicatorPosition(direction)
+	local x = ScreenWidth - 42
+	local y = ScreenHeight / 2 -20
+	if direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
+		x = 2
+	elseif direction == Panels.ScrollDirection.TOP_DOWN then
+		x = ScreenWidth / 2 - 20
+		y = ScreenHeight - 42
+	elseif direction == Panels.ScrollDirection.BOTTOM_UP then
+		x = ScreenWidth / 2 - 20
+		y = 2
+	end
+	buttonIndicator:setPosition(x, y)
+end
+
 local function loadSequence(num) 
 	sequence = sequences[num]
 	
@@ -166,6 +181,7 @@ local function loadSequence(num)
     setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
 	startTransitionIn(sequence.direction)
+	setButtonIndicatorPosition(sequence.direction)
 end
 
 local function loadGame()
@@ -242,7 +258,7 @@ end
 local function checkInputs() 
 	if lastPanelIsShowing() then
 		if playdate.buttonJustPressed(sequence.advanceControl) then 
-			buttonA:press()
+			buttonIndicator:press()
 			finishSequence()
 		end
 	end
@@ -257,6 +273,17 @@ local function updateComic()
 	end
 end
 
+
+local function drawButtonIndicator() 
+	if transitionOutAnimator == nil and transitionOutAnimator == nil then
+		if lastPanelIsShowing() then
+			buttonIndicator:show()
+		else 
+			buttonIndicator:hide()
+		end
+	end
+	buttonIndicator:draw()
+end
 
 local function drawComic()
 	gfx.clear()
@@ -274,15 +301,6 @@ local function drawComic()
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
 		end
 	end
-	
-	if transitionOutAnimator == nil and transitionOutAnimator == nil then
-		if lastPanelIsShowing() then
-			buttonA:show()
-		else 
-			buttonA:hide()
-		end
-	end
-	buttonA:draw(ScreenWidth - 42, ScreenHeight / 2 -20)
 end
 
 
@@ -294,6 +312,7 @@ function playdate.update()
 	
 	updateComic()
 	drawComic()
+	drawButtonIndicator()
 	playdate.timer.updateTimers()
 end
 
@@ -303,9 +322,9 @@ end
 
 
 function Panels.start()
-	buttonATable = gfx.imagetable.new(Panels.Settings.path .. "assets/buttonA-table-40-40.png")
-	buttonA = Panels.ButtonIndicator.new(buttonATable, 4)
-	buttonA:show()
+	buttonTable = gfx.imagetable.new(Panels.Settings.path .. "assets/buttonA-table-40-40.png")
+	buttonIndicator = Panels.ButtonIndicator.new(buttonTable, 4)
+	buttonIndicator:show()
 
 	validateSettings()
 	
