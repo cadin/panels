@@ -254,10 +254,12 @@ end
 
 local function unloadSequence()
 	for i, p in ipairs(panels) do
-		for j, l in ipairs(p.layers) do
-			if l.timer then
-				l.timer:remove()
-				l.timer = nil
+		if p.layers then
+			for j, l in ipairs(p.layers) do
+				if l.timer then
+					l.timer:remove()
+					l.timer = nil
+				end
 			end
 		end
 	end
