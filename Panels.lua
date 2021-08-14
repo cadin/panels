@@ -10,14 +10,16 @@ local ScreenWidth <const> = playdate.display.getWidth()
 
 Panels = {}
 
-import "./modules/Settings"
 import "./modules/ScrollConstants"
-import "./modules/Effect"
-import "./modules/Panel"
-import "./modules/Color"
-import "./modules/Utils"
-import "./modules/Input"
 import "./modules/ButtonIndicator"
+import "./modules/Color"
+import "./modules/Effect"
+import "./modules/Input"
+import "./modules/Menu"
+import "./modules/Panel"
+
+import "./modules/Settings"
+import "./modules/Utils"
 
 
 local currentSeqIndex = 1
@@ -37,7 +39,9 @@ local panelBoundaries = {}
 local transitionOutAnimator = nil
 local transitionInAnimator = nil
 
-local buttonIndicator
+local buttonIndicator = nil
+local menu = nil
+local menuIsActive = false
 
 local function setUpPanels(seq)
     panels = {}
@@ -98,7 +102,6 @@ local function lastPanelIsShowing()
 	or (not sequence.scrollingIsReversed and scrollPos <= -(maxScroll - threshold) ) then
 		return true
 	end
-	
 	return false
 end
 
@@ -290,6 +293,11 @@ function playdate.cranked(change, accChange)
 	scrollPos = scrollPos + change
 end
 
+function playdate.BButtonDown() 
+	menu:show()
+	menuIsActive = true
+end
+
 local function checkInputs() 
 	if lastPanelIsShowing() then
 		if playdate.buttonJustPressed(sequence.advanceControl) then 
@@ -298,6 +306,8 @@ local function checkInputs()
 		end
 	end
 end
+
+
 
 -- -------------------------------------------------
 -- GAME LOOP
@@ -331,26 +341,47 @@ end
 
 -- Playdate update loop
 function playdate.update()
-	-- TODO: 
-	-- trap for menu state
-	
-	updateComic()
-	drawComic()
-	drawButtonIndicator()
-	playdate.timer.updateTimers()
+	if menuIsActive then
+		-- menu:redraw()
+	else	
+		updateComic()
+		drawComic()
+		drawButtonIndicator()
+		playdate.timer.updateTimers()
+	end
 end
 
+
+local function onMenuDidSelect(chapter)
+	currentSeqIndex = chapter
+	loadSequence(currentSeqIndex)
+	menu:hide()
+end
+
+local function onMenuDidHide()
+	menuIsActive = false
+end
 
 -- -------------------------------------------------
 -- START GAME
 
 local function loadGame()
+	menu = Panels.Menu.new(sequences, onMenuDidSelect, onMenuDidHide)
 	loadSequence(currentSeqIndex)
+end
+
+local function updateSystemMenu()
+	local sysMenu = playdate.getSystemMenu()
+	local menuItem, error = sysMenu:addMenuItem("Chapters", function()
+		menu:show()
+		menuIsActive = true
+	end)
 end
 
 function Panels.start()
 	validateSettings()
 	createButtonIndicator()
+	updateSystemMenu()
 	
 	sequences = Panels.Settings.comicData
 	loadGame();
