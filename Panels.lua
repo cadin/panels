@@ -43,6 +43,8 @@ local buttonIndicator = nil
 local menu = nil
 local menuIsActive = false
 
+local maxUnlockedSequence = 0
+
 local function setUpPanels(seq)
     panels = {}
     local pos = 0
@@ -221,7 +223,9 @@ end
 
 local function loadSequence(num) 
 	sequence = sequences[num]
-	
+	if num > maxUnlockedSequence then maxUnlockedSequence = num end	
+	menu.sequences = maxUnlockedSequence
+
 	-- set default scroll direction for each axis if not specified
 	if sequence.direction == nil then
 		if sequence.axis == Panels.ScrollAxis.VERTICAL then 
@@ -307,8 +311,6 @@ local function checkInputs()
 	end
 end
 
-
-
 -- -------------------------------------------------
 -- GAME LOOP
 
@@ -352,6 +354,9 @@ function playdate.update()
 end
 
 
+-- -------------------------------------------------
+-- CHAPTER MENU
+
 local function onMenuDidSelect(chapter)
 	currentSeqIndex = chapter
 	loadSequence(currentSeqIndex)
@@ -360,6 +365,33 @@ end
 
 local function onMenuDidHide()
 	menuIsActive = false
+end
+
+
+-- -------------------------------------------------
+-- SAVE & LOAD GAME PROGRESS
+
+local function loadGameData()
+	local data = playdate.datastore.read()
+	if data then
+		maxUnlockedSequence = data.sequence
+	end
+end
+
+local function saveGameData() 
+	playdate.datastore.write({sequence = maxUnlockedSequence})
+end
+
+function playdate.gameWillTerminate()
+	saveGameData()
+end
+
+function playdate.deviceWillSleep()
+	saveGameData()
+end
+
+function playdate.deviceWillLock()
+	saveGameData()
 end
 
 -- -------------------------------------------------
@@ -379,6 +411,8 @@ local function updateSystemMenu()
 end
 
 function Panels.start()
+	loadGameData()
+	
 	validateSettings()
 	createButtonIndicator()
 	updateSystemMenu()

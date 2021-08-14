@@ -5,10 +5,11 @@ Panels.Menu = {}
 function Panels.Menu.new(data, selectionCallback, hideCallback)
 	local menu = { selection = 1 }
 	menu.sections = {}
+	menu.sequences = 0
 	
 	menu.inputHandlers = {
 		downButtonDown = function()
-			if menu.selection < #menu.sections then
+			if menu.selection < menu.sequences then
 				menu.selection = menu.selection + 1
 			end
 			menu:redraw()
@@ -48,18 +49,21 @@ function Panels.Menu.new(data, selectionCallback, hideCallback)
 		gfx.setColor(gfx.kColorBlack)
 		gfx.fillRoundRect(5,  5 + (self.selection - 1) * 32, 200, 26, 4 )
 		
+		print("sequences: " .. self.sequences)
 		local y = 10
 		for i, sec in ipairs(self.sections) do 
-			gfx.pushContext()
-			
-			if i == self.selection then
-				-- draw selected text in white
-				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			if i <= self.sequences then
+				gfx.pushContext()
+				
+				if i == self.selection then
+					-- draw selected text in white
+					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+				end
+				
+				gfx.drawText("*"..sec.title.."*", 16, y)
+				gfx.popContext()
+				y += 32
 			end
-			
-			gfx.drawText("*"..sec.title.."*", 16, y)
-			gfx.popContext()
-			y += 32
 		end
 	end
 	
