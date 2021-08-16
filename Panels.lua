@@ -28,9 +28,9 @@ local sequence = {}
 local panels = {}
 
 local scrollPos = 0
-local acc = 0.25
-local maxV = 4
-local velocity = 0
+local scrollAcceleration = 0.25
+local maxScrollVelocity = 8
+local scrollVelocity = 0
 local maxScroll = 0
 
 local snapStrength = 1.5
@@ -313,6 +313,30 @@ local function checkInputs()
 	end
 end
 
+local function updateArrowControls()
+	if ( sequence.axis==Panels.ScrollAxis.VERTICAL 
+		and playdate.buttonIsPressed(Panels.Input.DOWN) )
+	or ( sequence.axis == Panels.ScrollAxis.HORIZONTAL 
+		and playdate.buttonIsPressed(Panels.Input.LEFT) ) then
+			scrollVelocity = scrollVelocity + scrollAcceleration
+			if scrollVelocity > maxScrollVelocity then 	
+				scrollVelocity = maxScrollVelocity 	
+			end
+			scrollPos = scrollPos + scrollVelocity
+	elseif ( sequence.axis == Panels.ScrollAxis.VERTICAL 
+		and playdate.buttonIsPressed(Panels.Input.DOWN) ) 
+	or ( sequence.axis == Panels.ScrollAxis.HORIZONTAL 
+		and playdate.buttonIsPressed(Panels.Input.RIGHT) ) then 
+			scrollVelocity = scrollVelocity + scrollAcceleration
+			if scrollVelocity > maxScrollVelocity then 
+				scrollVelocity = maxScrollVelocity 
+			end
+			scrollPos = scrollPos - scrollVelocity
+	else
+		scrollVelocity = scrollVelocity / 2
+	end
+end
+
 -- -------------------------------------------------
 -- GAME LOOP
 
@@ -321,6 +345,9 @@ local function updateComic()
 		updateSequenceTransition()
 	else
 		updateScroll()
+		if sequence.scroll == Panels.ScrollType.MANUAL then
+			updateArrowControls()
+		end
 		checkInputs()
 	end
 end

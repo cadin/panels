@@ -174,7 +174,7 @@ function Panels.Panel.new(data)
 		gfx.drawRoundRect(1, 1, self.frame.width- 2, self.frame.height -2, 2)
 	end
 	
-	function panel:render(offset, frameColor)
+	function panel:render(offset, borderColor)
 		gfx.pushContext(self.canvas)
 		gfx.clear()
 		

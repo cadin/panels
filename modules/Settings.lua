@@ -15,7 +15,6 @@ local function addSlashToFolderName(f)
 	if string.sub(f, -1) ~= "/" then
 		f = f .. "/"
 	end
-	
 	return f
 end
 
