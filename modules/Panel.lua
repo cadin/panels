@@ -168,7 +168,7 @@ function Panels.Panel.new(data)
 		end
 	end
 	
-	function panel:drawFrame(color)
+	function panel:drawBorder(color)
 		gfx.setColor(color)
 		gfx.setLineWidth(2)
 		gfx.drawRoundRect(1, 1, self.frame.width- 2, self.frame.height -2, 2)
@@ -179,8 +179,8 @@ function Panels.Panel.new(data)
 		gfx.clear()
 		
 		self:drawLayers(offset)
-		if not self.frameless then
-			self:drawFrame(frameColor)
+		if not self.borderless then
+			self:drawBorder(borderColor)
 		end
 	
 		if self.panels then
@@ -189,7 +189,7 @@ function Panels.Panel.new(data)
 			if offset.y == 0 then o.y = 0 end
 	
 			for i, subPanel in ipairs(self.panels) do
-				subPanel:render(o, frameColor)
+				subPanel:render(o, borderColor)
 				subPanel.canvas:draw(subPanel.frame.x, subPanel.frame.y)
 			end
 		end
