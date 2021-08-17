@@ -10,16 +10,19 @@ local ScreenWidth <const> = playdate.display.getWidth()
 
 Panels = {}
 
+import "./modules/Settings"
 import "./modules/ScrollConstants"
 import "./modules/ButtonIndicator"
 import "./modules/Color"
 import "./modules/Effect"
 import "./modules/Input"
 import "./modules/Menu"
+
 import "./modules/Panel"
 
-import "./modules/Settings"
+
 import "./modules/Utils"
+import "./modules/Credits"
 
 
 local currentSeqIndex = 1
@@ -42,6 +45,8 @@ local transitionInAnimator = nil
 local buttonIndicator = nil
 local menu = nil
 local menuIsActive = false
+local credits = nil
+local creditsAreActive = false
 
 local maxUnlockedSequence = 0
 
@@ -315,26 +320,26 @@ end
 
 local function updateArrowControls()
 	if ( sequence.axis==Panels.ScrollAxis.VERTICAL 
-		and playdate.buttonIsPressed(Panels.Input.DOWN) )
+		and playdate.buttonIsPressed(Panels.Input.UP) )
 	or ( sequence.axis == Panels.ScrollAxis.HORIZONTAL 
 		and playdate.buttonIsPressed(Panels.Input.LEFT) ) then
 			scrollVelocity = scrollVelocity + scrollAcceleration
-			if scrollVelocity > maxScrollVelocity then 	
-				scrollVelocity = maxScrollVelocity 	
-			end
-			scrollPos = scrollPos + scrollVelocity
+			
 	elseif ( sequence.axis == Panels.ScrollAxis.VERTICAL 
 		and playdate.buttonIsPressed(Panels.Input.DOWN) ) 
 	or ( sequence.axis == Panels.ScrollAxis.HORIZONTAL 
 		and playdate.buttonIsPressed(Panels.Input.RIGHT) ) then 
-			scrollVelocity = scrollVelocity + scrollAcceleration
-			if scrollVelocity > maxScrollVelocity then 
-				scrollVelocity = maxScrollVelocity 
-			end
-			scrollPos = scrollPos - scrollVelocity
+			scrollVelocity = scrollVelocity - scrollAcceleration
 	else
 		scrollVelocity = scrollVelocity / 2
 	end
+	
+	if scrollVelocity > maxScrollVelocity then 	
+		scrollVelocity = maxScrollVelocity 	
+	elseif scrollVelocity < -maxScrollVelocity then
+		scrollVelocity = -maxScrollVelocity
+	end
+	scrollPos = scrollPos + scrollVelocity
 end
 
 -- -------------------------------------------------
@@ -372,7 +377,7 @@ end
 
 -- Playdate update loop
 function playdate.update()
-	if menuIsActive then
+	if menuIsActive or creditsAreActive then
 		-- menu:redraw()
 	else	
 		updateComic()
@@ -428,15 +433,23 @@ end
 
 local function loadGame()
 	menu = Panels.Menu.new(sequences, onMenuDidSelect, onMenuDidHide)
+	credits = Panels.Credits.new()
 	loadSequence(currentSeqIndex)
 end
 
 local function updateSystemMenu()
 	local sysMenu = playdate.getSystemMenu()
-	local menuItem, error = sysMenu:addMenuItem("Chapters", function()
+	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", function()
 		menu:show()
 		menuIsActive = true
 	end)
+	
+	local creditsItem, error = sysMenu:addMenuItem("Credits", function()
+		creditsAreActive = true
+		credits:show()
+		
+	end
+	)
 end
 
 function Panels.start()
