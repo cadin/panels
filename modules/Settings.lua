@@ -3,8 +3,8 @@ Panels.Settings = {
 	comicData = {},
 	imageFolder = "images/",
 	audioFolder = "audio/",
+	menuImage = "menuImage.png",
 	
-	parallaxDistance = 480,
 	defaultFrame = {gap = 50, margin = 8},
 	snapToPanels = true,
 	sequenceTransitionDuration = 750,

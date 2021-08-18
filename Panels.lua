@@ -25,7 +25,7 @@ import "./modules/Utils"
 import "./modules/Credits"
 
 
-local currentSeqIndex = 1
+local currentSeqIndex = 2
 local sequences = nil
 local sequence = {}
 local panels = {}
@@ -48,7 +48,7 @@ local menuIsActive = false
 local credits = nil
 local creditsAreActive = false
 
-local maxUnlockedSequence = 0
+Panels.maxUnlockedSequence = 1
 
 local function setUpPanels(seq)
     panels = {}
@@ -228,8 +228,8 @@ end
 
 local function loadSequence(num) 
 	sequence = sequences[num]
-	if num > maxUnlockedSequence then maxUnlockedSequence = num end	
-	menu.sequences = maxUnlockedSequence
+	if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end	
+	-- menu.sequences = maxUnlockedSequence
 
 	-- set default scroll direction for each axis if not specified
 	if sequence.direction == nil then
@@ -305,7 +305,8 @@ function playdate.cranked(change, accChange)
 end
 
 function playdate.BButtonDown() 
-	menu:show()
+	-- menu:show()
+	showChapterMenu()
 	menuIsActive = true
 end
 
@@ -377,30 +378,17 @@ end
 
 -- Playdate update loop
 function playdate.update()
-	if menuIsActive or creditsAreActive then
-		-- menu:redraw()
-	else	
+	if not menuIsFullScreen then 	
 		updateComic()
 		drawComic()
 		drawButtonIndicator()
-		playdate.timer.updateTimers()
 	end
+	
+	if menuIsActive or creditsAreActive then
+		drawMenu()
+	end
+	playdate.timer.updateTimers()
 end
-
-
--- -------------------------------------------------
--- CHAPTER MENU
-
-local function onMenuDidSelect(chapter)
-	currentSeqIndex = chapter
-	loadSequence(currentSeqIndex)
-	menu:hide()
-end
-
-local function onMenuDidHide()
-	menuIsActive = false
-end
-
 
 -- -------------------------------------------------
 -- SAVE & LOAD GAME PROGRESS
@@ -408,12 +396,12 @@ end
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
-		maxUnlockedSequence = data.sequence
+		Panels.maxUnlockedSequence = data.sequence
 	end
 end
 
 local function saveGameData() 
-	playdate.datastore.write({sequence = maxUnlockedSequence})
+	playdate.datastore.write({sequence = Panels.maxUnlockedSequence})
 end
 
 function playdate.gameWillTerminate()
@@ -428,11 +416,45 @@ function playdate.deviceWillLock()
 	saveGameData()
 end
 
+
+-- -------------------------------------------------
+-- MENU HANDLERS
+
+function Panels.onChapterSelected(chapter)
+	currentSeqIndex = chapter
+	loadSequence(currentSeqIndex)
+end
+
+function Panels.onMenuWillShow()
+	menuIsActive = true
+end
+
+function Panels.onMenuDidShow()
+	menuIsFullScreen = true
+end
+
+function Panels.onMenuWillHide()
+	menuIsFullScreen = false
+end
+
+function Panels.onMenuDidHide()
+	menuIsActive = false
+end
+
+function Panels.onGameDidStartOver() 
+	Panels.maxUnlockedSequence = 1
+	saveGameData()
+	currentSeqIndex = 1
+	loadSequence(currentSeqIndex)
+end
+
+
 -- -------------------------------------------------
 -- START GAME
 
 local function loadGame()
-	menu = Panels.Menu.new(sequences, onMenuDidSelect, onMenuDidHide)
+	createChapterMenu(sequences)
+	createMainMenu()
 	credits = Panels.Credits.new()
 	loadSequence(currentSeqIndex)
 end
@@ -440,14 +462,12 @@ end
 local function updateSystemMenu()
 	local sysMenu = playdate.getSystemMenu()
 	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", function()
-		menu:show()
-		menuIsActive = true
+		showChapterMenu()
 	end)
 	
 	local creditsItem, error = sysMenu:addMenuItem("Credits", function()
 		creditsAreActive = true
 		credits:show()
-		
 	end
 	)
 end
@@ -460,5 +480,26 @@ function Panels.start()
 	updateSystemMenu()
 	
 	sequences = Panels.Settings.comicData
+	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
+	
 	loadGame();
+	
+	if currentSeqIndex > 1 then 
+		menuIsActive = true
+		showMainMenu(false)
+	end
+end
+
+-- -------------------------------------------------
+-- DEBUG
+
+local function unlockAll()
+	Panels.maxUnlockedSequence = #sequences
+	saveGameData()
+end
+
+function playdate.keyPressed(key)
+	if key == "0" then 
+		unlockAll()
+	end
 end

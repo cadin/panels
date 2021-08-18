@@ -68,7 +68,11 @@ function Panels.Panel.new(data)
 	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
 
 	if not panel.parallaxDistance then
-		panel.parallaxDistance = Panels.Settings.parallaxDistance
+		if panel.axis == Panels.ScrollAxis.HORIZONTAL then
+			panel.parallaxDistance = panel.frame.width * 1.2
+		else 
+			panel.parallaxDistance = panel.frame.height * 1.2
+		end
 	end
 
 	if panel.panels then
