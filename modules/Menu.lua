@@ -6,19 +6,14 @@ local menuAnimationDuration <const> = 200
 local chapterList = playdate.ui.gridview.new(0, 32)
 local menuList = playdate.ui.gridview.new(0, 32)
 local sections = {}
-local selection = 1
-local headerFont = gfx.getSystemFont("bold") --gfx.font.new(Panels.Settings.path .. 'assets/fonts/Asheville-Sans-14-Bold')
+local headerFont = gfx.getSystemFont("bold")
 local listFont = gfx.font.new(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")
 local coverImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.menuImage)
 
 local chapterAnimator = nil
 local mainAnimator = nil
 local isMainMenu = false
-
 local state = "showing"
-
-local menuOptions = { "Continue Story", "Select Chapter", "Start Over" }
-
 
 local function drawMenuBG(xPos)
 	gfx.setColor(Panels.Color.WHITE)
@@ -28,7 +23,11 @@ local function drawMenuBG(xPos)
 	gfx.drawLine(xPos, 0, xPos, 240)
 end
 
+
+-- -------------------------------------------------
 -- MAIN MENU
+
+local menuOptions = { "Continue Story", "Select Chapter", "Start Over" }
 
 local function startShowingMainMenu(animated)
 	state = "showing"
@@ -68,7 +67,6 @@ function menuList:drawCell(section, row, column, selected, x, y, width, height)
 	gfx.drawTextInRect("" .. menuOptions[row] .. "", x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.left)
 end
 
-
 function showMainMenu(animated)
 	isMainMenu = true	
 	startShowingMainMenu(animated)
@@ -102,10 +100,8 @@ function showMainMenu(animated)
 end
 
 
-
-
+-- -------------------------------------------------
 -- CHAPTER MENU
-
 
 local function createSectionsFromData(data)
 	for i, seq in ipairs(data) do
@@ -141,8 +137,6 @@ function chapterList:drawSectionHeader(section, x, y, width, height)
 	gfx.drawTextInRect("CHAPTERS", x, y+8, width, height, nil, "...", kTextAlignment.center)
 	gfx.drawLine(x + 32, y + height - 2, x + width - 32, y + height - 2)
 end
-
-
 
 local function drawMainMenu(xPos)
 	drawMenuBG(xPos)
@@ -181,8 +175,6 @@ function drawMenu()
 	end 
 end
 
-
-
 function hideChapterMenu()
 	playdate.inputHandlers.pop()
 	chapterAnimator = gfx.animator.new(menuAnimationDuration, 1, 0, playdate.easingFunctions.inOutQuad)
@@ -190,7 +182,6 @@ function hideChapterMenu()
 	if not isMainMenu then
 		startHidingMainMenu()
 	end
-	
 end
 
 function showChapterMenu()
