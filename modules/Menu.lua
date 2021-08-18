@@ -30,10 +30,12 @@ end
 
 -- MAIN MENU
 
-local function startShowingMainMenu()
+local function startShowingMainMenu(animated)
 	state = "showing"
 	Panels.onMenuWillShow()
-	mainAnimator = gfx.animator.new(menuAnimationDuration, 0, 1, playdate.easingFunctions.inOutQuad)
+	local startVal = 1
+	if animated then startVal = 0 end
+	mainAnimator = gfx.animator.new(menuAnimationDuration, startVal, 1, playdate.easingFunctions.inOutQuad)
 end
 
 local function startHidingMainMenu()
@@ -67,9 +69,9 @@ function menuList:drawCell(section, row, column, selected, x, y, width, height)
 end
 
 
-function showMainMenu()
+function showMainMenu(animated)
 	isMainMenu = true	
-	startShowingMainMenu()
+	startShowingMainMenu(animated)
 	
 	local inputHandlers = {
 		downButtonUp = function()
@@ -83,16 +85,17 @@ function showMainMenu()
 		AButtonDown = function()
 			local row = menuList:getSelectedRow()
 			if row == 1 then     -- Continue
+				hideMainMenu()
 			elseif row == 2 then -- Chapters
 				showChapterMenu()
 			else                 -- Start Over
+				-- TODO: 
+				-- confirm before resetting game data
+				Panels.onGameDidStartOver()
+				hideMainMenu()
 			end	
 			
 		end,
-		
-		BButtonDown = function()
-			hideMainMenu()
-		end
 	}
 	menuList:setSelectedRow(1)
 	playdate.inputHandlers.push(inputHandlers)
@@ -106,8 +109,8 @@ end
 
 local function createSectionsFromData(data)
 	for i, seq in ipairs(data) do
-		if seq.title then
-			sections[#sections + 1] = {title = seq.title, index = i, unlocked = false}
+		if seq.title and i <= Panels.maxUnlockedSequence then
+			sections[#sections + 1] = {title = seq.title, index = i}
 		end
 	end
 end
@@ -193,11 +196,13 @@ end
 function showChapterMenu()
 	
 	if not isMainMenu then
-		startShowingMainMenu()
+		startShowingMainMenu(true)
 	end
 	
 	chapterAnimator = gfx.animator.new(menuAnimationDuration, 0, 1, playdate.easingFunctions.inOutQuad)
 	
+	chapterList:setSelectedRow(1)
+	chapterList:selectPreviousRow() -- forces list to scroll into view
 
 	local inputHandlers = {
 		downButtonUp = function()
@@ -221,6 +226,6 @@ function showChapterMenu()
 			hideChapterMenu()
 		end
 	}
-	chapterList:setSelectedRow(1)
+	
 	playdate.inputHandlers.push(inputHandlers)
 end

@@ -48,7 +48,7 @@ local menuIsActive = false
 local credits = nil
 local creditsAreActive = false
 
-local maxUnlockedSequence = 0
+Panels.maxUnlockedSequence = 1
 
 local function setUpPanels(seq)
     panels = {}
@@ -228,7 +228,7 @@ end
 
 local function loadSequence(num) 
 	sequence = sequences[num]
-	if num > maxUnlockedSequence then maxUnlockedSequence = num end	
+	if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end	
 	-- menu.sequences = maxUnlockedSequence
 
 	-- set default scroll direction for each axis if not specified
@@ -390,49 +390,18 @@ function playdate.update()
 	playdate.timer.updateTimers()
 end
 
-
--- -------------------------------------------------
--- MENU HANDLERS
-
-function Panels.onChapterSelected(chapter)
-	currentSeqIndex = chapter
-	loadSequence(currentSeqIndex)
-	print("onChapterSelected: " .. chapter)
-end
-
-function Panels.onMenuWillShow()
-	menuIsActive = true
-	print("onMenuWillShow")
-end
-
-function Panels.onMenuDidShow()
-	menuIsFullScreen = true
-	print("onMenuDidShow")
-end
-
-function Panels.onMenuWillHide()
-	menuIsFullScreen = false
-	print("onMenuWillHide")
-end
-
-function Panels.onMenuDidHide()
-	menuIsActive = false
-	print("onMenuDidHide")
-end
-
-
 -- -------------------------------------------------
 -- SAVE & LOAD GAME PROGRESS
 
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
-		maxUnlockedSequence = data.sequence
+		Panels.maxUnlockedSequence = data.sequence
 	end
 end
 
 local function saveGameData() 
-	playdate.datastore.write({sequence = maxUnlockedSequence})
+	playdate.datastore.write({sequence = Panels.maxUnlockedSequence})
 end
 
 function playdate.gameWillTerminate()
@@ -446,6 +415,39 @@ end
 function playdate.deviceWillLock()
 	saveGameData()
 end
+
+
+-- -------------------------------------------------
+-- MENU HANDLERS
+
+function Panels.onChapterSelected(chapter)
+	currentSeqIndex = chapter
+	loadSequence(currentSeqIndex)
+end
+
+function Panels.onMenuWillShow()
+	menuIsActive = true
+end
+
+function Panels.onMenuDidShow()
+	menuIsFullScreen = true
+end
+
+function Panels.onMenuWillHide()
+	menuIsFullScreen = false
+end
+
+function Panels.onMenuDidHide()
+	menuIsActive = false
+end
+
+function Panels.onGameDidStartOver() 
+	Panels.maxUnlockedSequence = 1
+	saveGameData()
+	currentSeqIndex = 1
+	loadSequence(currentSeqIndex)
+end
+
 
 -- -------------------------------------------------
 -- START GAME
@@ -472,14 +474,18 @@ end
 
 function Panels.start()
 	loadGameData()
+	currentSeqIndex = Panels.maxUnlockedSequence
 	
 	validateSettings()
 	createButtonIndicator()
 	updateSystemMenu()
 	
 	sequences = Panels.Settings.comicData
+	
 	loadGame();
 	
-	menuIsActive = true
-	showMainMenu()
+	if currentSeqIndex > 1 then 
+		menuIsActive = true
+		showMainMenu(false)
+	end
 end
