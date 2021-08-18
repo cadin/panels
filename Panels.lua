@@ -25,7 +25,7 @@ import "./modules/Utils"
 import "./modules/Credits"
 
 
-local currentSeqIndex = 1
+local currentSeqIndex = 2
 local sequences = nil
 local sequence = {}
 local panels = {}
@@ -229,7 +229,7 @@ end
 local function loadSequence(num) 
 	sequence = sequences[num]
 	if num > maxUnlockedSequence then maxUnlockedSequence = num end	
-	menu.sequences = maxUnlockedSequence
+	-- menu.sequences = maxUnlockedSequence
 
 	-- set default scroll direction for each axis if not specified
 	if sequence.direction == nil then
@@ -305,7 +305,8 @@ function playdate.cranked(change, accChange)
 end
 
 function playdate.BButtonDown() 
-	menu:show()
+	-- menu:show()
+	showChapterMenu()
 	menuIsActive = true
 end
 
@@ -377,28 +378,46 @@ end
 
 -- Playdate update loop
 function playdate.update()
-	if menuIsActive or creditsAreActive then
-		-- menu:redraw()
-	else	
+	if not menuIsFullScreen then 	
 		updateComic()
 		drawComic()
 		drawButtonIndicator()
-		playdate.timer.updateTimers()
 	end
+	
+	if menuIsActive or creditsAreActive then
+		drawMenu()
+	end
+	playdate.timer.updateTimers()
 end
 
 
 -- -------------------------------------------------
--- CHAPTER MENU
+-- MENU HANDLERS
 
-local function onMenuDidSelect(chapter)
+function Panels.onChapterSelected(chapter)
 	currentSeqIndex = chapter
 	loadSequence(currentSeqIndex)
-	menu:hide()
+	print("onChapterSelected: " .. chapter)
 end
 
-local function onMenuDidHide()
+function Panels.onMenuWillShow()
+	menuIsActive = true
+	print("onMenuWillShow")
+end
+
+function Panels.onMenuDidShow()
+	menuIsFullScreen = true
+	print("onMenuDidShow")
+end
+
+function Panels.onMenuWillHide()
+	menuIsFullScreen = false
+	print("onMenuWillHide")
+end
+
+function Panels.onMenuDidHide()
 	menuIsActive = false
+	print("onMenuDidHide")
 end
 
 
@@ -432,7 +451,8 @@ end
 -- START GAME
 
 local function loadGame()
-	menu = Panels.Menu.new(sequences, onMenuDidSelect, onMenuDidHide)
+	createChapterMenu(sequences)
+	createMainMenu()
 	credits = Panels.Credits.new()
 	loadSequence(currentSeqIndex)
 end
@@ -440,14 +460,12 @@ end
 local function updateSystemMenu()
 	local sysMenu = playdate.getSystemMenu()
 	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", function()
-		menu:show()
-		menuIsActive = true
+		showChapterMenu()
 	end)
 	
 	local creditsItem, error = sysMenu:addMenuItem("Credits", function()
 		creditsAreActive = true
 		credits:show()
-		
 	end
 	)
 end
@@ -461,4 +479,7 @@ function Panels.start()
 	
 	sequences = Panels.Settings.comicData
 	loadGame();
+	
+	menuIsActive = true
+	showMainMenu()
 end

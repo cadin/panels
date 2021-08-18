@@ -1,79 +1,226 @@
+import 'CoreLibs/ui/gridview.lua'
 local gfx <const> = playdate.graphics
 
-Panels.Menu = {}
+local menuAnimationDuration <const> = 200
 
-function Panels.Menu.new(data, selectionCallback, hideCallback)
-	local menu = { selection = 1 }
-	menu.sections = {}
-	menu.sequences = 0
-	
-	menu.inputHandlers = {
-		downButtonDown = function()
-			if menu.selection < menu.sequences then
-				menu.selection = menu.selection + 1
-			end
-			menu:redraw()
-		end,
-		
-		upButtonDown = function()
-			if menu.selection > 1 then 
-				menu.selection = menu.selection - 1
-			end
-			menu:redraw()
-		end,
-		
-		AButtonDown = function()
-			local item = menu.sections[menu.selection] 
-			selectionCallback( item.index )
-		end,
-		
-		BButtonDown = function()
-			menu:hide()
-		end
-	}
-	
-	for i, seq in ipairs(data) do
-		if seq.title then
-			menu.sections[#menu.sections + 1] = {title = seq.title, index = i, unlocked = false}
-		end
-	end
-	
-	function menu:show()
-		-- TODO: show animation?
-		playdate.inputHandlers.push(self.inputHandlers)
-		self:redraw()
-	end
-	
-	function menu:redraw()
-		gfx.clear()
+local chapterList = playdate.ui.gridview.new(0, 32)
+local menuList = playdate.ui.gridview.new(0, 32)
+local sections = {}
+local selection = 1
+local headerFont = gfx.getSystemFont("bold") --gfx.font.new(Panels.Settings.path .. 'assets/fonts/Asheville-Sans-14-Bold')
+local listFont = gfx.font.new(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")
+local coverImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.menuImage)
+
+local chapterAnimator = nil
+local mainAnimator = nil
+local isMainMenu = false
+
+local state = "showing"
+
+local menuOptions = { "Continue Story", "Select Chapter", "Start Over" }
+
+
+local function drawMenuBG(xPos)
+	gfx.setColor(Panels.Color.WHITE)
+	gfx.fillRect(xPos, 0,180, 240)
+	gfx.setColor(Panels.Color.BLACK)
+	gfx.setLineWidth(2)
+	gfx.drawLine(xPos, 0, xPos, 240)
+end
+
+-- MAIN MENU
+
+local function startShowingMainMenu()
+	state = "showing"
+	Panels.onMenuWillShow()
+	mainAnimator = gfx.animator.new(menuAnimationDuration, 0, 1, playdate.easingFunctions.inOutQuad)
+end
+
+local function startHidingMainMenu()
+	state = "hiding"
+	Panels.onMenuWillHide()
+	mainAnimator = gfx.animator.new(menuAnimationDuration, 1, 0, playdate.easingFunctions.inOutQuad)
+end
+
+local function hideMainMenu()
+	playdate.inputHandlers.pop()
+	startHidingMainMenu()
+	isMainMenu = false
+end
+
+function createMainMenu()
+	menuList:setNumberOfRows(#menuOptions)
+	menuList:setCellPadding(0, 0, 4, 4)
+end
+
+function menuList:drawCell(section, row, column, selected, x, y, width, height)
+	if selected then
 		gfx.setColor(gfx.kColorBlack)
-		gfx.fillRoundRect(5,  5 + (self.selection - 1) * 32, 200, 26, 4 )
-		
-		print("sequences: " .. self.sequences)
-		local y = 10
-		for i, sec in ipairs(self.sections) do 
-			if i <= self.sequences then
-				gfx.pushContext()
-				
-				if i == self.selection then
-					-- draw selected text in white
-					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-				end
-				
-				gfx.drawText("*"..sec.title.."*", 16, y)
-				gfx.popContext()
-				y += 32
-			end
-		end
+		gfx.fillRoundRect(x, y, width, height, 4)
+		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	else
+		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	end
 	
-	function menu:hide()
-		-- TODO: hide animation
-		playdate.inputHandlers.pop()
-		hideCallback()
-	end
-	
-	return menu
+	gfx.setFont(listFont)
+	gfx.drawTextInRect("" .. menuOptions[row] .. "", x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.left)
 end
 
 
+function showMainMenu()
+	isMainMenu = true	
+	startShowingMainMenu()
+	
+	local inputHandlers = {
+		downButtonUp = function()
+			menuList:selectNextRow(false)
+		end,
+		
+		upButtonUp = function()
+			menuList:selectPreviousRow(false)
+		end,
+		
+		AButtonDown = function()
+			local row = menuList:getSelectedRow()
+			if row == 1 then     -- Continue
+			elseif row == 2 then -- Chapters
+				showChapterMenu()
+			else                 -- Start Over
+			end	
+			
+		end,
+		
+		BButtonDown = function()
+			hideMainMenu()
+		end
+	}
+	menuList:setSelectedRow(1)
+	playdate.inputHandlers.push(inputHandlers)
+end
+
+
+
+
+-- CHAPTER MENU
+
+
+local function createSectionsFromData(data)
+	for i, seq in ipairs(data) do
+		if seq.title then
+			sections[#sections + 1] = {title = seq.title, index = i, unlocked = false}
+		end
+	end
+end
+
+function createChapterMenu(data)
+	createSectionsFromData(data)
+	chapterList:setNumberOfRows(#sections)
+	chapterList:setSectionHeaderHeight(32)
+	chapterList:setCellPadding(0, 0, 4, 4)
+end
+
+
+function chapterList:drawCell(section, row, column, selected, x, y, width, height)
+	if selected then
+		gfx.setColor(gfx.kColorBlack)
+		gfx.fillRoundRect(x, y, width, height, 4)
+		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	else
+		gfx.setImageDrawMode(gfx.kDrawModeCopy)
+	end
+	
+	gfx.setFont(listFont)
+	gfx.drawTextInRect("" .. sections[row].title.. "", x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.left)
+end
+
+function chapterList:drawSectionHeader(section, x, y, width, height)
+	gfx.setFont(headerFont)
+	gfx.drawTextInRect("CHAPTERS", x, y+8, width, height, nil, "...", kTextAlignment.center)
+	gfx.drawLine(x + 32, y + height - 2, x + width - 32, y + height - 2)
+end
+
+
+
+local function drawMainMenu(xPos)
+	drawMenuBG(xPos)
+	menuList:drawInRect(xPos + 8, 100, 164, 240)
+end
+
+local function drawChapterMenu(xPos)
+	drawMenuBG(xPos)
+	chapterList:drawInRect(xPos + 8, 0, 164, 240)
+end
+
+function drawMenu()
+	local chapterValue = 0
+	if chapterAnimator then chapterValue = chapterAnimator:currentValue() end
+	local mainValue = mainAnimator:currentValue()
+	local coverOffset = 400 - mainValue * 400
+	local menuOffset = 400 - mainValue * 180
+	
+	coverImage:draw(coverOffset, 0)
+	
+	if chapterValue < 1 then 
+		drawMainMenu(menuOffset)
+	end
+	
+	if chapterValue > 0 then 
+		local chapterOffset = 400 - chapterValue * 180
+		drawChapterMenu(chapterOffset)
+	end
+	
+	if state == "showing" and mainValue >= 1 then
+		Panels.onMenuDidShow()
+		state = "none"
+	elseif state == "hiding" and mainValue <= 0 then
+		Panels.onMenuDidHide()
+		state = "none"
+	end 
+end
+
+
+
+function hideChapterMenu()
+	playdate.inputHandlers.pop()
+	chapterAnimator = gfx.animator.new(menuAnimationDuration, 1, 0, playdate.easingFunctions.inOutQuad)
+	
+	if not isMainMenu then
+		startHidingMainMenu()
+	end
+	
+end
+
+function showChapterMenu()
+	
+	if not isMainMenu then
+		startShowingMainMenu()
+	end
+	
+	chapterAnimator = gfx.animator.new(menuAnimationDuration, 0, 1, playdate.easingFunctions.inOutQuad)
+	
+
+	local inputHandlers = {
+		downButtonUp = function()
+			chapterList:selectNextRow(false)
+		end,
+		
+		upButtonUp = function()
+			chapterList:selectPreviousRow(false)
+		end,
+		
+		AButtonDown = function()
+			local item = sections[chapterList:getSelectedRow()] 
+			Panels.onChapterSelected( item.index )
+			hideChapterMenu()
+			if isMainMenu then 
+				hideMainMenu()
+			end
+		end,
+		
+		BButtonDown = function()
+			hideChapterMenu()
+		end
+	}
+	chapterList:setSelectedRow(1)
+	playdate.inputHandlers.push(inputHandlers)
+end

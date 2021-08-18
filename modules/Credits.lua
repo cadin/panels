@@ -20,12 +20,10 @@ end
 
 function Panels.Credits.new()
 	
-	
 	local credits = {
 		panelsImg = createPanelsCredits(),
 		scrollPos = 0
 	}
-	
 	
 	function credits:show()
 		self:redraw()
