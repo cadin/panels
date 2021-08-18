@@ -474,18 +474,32 @@ end
 
 function Panels.start()
 	loadGameData()
-	currentSeqIndex = Panels.maxUnlockedSequence
 	
 	validateSettings()
 	createButtonIndicator()
 	updateSystemMenu()
 	
 	sequences = Panels.Settings.comicData
+	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	
 	loadGame();
 	
 	if currentSeqIndex > 1 then 
 		menuIsActive = true
 		showMainMenu(false)
+	end
+end
+
+-- -------------------------------------------------
+-- DEBUG
+
+local function unlockAll()
+	Panels.maxUnlockedSequence = #sequences
+	saveGameData()
+end
+
+function playdate.keyPressed(key)
+	if key == "0" then 
+		unlockAll()
 	end
 end
