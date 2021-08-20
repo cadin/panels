@@ -2,7 +2,7 @@ local gfx <const> = playdate.graphics
 
 Panels.Credits = {}
 
-local qrCode = gfx.image.new(Panels.Settings.path .. "assets/panelsPagesQR.png")
+local qrCode = gfx.image.new(Panels.Settings.path .. "assets/images/panelsPagesQR.png")
 local url = "cadin.github.io/panels"
 
 local function createPanelsCredits()

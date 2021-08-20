@@ -117,7 +117,7 @@ end
 -- BUTTON INDICATOR
 
 local function createButtonIndicator()
-	buttonTable = gfx.imagetable.new(Panels.Settings.path .. "assets/buttonA-table-40-40.png")
+	buttonTable = gfx.imagetable.new(Panels.Settings.path .. "assets/images/buttonA-table-40-40.png")
 	buttonIndicator = Panels.ButtonIndicator.new(buttonTable, 4)
 end
 
