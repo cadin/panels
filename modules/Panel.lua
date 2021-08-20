@@ -79,6 +79,7 @@ end
 
 function Panels.Panel.new(data)
 	local panel = table.shallowcopy(data)
+	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	
 	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
@@ -115,6 +116,14 @@ function Panels.Panel.new(data)
 			layer.visible = true
 		end
 	end
+	
+	if panel.audio then 
+		panel.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. panel.audio.file)
+		if panel.audio.pan then 
+			panel.sfxPlayer:setVolume(1 - panel.audio.pan, panel.audio.pan)
+		end
+		panel.sfxTrigger = panel.audio.trigger or 0
+	end
 
 	function panel:isOnScreen(offset) 
 		local isOn = false
@@ -132,11 +141,18 @@ function Panels.Panel.new(data)
 		local frame = self.frame
 		local shake
 		local pct = getScrollPercentages(frame, offset, self.axis)
-	
+		local cntrlPct
+		if self.axis == AxisHorizontal then cntrlPct = pct.x else cntrlPct = pct.y end
 	
 		if self.effect then
 			if self.effect.type == Panels.Effect.SHAKE_UNISON then 
 				shake = calculateShake(self.effect.strength) 
+			end
+		end
+		
+		if self.sfxPlayer then 
+			if cntrlPct >= self.sfxTrigger and self.prevPct < self.sfxTrigger then
+				self.sfxPlayer:play()
 			end
 		end
 	
@@ -148,8 +164,7 @@ function Panels.Panel.new(data)
 				local rotation = 0
 	
 				if layer.animate then 
-					local cntrlPct
-					if self.axis == AxisHorizontal then cntrlPct = pct.x else cntrlPct = pct.y end
+					
 					if layer.animate.x then xPos = math.floor(xPos + ((layer.animate.x - layer.x) * cntrlPct)) end
 					if layer.animate.y then yPos = math.floor(yPos + ((layer.animate.y - layer.y) * cntrlPct)) end
 					if layer.animate.rotation then rotation = layer.animate.rotation * cntrlPct end
@@ -192,6 +207,8 @@ function Panels.Panel.new(data)
 	
 			end
 		end
+		
+		self.prevPct = cntrlPct
 	end
 	
 	function panel:drawTextLayer(layer, xPos, yPos)
