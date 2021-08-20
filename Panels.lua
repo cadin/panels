@@ -117,23 +117,10 @@ end
 -- BUTTON INDICATOR
 
 local function createButtonIndicator()
-	buttonTable = gfx.imagetable.new(Panels.Settings.path .. "assets/images/buttonA-table-40-40.png")
+	-- TODO: make this use different images depending on `sequence.advanceControl`
+	buttonTable = gfx.imagetable.new(
+		Panels.Settings.path .. "assets/images/buttonA-table-40-40.png")
 	buttonIndicator = Panels.ButtonIndicator.new(buttonTable, 4)
-end
-
-local function setButtonIndicatorPosition(direction)
-	local x = ScreenWidth - 42
-	local y = ScreenHeight / 2 -20
-	if direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
-		x = 2
-	elseif direction == Panels.ScrollDirection.TOP_DOWN then
-		x = ScreenWidth / 2 - 20
-		y = ScreenHeight - 42
-	elseif direction == Panels.ScrollDirection.BOTTOM_UP then
-		x = ScreenWidth / 2 - 20
-		y = 2
-	end
-	buttonIndicator:setPosition(x, y)
 end
 
 local function drawButtonIndicator() 
@@ -267,7 +254,7 @@ local function loadSequence(num)
     setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
 	startTransitionIn(sequence.direction)
-	setButtonIndicatorPosition(sequence.direction)
+	buttonIndicator:setPositionForScrollDirection(sequence.direction)
 end
 
 local function unloadSequence()
