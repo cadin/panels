@@ -19,7 +19,7 @@ import "./modules/Input"
 import "./modules/Menu"
 import "./modules/Font"
 import "./modules/Panel"
-
+import "./modules/Audio"
 
 import "./modules/Utils"
 import "./modules/Credits"
@@ -223,23 +223,6 @@ local function startTransitionOut(direction)
 end
 
 
--- -------------------------------------------------
--- AUDIO
-
-local function startBGAudio(path, loop)
-	bgAudioPlayer, error = playdate.sound.fileplayer.new(path)
-	print(path, bgAudioPlayer, error)
-	local repeatCount 
-	if loop then repeatCount = 0 else repeatCount = 1 end
-	bgAudioPlayer:play(repeatCount)
-end
-
-local function stopBGAudio() 
-	if bgAudioPlayer then
-		bgAudioPlayer:stop()
-	end
-end
-
 
 -- -------------------------------------------------
 -- SEQUENCE LIFECYCLE
@@ -272,13 +255,13 @@ local function loadSequence(num)
 	if sequence.audio then
 		if not sequence.audio.continuePrevious then
 			if sequence.audio.file then
-				startBGAudio(sequence.audio.file, sequence.audio.loop or false)
+				Panels.Audio.startBGAudio(sequence.audio.file, sequence.audio.loop or false)
 			else
-				stopBGAudio()
+				Panels.Audio.stopBGAudio()
 			end
 		end
 	else
-		stopBGAudio()
+		Panels.Audio.stopBGAudio()
 	end
 
     setUpPanels(sequence)
@@ -452,6 +435,7 @@ end
 -- MENU HANDLERS
 
 function Panels.onChapterSelected(chapter)
+	Panels.Audio.stopBGAudio()
 	unloadSequence(currentSeqIndex)
 	currentSeqIndex = chapter
 	loadSequence(currentSeqIndex)
@@ -459,6 +443,7 @@ end
 
 function Panels.onMenuWillShow()
 	menuIsActive = true
+	Panels.Audio.pauseBGAudio()
 end
 
 function Panels.onMenuDidShow()
@@ -471,9 +456,11 @@ end
 
 function Panels.onMenuDidHide()
 	menuIsActive = false
+	Panels.Audio.resumeBGAudio()
 end
 
 function Panels.onGameDidStartOver() 
+	Panels.Audio.stopBGAudio()
 	Panels.maxUnlockedSequence = 1
 	saveGameData()
 	currentSeqIndex = 1
