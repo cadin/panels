@@ -8,7 +8,7 @@ Panels.Settings = {
 	defaultFrame = {gap = 50, margin = 8},
 	snapToPanels = true,
 	sequenceTransitionDuration = 750,
-	
+	defaultFont = nil
 }
 
 local function addSlashToFolderName(f)

@@ -17,7 +17,7 @@ import "./modules/Color"
 import "./modules/Effect"
 import "./modules/Input"
 import "./modules/Menu"
-
+import "./modules/Font"
 import "./modules/Panel"
 
 
@@ -25,7 +25,7 @@ import "./modules/Utils"
 import "./modules/Credits"
 
 
-local currentSeqIndex = 2
+local currentSeqIndex = 1
 local sequences = nil
 local sequence = {}
 local panels = {}
@@ -265,6 +265,10 @@ local function unloadSequence()
 					l.timer:remove()
 					l.timer = nil
 				end
+				
+				if l.textAnimator then
+					l.textAnimator = nil
+				end
 			end
 		end
 	end
@@ -302,12 +306,6 @@ end
 
 function playdate.cranked(change, accChange)
 	scrollPos = scrollPos + change
-end
-
-function playdate.BButtonDown() 
-	-- menu:show()
-	showChapterMenu()
-	menuIsActive = true
 end
 
 local function checkInputs() 
@@ -383,8 +381,11 @@ function playdate.update()
 		drawComic()
 		drawButtonIndicator()
 	end
-	
-	if menuIsActive or creditsAreActive then
+	-- TODO: fix credits screen
+	if creditsAreActive then
+		credits:redraw()
+	end
+	if menuIsActive then
 		drawMenu()
 	end
 	playdate.timer.updateTimers()
@@ -421,6 +422,7 @@ end
 -- MENU HANDLERS
 
 function Panels.onChapterSelected(chapter)
+	unloadSequence(currentSeqIndex)
 	currentSeqIndex = chapter
 	loadSequence(currentSeqIndex)
 end

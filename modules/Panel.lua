@@ -49,14 +49,30 @@ end
 local function doLayerEffect(layer)
 	if layer.effect.type == Panels.Effect.BLINK then
 		if layer.timer == nil then
-			layer.timer = playdate.timer.new(layer.effect.durations.on  + layer.effect.durations.off)
-			layer.timer.repeats = true
-		else
-			if layer.timer.currentTime < layer.effect.durations.on then
-				layer.visible = true
-			else 
+			if layer.effect.delay then 
 				layer.visible = false
+				layer.timer = playdate.timer.new(layer.effect.delay)
+				layer.timer.repeats = false
+			else
+				layer.timer = playdate.timer.new(layer.effect.durations.on  + layer.effect.durations.off)
+				layer.timer.repeats = true
 			end
+			
+		else
+			if layer.effect.delay then 
+				if layer.timer.currentTime >= layer.effect.delay then 
+					layer.effect.delay = false
+					layer.timer = playdate.timer.new(layer.effect.durations.on  + layer.effect.durations.off)
+					layer.timer.repeats = true
+				end
+			else 
+				if layer.timer.currentTime < layer.effect.durations.on then
+					layer.visible = true
+				else 
+					layer.visible = false
+				end
+			end
+			
 		end
 	end
 end
@@ -126,7 +142,7 @@ function Panels.Panel.new(data)
 	
 		if layers then
 			for i, layer in ipairs(layers) do 
-				local p = layer.parallax
+				local p = layer.parallax or 0
 				local xPos = math.floor(layer.x + (self.parallaxDistance * pct.x - self.parallaxDistance/2) * p)
 				local yPos = math.floor(layer.y + (self.parallaxDistance * pct.y - self.parallaxDistance/2) * p)
 				local rotation = 0
@@ -150,12 +166,11 @@ function Panels.Panel.new(data)
 					end
 				end
 				
-				
+				if layer.effect then
+					doLayerEffect(layer, xPos, yPos)
+				end
 				
 				if layer.img then 
-					if layer.effect then
-						doLayerEffect(layer, xPos, yPos)
-					end
 					if layer.visible then
 						layer.img:draw(xPos, yPos)
 					end
@@ -165,11 +180,56 @@ function Panels.Panel.new(data)
 					if self.axis == AxisHorizontal then p = pct.x else p = pct.y end
 					p = p + (self.transitionOffset or 0)
 					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
-					layer.imgs[j]:draw(xPos, yPos)
+					if layer.visible then 
+						layer.imgs[j]:draw(xPos, yPos)
+					end
+					
+				elseif layer.text then
+					if layer.visible then 
+						self:drawTextLayer(layer, xPos, yPos)
+					end
 				end
 	
 			end
 		end
+	end
+	
+	function panel:drawTextLayer(layer, xPos, yPos)
+		gfx.pushContext()
+		if layer.font then
+			gfx.setFont(Panels.Font.get(layer.font))
+		elseif self.font then
+			gfx.setFont(Panels.Font.get(self.font))
+		end
+		
+		local txt = layer.text
+		if layer.effect then
+			if layer.effect.type == Panels.Effect.TYPE_ON then
+				if layer.textAnimator == nil then
+					layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(txt), playdate.easingFunctions.linear, layer.effect.delay or 0)
+				end
+				
+				local j = math.ceil(layer.textAnimator:currentValue())
+				txt = string.sub(txt, 1, j)
+			end
+		end
+		
+		if layer.background then
+			local w, h = gfx.getTextSize(txt)
+			gfx.setColor(layer.background)
+			if layer.background == Panels.Color.BLACK then 
+				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			end
+			if w > 0 and h > 0 then
+				gfx.fillRect(xPos - 4, yPos - 1, w + 8, h + 2 )
+			end
+		end
+		if layer.color == Panels.Color.WHITE then
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		end
+
+		gfx.drawText(txt, xPos, yPos)
+		gfx.popContext()
 	end
 	
 	function panel:drawBorder(color)
