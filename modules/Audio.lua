@@ -6,9 +6,12 @@ Panels.Audio = {}
 
 function Panels.Audio.startBGAudio(path, loop)
 	bgAudioPlayer, error = playdate.sound.fileplayer.new(path)
-	print(path, bgAudioPlayer, error)
-	if loop then repeatCount = 0 else repeatCount = 1 end
-	bgAudioPlayer:play(repeatCount)
+	if bgAudioPlayer then 
+		if loop then repeatCount = 0 else repeatCount = 1 end
+		bgAudioPlayer:play(repeatCount)
+	else 
+		printError(error, "Error loading background audio:")
+	end
 end
 
 function Panels.Audio.stopBGAudio() 

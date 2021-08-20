@@ -467,15 +467,22 @@ end
 
 local function updateSystemMenu()
 	local sysMenu = playdate.getSystemMenu()
-	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", function()
-		showChapterMenu()
-	end)
-	
-	local creditsItem, error = sysMenu:addMenuItem("Credits", function()
-		creditsAreActive = true
-		credits:show()
-	end
+	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", 
+		function()
+			showChapterMenu()
+		end
 	)
+	printError(error, "Error adding Chapters to system menu")
+	
+	
+	local creditsItem, error2 = sysMenu:addMenuItem("Credits", 
+		function()
+			creditsAreActive = true
+			credits:show()
+		end
+	)
+	printError(error2, "Error adding Credits to system menu:")
+
 end
 
 function Panels.start()
