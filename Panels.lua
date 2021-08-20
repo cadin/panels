@@ -224,6 +224,24 @@ end
 
 
 -- -------------------------------------------------
+-- AUDIO
+
+local function startBGAudio(path, loop)
+	bgAudioPlayer, error = playdate.sound.fileplayer.new(path)
+	print(path, bgAudioPlayer, error)
+	local repeatCount 
+	if loop then repeatCount = 0 else repeatCount = 1 end
+	bgAudioPlayer:play(repeatCount)
+end
+
+local function stopBGAudio() 
+	if bgAudioPlayer then
+		bgAudioPlayer:stop()
+	end
+end
+
+
+-- -------------------------------------------------
 -- SEQUENCE LIFECYCLE
 
 local function loadSequence(num) 
@@ -249,6 +267,18 @@ local function loadSequence(num)
 	
 	if sequence.advanceControl == nil then 
 		sequence.advanceControl = Panels.Input.A
+	end
+	
+	if sequence.audio then
+		if not sequence.audio.continuePrevious then
+			if sequence.audio.file then
+				startBGAudio(sequence.audio.file, sequence.audio.loop or false)
+			else
+				stopBGAudio()
+			end
+		end
+	else
+		stopBGAudio()
 	end
 
     setUpPanels(sequence)
