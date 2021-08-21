@@ -223,11 +223,20 @@ function Panels.Panel.new(data)
 		if layer.effect then
 			if layer.effect.type == Panels.Effect.TYPE_ON then
 				if layer.textAnimator == nil then
+					layer.isTyping = true
 					layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(txt), playdate.easingFunctions.linear, layer.effect.delay or 0)
+					playdate.timer.performAfterDelay(layer.effect.delay or 0, Panels.Audio.startTypingSound)
 				end
 				
-				local j = math.ceil(layer.textAnimator:currentValue())
-				txt = string.sub(txt, 1, j)
+				if layer.isTyping then 
+					local j = math.ceil(layer.textAnimator:currentValue())
+					txt = string.sub(txt, 1, j)
+					
+					if txt == layer.text then
+						layer.isTyping = false
+						Panels.Audio.stopTypingSound()
+					end
+				end
 			end
 		end
 		

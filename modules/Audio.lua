@@ -1,6 +1,9 @@
 local bgAudioPlayer = nil
 local shouldResume = false
 local repeatCount = 1
+local typingRetainCount = 0
+local typingSamplePlayer = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/typingBeep.wav")
+
 
 Panels.Audio = {}
 
@@ -32,5 +35,18 @@ end
 function Panels.Audio.resumeBGAudio()
 	if bgAudioPlayer and shouldResume then
 		bgAudioPlayer:play(repeatCount)
+	end
+end
+
+function Panels.Audio.startTypingSound()
+	typingRetainCount = typingRetainCount + 1
+	typingSamplePlayer:play(0)
+end
+
+function Panels.Audio.stopTypingSound()
+	typingRetainCount = typingRetainCount - 1
+	
+	if typingRetainCount <=0 then
+		typingSamplePlayer:stop()
 	end
 end
