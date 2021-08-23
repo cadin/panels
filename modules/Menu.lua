@@ -105,8 +105,8 @@ end
 
 local function createSectionsFromData(data)
 	for i, seq in ipairs(data) do
-		if seq.title and i <= Panels.maxUnlockedSequence then
-			sections[#sections + 1] = {title = seq.title, index = i}
+		if (seq.title or Panels.Settings.listUnnamedSequences) and i <= Panels.maxUnlockedSequence then
+			sections[#sections + 1] = {title = seq.title or "--", index = i}
 		end
 	end
 end
