@@ -143,6 +143,7 @@ function Panels.Panel.new(data)
 		local pct = getScrollPercentages(frame, offset, self.axis)
 		local cntrlPct
 		if self.axis == AxisHorizontal then cntrlPct = pct.x else cntrlPct = pct.y end
+		if self.scrollingIsReversed then cntrlPct = 1-cntrlPct end
 	
 		if self.effect then
 			if self.effect.type == Panels.Effect.SHAKE_UNISON then 
@@ -164,7 +165,6 @@ function Panels.Panel.new(data)
 				local rotation = 0
 	
 				if layer.animate then 
-					
 					if layer.animate.x then xPos = math.floor(xPos + ((layer.animate.x - layer.x) * cntrlPct)) end
 					if layer.animate.y then yPos = math.floor(yPos + ((layer.animate.y - layer.y) * cntrlPct)) end
 					if layer.animate.rotation then rotation = layer.animate.rotation * cntrlPct end
@@ -191,8 +191,7 @@ function Panels.Panel.new(data)
 					end
 
 				elseif layer.imgs then
-					local p
-					if self.axis == AxisHorizontal then p = pct.x else p = pct.y end
+					local p = cntrlPct
 					p = p + (self.transitionOffset or 0)
 					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
 					if layer.visible then 

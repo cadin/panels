@@ -66,6 +66,7 @@ local function setUpPanels(seq)
 		end
 		
 		panel.axis = seq.axis
+		panel.scrollingIsReversed = seq.scrollingIsReversed or false
 
 		local p = Panels.Panel.new(panel)
 
