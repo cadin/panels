@@ -123,10 +123,7 @@ end
 -- BUTTON INDICATOR
 
 local function createButtonIndicator()
-	-- TODO: make this use different images depending on `sequence.advanceControl`
-	buttonTable = gfx.imagetable.new(
-		Panels.Settings.path .. "assets/images/buttonA-table-40-40.png")
-	buttonIndicator = Panels.ButtonIndicator.new(buttonTable, 4)
+	buttonIndicator = Panels.ButtonIndicator.new()
 end
 
 local function drawButtonIndicator() 
@@ -138,6 +135,18 @@ local function drawButtonIndicator()
 		end
 	end
 	buttonIndicator:draw()
+end
+
+local function getAdvanceControlForScrollDirection(dir)
+	if dir == Panels.ScrollDirection.LEFT_TO_RIGHT then 
+		return Panels.Input.RIGHT
+	elseif dir == Panels.ScrollDirection.TOP_DOWN then
+		return Panels.Input.DOWN
+	elseif dir == Panels.ScrollDirection.BOTTOM_UP then
+		return Panels.Input.UP
+	else
+		return Panels.Input.LEFT
+	end
 end
 
 
@@ -242,7 +251,7 @@ local function loadSequence(num)
 	end
 	
 	if sequence.advanceControl == nil then 
-		sequence.advanceControl = Panels.Input.A
+		sequence.advanceControl = getAdvanceControlForScrollDirection(sequence.direction)
 	end
 	
 	if sequence.audio then
@@ -264,7 +273,9 @@ local function loadSequence(num)
     setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
 	startTransitionIn(sequence.direction)
+	buttonIndicator:setButton(sequence.advanceControl)
 	buttonIndicator:setPositionForScrollDirection(sequence.direction)
+	
 end
 
 local function unloadSequence()

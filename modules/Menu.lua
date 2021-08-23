@@ -19,8 +19,10 @@ local function drawMenuBG(xPos)
 	gfx.setColor(Panels.Color.WHITE)
 	gfx.fillRect(xPos, 0,180, 240)
 	gfx.setColor(Panels.Color.BLACK)
+	
 	gfx.setLineWidth(2)
-	gfx.drawLine(xPos, 0, xPos, 240)
+	gfx.drawRoundRect(xPos, 0, 190, 240, 4)
+	-- gfx.drawLine(xPos, 0, xPos, 240)
 end
 
 

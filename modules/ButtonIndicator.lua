@@ -3,13 +3,16 @@ Panels.ButtonIndicator = {}
 local ScreenWidth <const> = playdate.display.getWidth()
 local ScreenHeight <const> = playdate.display.getHeight()
 
-function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
-	local button = {imageTable = _imageTable, holdFrame = _holdFrame}
+local gfx <const> = playdate.graphics
+
+function Panels.ButtonIndicator.new()
+	local button = {imageTable = nil, holdFrame = 4}
 	button.currentFrame = 1
 	button.step = 1
 	button.state = "hidden"
 	button.x = 0
 	button.y = 0
+	button.button = "0"
 	
 	button.timer = playdate.timer.new(
 		50, 
@@ -22,6 +25,35 @@ function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
 	function button:setPosition(x, y)
 		self.x = x
 		self.y = y
+	end
+	
+	function button:setButton(button)
+		print("setButton: " .. button)
+		print(self.button)
+		if self.button ~= button then 
+			print("setting")
+			local imgTable = nil
+			if button == Panels.Input.A then
+				imgTable = gfx.imagetable.new(
+					Panels.Settings.path .. "assets/images/buttonA-table-40-40.png")
+			elseif button == Panels.Input.B then
+				imgTable = gfx.imagetable.new(
+					Panels.Settings.path .. "assets/images/buttonB-table-40-40.png")
+			elseif button == Panels.Input.UP then
+				imgTable = gfx.imagetable.new(
+					Panels.Settings.path .. "assets/images/buttonUP-table-40-40.png")
+			elseif button == Panels.Input.RIGHT then
+				imgTable = gfx.imagetable.new(
+					Panels.Settings.path .. "assets/images/buttonRT-table-40-40.png")
+			elseif button == Panels.Input.DOWN then
+				imgTable = gfx.imagetable.new(
+					Panels.Settings.path .. "assets/images/buttonDN-table-40-40.png")
+			else
+				imgTable = gfx.imagetable.new(
+					Panels.Settings.path .. "assets/images/buttonLT-table-40-40.png")
+			end
+			self.imageTable = imgTable
+		end
 	end
 	
 	function button:setPositionForScrollDirection(direction)
@@ -64,21 +96,23 @@ function Panels.ButtonIndicator.new(_imageTable, _holdFrame)
 	end
 	
 	function button:updateTimer()
-		self.currentFrame = self.currentFrame + self.step
-		
-
-		
-		if self.currentFrame < 1 or self.currentFrame >= #self.imageTable then
-			self.currentFrame = 1
-			self.timer:pause()
-			self.state = "hidden"
-		elseif self.currentFrame == self.holdFrame then
-			self.timer:pause() 
+		if self.imageTable then 
+			self.currentFrame = self.currentFrame + self.step
+	
+			if self.currentFrame < 1 or self.currentFrame >= #self.imageTable then
+				self.currentFrame = 1
+				self.timer:pause()
+				self.state = "hidden"
+			elseif self.currentFrame == self.holdFrame then
+				self.timer:pause() 
+			end
 		end
 	end
 	
 	function button:draw(x, y)
-		self.imageTable:drawImage(self.currentFrame, x or self.x, y or self.y)
+		if self.imageTable then 
+			self.imageTable:drawImage(self.currentFrame, x or self.x, y or self.y)
+		end
 	end
 	
 	return button
