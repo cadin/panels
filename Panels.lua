@@ -54,8 +54,13 @@ local function setUpPanels(seq)
     panels = {}
     local pos = 0
 	local j = 1
+	
+	local list = table.shallowcopy(seq.panels)
+	if seq.scrollingIsReversed then 
+		reverseTable(list)
+	end
 
-	for i, panel in ipairs(seq.panels) do
+	for i, panel in ipairs(list) do
 		if panel.frame == nil then
 			panel.frame = table.shallowcopy(seq.defaultFrame) 
 		end
