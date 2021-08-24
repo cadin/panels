@@ -4,10 +4,10 @@ local gfx <const> = playdate.graphics
 local menuAnimationDuration <const> = 200
 
 local chapterList = playdate.ui.gridview.new(0, 32)
-local menuList = playdate.ui.gridview.new(0, 32)
+local menuList = playdate.ui.gridview.new(128, 32)
 local sections = {}
 local headerFont = gfx.getSystemFont("bold")
-local listFont = gfx.font.new(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")
+local listFont = gfx.getSystemFont() --gfx.font.new(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")
 local coverImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.menuImage)
 
 local chapterAnimator = nil
@@ -15,26 +15,25 @@ local mainAnimator = nil
 local isMainMenu = false
 local state = "showing"
 
-local function drawMenuBG(xPos)
+
+local function drawMenuBG(yPos)
 	gfx.setColor(Panels.Color.WHITE)
-	gfx.fillRect(xPos, 0,180, 240)
+	gfx.fillRoundRect(0, yPos, 400, 245, 4)
 	gfx.setColor(Panels.Color.BLACK)
-	
 	gfx.setLineWidth(2)
-	gfx.drawRoundRect(xPos, 0, 190, 240, 4)
-	-- gfx.drawLine(xPos, 0, xPos, 240)
+	gfx.drawRoundRect(0, yPos, 400, 245, 4)
 end
 
 
 -- -------------------------------------------------
 -- MAIN MENU
 
-local menuOptions = { "Continue Story", "Select Chapter", "Start Over" }
+local menuOptions = { "Restart", "Chapters",  "Continue", }
 
 local function startShowingMainMenu(animated)
 	state = "showing"
 	Panels.onMenuWillShow()
-	local startVal = 1
+	local startVal = 0
 	if animated then startVal = 0 end
 	mainAnimator = gfx.animator.new(menuAnimationDuration, startVal, 1, playdate.easingFunctions.inOutQuad)
 end
@@ -52,21 +51,26 @@ local function hideMainMenu()
 end
 
 function createMainMenu()
-	menuList:setNumberOfRows(#menuOptions)
+	menuList:setNumberOfRows(1)
+	menuList:setNumberOfColumns(#menuOptions)
 	menuList:setCellPadding(0, 0, 4, 4)
+	
+	menuList:setSelection(1, 1,3)
 end
 
 function menuList:drawCell(section, row, column, selected, x, y, width, height)
+	local text = menuOptions[column]
 	if selected then
 		gfx.setColor(gfx.kColorBlack)
 		gfx.fillRoundRect(x, y, width, height, 4)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		text = "*" .. text .. "*"
 	else
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	end
 	
 	gfx.setFont(listFont)
-	gfx.drawTextInRect("" .. menuOptions[row] .. "", x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.left)
+	gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
 end
 
 function showMainMenu(animated)
@@ -74,19 +78,19 @@ function showMainMenu(animated)
 	startShowingMainMenu(animated)
 	
 	local inputHandlers = {
-		downButtonUp = function()
-			menuList:selectNextRow(false)
+		rightButtonUp = function()
+			menuList:selectNextColumn(false)
 		end,
 		
-		upButtonUp = function()
-			menuList:selectPreviousRow(false)
+		leftButtonUp = function()
+			menuList:selectPreviousColumn(false)
 		end,
 		
 		AButtonDown = function()
-			local row = menuList:getSelectedRow()
-			if row == 1 then     -- Continue
+			local s, r, column = menuList:getSelection()
+			if column == 3 then     -- Continue
 				hideMainMenu()
-			elseif row == 2 then -- Chapters
+			elseif column == 2 then -- Chapters
 				showChapterMenu()
 			else                 -- Start Over
 				-- TODO: 
@@ -97,7 +101,7 @@ function showMainMenu(animated)
 			
 		end,
 	}
-	menuList:setSelectedRow(1)
+	-- menuList:setSelectedRow(1)
 	playdate.inputHandlers.push(inputHandlers)
 end
 
@@ -107,8 +111,11 @@ end
 
 local function createSectionsFromData(data)
 	for i, seq in ipairs(data) do
-		if (seq.title or Panels.Settings.listUnnamedSequences) and i <= Panels.maxUnlockedSequence then
-			sections[#sections + 1] = {title = seq.title or "--", index = i}
+		if (seq.title or Panels.Settings.listUnnamedSequences) 
+		and (i <= Panels.maxUnlockedSequence or Panels.Settings.listLockedSequences) then
+			local title = seq.title or "--"
+			if i <= Panels.maxUnlockedSequence then title = "*" .. title .. "*" end
+			sections[#sections + 1] = {title = title, index = i}
 		end
 	end
 end
@@ -116,10 +123,10 @@ end
 function createChapterMenu(data)
 	createSectionsFromData(data)
 	chapterList:setNumberOfRows(#sections)
-	chapterList:setSectionHeaderHeight(32)
-	chapterList:setCellPadding(0, 0, 4, 4)
-end
+	chapterList:setSectionHeaderHeight(48)
+	chapterList:setCellPadding(0, 0, 0, 8)
 
+end
 
 function chapterList:drawCell(section, row, column, selected, x, y, width, height)
 	if selected then
@@ -131,23 +138,25 @@ function chapterList:drawCell(section, row, column, selected, x, y, width, heigh
 	end
 	
 	gfx.setFont(listFont)
-	gfx.drawTextInRect("" .. sections[row].title.. "", x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.left)
+	gfx.drawTextInRect("" .. sections[row].title.. "", x + 16, y+8, width -32, height+2, nil, "...", kTextAlignment.left)
 end
 
 function chapterList:drawSectionHeader(section, x, y, width, height)
 	gfx.setFont(headerFont)
-	gfx.drawTextInRect("CHAPTERS", x, y+8, width, height, nil, "...", kTextAlignment.center)
-	gfx.drawLine(x + 32, y + height - 2, x + width - 32, y + height - 2)
+	gfx.drawTextInRect("Chapters", x, y+12, width, height, nil, "...", kTextAlignment.center)
+	gfx.setLineWidth(1)
+	gfx.drawLine(x, y + 20, x + 120, y + 20)
+	gfx.drawLine(x + width - 120, y + 20, x + width, y + 20)
 end
 
-local function drawMainMenu(xPos)
-	drawMenuBG(xPos)
-	menuList:drawInRect(xPos + 8, 100, 164, 240)
+local function drawMainMenu(yPos)
+	drawMenuBG(yPos)
+	menuList:drawInRect(8, yPos + 3, 384, 42)
 end
 
-local function drawChapterMenu(xPos)
-	drawMenuBG(xPos)
-	chapterList:drawInRect(xPos + 8, 0, 164, 240)
+local function drawChapterMenu(yPos)
+	drawMenuBG(yPos)
+	chapterList:drawInRect(32, yPos + 3, 336, 240)
 end
 
 function drawMenu()
@@ -155,7 +164,7 @@ function drawMenu()
 	if chapterAnimator then chapterValue = chapterAnimator:currentValue() end
 	local mainValue = mainAnimator:currentValue()
 	local coverOffset = 400 - mainValue * 400
-	local menuOffset = 400 - mainValue * 180
+	local menuOffset = 240 - mainValue * 45
 	
 	coverImage:draw(coverOffset, 0)
 	
@@ -164,7 +173,7 @@ function drawMenu()
 	end
 	
 	if chapterValue > 0 then 
-		local chapterOffset = 400 - chapterValue * 180
+		local chapterOffset = (240 - chapterValue * 240) 
 		drawChapterMenu(chapterOffset)
 	end
 	
@@ -199,7 +208,9 @@ function showChapterMenu()
 
 	local inputHandlers = {
 		downButtonUp = function()
-			chapterList:selectNextRow(false)
+			if chapterList:getSelectedRow() < Panels.maxUnlockedSequence then 
+				chapterList:selectNextRow(false)
+			end
 		end,
 		
 		upButtonUp = function()

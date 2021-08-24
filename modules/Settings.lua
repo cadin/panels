@@ -1,16 +1,20 @@
 Panels.Settings = {
+	-- path settings
 	path = "libraries/panels/",
 	comicData = {},
 	imageFolder = "images/",
 	audioFolder = "audio/",
-	menuImage = "menuImage.png",
 	
+	-- panel settings
 	defaultFrame = {gap = 50, margin = 8},
 	snapToPanels = true,
 	sequenceTransitionDuration = 750,
 	defaultFont = nil,
 	
-	listUnnamedSequences = true
+	-- menu settings
+	menuImage = "menuSketch.png",
+	listUnnamedSequences = true,
+	listLockedSequences = true
 }
 
 local function addSlashToFolderName(f)
