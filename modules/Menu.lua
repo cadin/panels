@@ -7,7 +7,7 @@ local chapterList = playdate.ui.gridview.new(0, 32)
 local menuList = playdate.ui.gridview.new(128, 32)
 local sections = {}
 local headerFont = gfx.getSystemFont("bold")
-local listFont = gfx.getSystemFont() --gfx.font.new(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")
+local listFont = gfx.getSystemFont()
 local coverImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.menuImage)
 
 local chapterAnimator = nil
@@ -110,6 +110,7 @@ end
 -- CHAPTER MENU
 
 local function createSectionsFromData(data)
+	sections = {}
 	for i, seq in ipairs(data) do
 		if (seq.title or Panels.Settings.listUnnamedSequences) 
 		and (i <= Panels.maxUnlockedSequence or Panels.Settings.listLockedSequences) then

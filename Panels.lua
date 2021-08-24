@@ -473,6 +473,7 @@ function Panels.onGameDidStartOver()
 	saveGameData()
 	currentSeqIndex = 1
 	loadSequence(currentSeqIndex)
+	createChapterMenu(sequences)
 end
 
 
