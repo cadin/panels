@@ -452,6 +452,7 @@ end
 function Panels.onMenuWillShow()
 	menuIsActive = true
 	Panels.Audio.pauseBGAudio()
+	Panels.Audio.muteTypingSounds()
 end
 
 function Panels.onMenuDidShow()
@@ -465,6 +466,7 @@ end
 function Panels.onMenuDidHide()
 	menuIsActive = false
 	Panels.Audio.resumeBGAudio()
+	Panels.Audio.unmuteTypingSounds()
 end
 
 function Panels.onGameDidStartOver() 

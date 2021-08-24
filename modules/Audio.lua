@@ -4,6 +4,7 @@ local repeatCount = 1
 local typingRetainCount = 0
 local typingSamplePlayer = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/typingBeep.wav")
 
+local typingIsMuted = false
 
 Panels.Audio = {}
 
@@ -39,8 +40,10 @@ function Panels.Audio.resumeBGAudio()
 end
 
 function Panels.Audio.startTypingSound()
-	typingRetainCount = typingRetainCount + 1
-	typingSamplePlayer:play(0)
+	if not typingIsMuted then
+		typingRetainCount = typingRetainCount + 1
+		typingSamplePlayer:play(0)
+	end
 end
 
 function Panels.Audio.stopTypingSound()
@@ -49,4 +52,14 @@ function Panels.Audio.stopTypingSound()
 	if typingRetainCount <=0 then
 		typingSamplePlayer:stop()
 	end
+end
+
+function Panels.Audio.muteTypingSounds()
+	typingIsMuted = true
+	typingRetainCount = 0
+	typingSamplePlayer:stop()
+end
+
+function Panels.Audio.unmuteTypingSounds()
+	typingIsMuted = false
 end
