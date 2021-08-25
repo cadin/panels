@@ -164,12 +164,10 @@ function drawMenu()
 	local chapterValue = 0
 	if chapterAnimator then chapterValue = chapterAnimator:currentValue() end
 	local mainValue = mainAnimator:currentValue()
-	local coverOffset = 400 - mainValue * 400
 	local menuOffset = 240 - mainValue * 45
 	
-	coverImage:draw(coverOffset, 0)
-	
-	if chapterValue < 1 then 
+	if isMainMenu and chapterValue < 1 then 
+		coverImage:draw(0, 0)
 		drawMainMenu(menuOffset)
 	end
 	

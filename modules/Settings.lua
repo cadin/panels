@@ -2,6 +2,7 @@ Panels.Settings = {
 	-- path settings
 	path = "libraries/panels/",
 	comicData = {},
+	credits = {},
 	imageFolder = "images/",
 	audioFolder = "audio/",
 	
@@ -12,7 +13,7 @@ Panels.Settings = {
 	defaultFont = nil,
 	
 	-- menu settings
-	menuImage = "menuSketch.png",
+	menuImage = "menuImage.png",
 	listUnnamedSequences = true,
 	listLockedSequences = true
 }
