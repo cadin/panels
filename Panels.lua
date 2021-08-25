@@ -20,6 +20,8 @@ import "./modules/Menu"
 import "./modules/Font"
 import "./modules/Panel"
 import "./modules/Audio"
+import "./modules/TextAlignment"
+
 
 import "./modules/Utils"
 import "./modules/Credits"
@@ -402,12 +404,14 @@ function playdate.update()
 		drawComic()
 		drawButtonIndicator()
 	end
+	
+	if menuIsActive then
+		drawMenu()
+	end
+	
 	-- TODO: fix credits screen
 	if creditsAreActive then
 		credits:redraw()
-	end
-	if menuIsActive then
-		drawMenu()
 	end
 	playdate.timer.updateTimers()
 end
