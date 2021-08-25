@@ -2,7 +2,7 @@
 
 Build interactive comics for the Playdate console.
 
-![Banner](./assets/images/banner.gif)
+![Banner](./assets/images/panelsBanner.gif)
 
 ## Getting Started
 
