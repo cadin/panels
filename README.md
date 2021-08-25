@@ -2,13 +2,18 @@
 
 Build interactive comics for the Playdate console.
 
-![Banner](assets/images/banner.gif)
+![Banner](./assets/images/banner.gif)
 
 ## Getting Started
 
 ### Requirements
 
+-   [Playdate SDK](https://play.date/dev/)
+-   [Playdate Console](https://shop.play.date) (optional)
+
 ### Setup
+
+Clone thi
 
 ### Project Structure
 
@@ -30,7 +35,7 @@ Build interactive comics for the Playdate console.
 
 #### Errors
 
-Check the Playdate Simulator console for helpful errors or messages.
+Check the console in the Playdate Simulator for helpful errors or messages.
 
 A build error pointing to your data file usually indicates a formatting error. Make sure all quotes and braces are closed. Check for missing commas in between items.
 
