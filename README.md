@@ -4,6 +4,9 @@ Build interactive comics for the Playdate console.
 
 ![Banner](./assets/images/panelsBanner.gif)
 
+<!-- TODO: add a general description about what Panels is and what it does. -->
+<!-- would be nice to have an animation here too as a demonstration -->
+
 ## Getting Started
 
 ### Requirements
@@ -13,11 +16,42 @@ Build interactive comics for the Playdate console.
 
 ### Setup
 
-Clone thi
+1. Clone this repo into your project, preferrably into a `libraries` folder.
+2. Inside your `main.lua` file import Panels.
+3. Tell Panels where to find your [`comicData`](#comic-data) table.
+4. Start Panels.
+
+#### Example `main.lua` File:
+
+```lua
+import "libraries/panels/Panels"
+import "comicData.lua"  -- contains your comicData table
+
+Panels.Settings.comicData = comicData
+Panels.start()
+```
 
 ### Project Structure
 
-### Main File
+Panels expects to be placed in a folder called `libraries` within your project source folder.
+
+<pre>
+📁 MyProjectSource
+├── 📄 main.lua
+├── 📁 audio
+├── 📁 images
+└── 📁 libraries
+    └── 📁 <b>panels</b>
+</pre>
+
+If you need to place Panels somewhere else in your project, you just need to update the `path` setting before starting Panels:
+
+```
+Panels.Settings.path = "frameworks/panels/"
+Panels.start()
+```
+
+Panels will attempt to load images and audio files from the `images` and `audio` folders respectively. These folders can also be changed by altering [settings](#settings) before calling `start()`.
 
 ## Comic Data
 
