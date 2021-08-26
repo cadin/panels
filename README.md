@@ -4,6 +4,8 @@ Build interactive comics for the Playdate console.
 
 ![Banner](./assets/images/panelsBanner.gif)
 
+<!-- <img src="./assets/images/PanelsLoop.gif" width="80%" style="image-rendering: pixelated;"/> -->
+
 <!-- TODO: add a general description about what Panels is and what it does. -->
 <!-- would be nice to have an animation here too as a demonstration -->
 
@@ -61,6 +63,8 @@ Panels will attempt to load images and audio files from the `images` and `audio`
 
 ### Layers
 
+## Image Format
+
 ## Settings
 
 ## Support
@@ -73,7 +77,7 @@ Check the console in the Playdate Simulator for helpful errors or messages.
 
 A build error pointing to your data file usually indicates a formatting error. Make sure all quotes and braces are closed. Check for missing commas in between items.
 
-An error pointing to code within Panels may still be caused by missing info in your data file. Take a look at the portion of the code with the error and see which item(s) is causing the error. Check the section of your data file that provides those items to make sure you're specifying the proper paths, names, values, etc.
+An error pointing to code within Panels may still be caused by missing info in your data file. Take a look at the portion of the code with the error and see which items are causing the error. Check the section of your data file that provides those items to make sure you're specifying the proper paths, names, values, etc.
 
 If everything looks good, you may have found a bug! Please [report it](#bug-reports) so it can get fixed.
 
@@ -81,9 +85,13 @@ If everything looks good, you may have found a bug! Please [report it](#bug-repo
 
 ### Feature Requests
 
+Add feature requests to the [Issues](https://github.com/cadin/panels/issues) page.
+
+Include a description of the general functionality you need, along with your preferred implementation (if you have one). Please search first to see if someone else has already created an issue for your feature. If so, you can add a vote or comment to show your support.
+
 ### Bug Reports
 
-File bug reports on the [Issues](./issues) page.
+File bug reports on the [Issues](https://github.com/cadin/panels/issues) page.
 
 Each bug should be listed as a separate issue. Please search first to see if someone else has already filed the bug, and list all steps needed to reproduce the issue in the smallest possible project.
 
