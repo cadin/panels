@@ -61,7 +61,6 @@ local function createGameCredits(textAlignment)
 	
 	for i, line in ipairs(credits) do
 		y = y +  (line.spacing or 0)
-		print(line.text)
 		if line.alignment then 
 			alignment = line.alignment
 			x = getPositionForAlignment(line.alignment)
@@ -103,7 +102,7 @@ function Panels.Credits.new()
 	function credits:drawPanelsCredits(x, y) 
 		gfx.drawLine(0, y, 400, y)
 		gfx.setColor(Panels.Color.BLACK)
-		gfx.fillRect(0, y, 400, 78)
+		gfx.fillRect(0, y, 400, 90) -- 78
 		self.panelsImg:draw(90, y + 12)
 	end
 	
