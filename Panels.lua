@@ -515,12 +515,12 @@ function Panels.start()
 	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences);
 	
-	if currentSeqIndex > 1 then 
-		menusAreFullScreen = true
-		Panels.mainMenu:show()
-	else
+	-- if currentSeqIndex > 1 then 
+	-- 	menusAreFullScreen = true
+	-- 	Panels.mainMenu:show()
+	-- else
 		loadSequence(currentSeqIndex)
-	end
+	-- end
 end
 
 -- -------------------------------------------------
