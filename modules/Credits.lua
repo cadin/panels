@@ -9,6 +9,11 @@ local url = "cadin.github.io/panels"
 
 
 local maxScroll = 0
+local scrollAcceleration = 0.25
+local maxScrollVelocity = 6
+local scrollVelocity = 0
+local snapStrength = 1.5
+
 local headerHeight = 48
 local bottomPadding = 24
 local panelsCreditHeight = 78
@@ -108,14 +113,30 @@ function Panels.Credits.new()
 	end
 	
 	function credits:checkForInput()
+		-- button input
 		if playdate.buttonIsPressed(Panels.Input.DOWN) then
-			if self.scrollPos > maxScroll then
-				self.scrollPos = self.scrollPos - 2
-			end
+			scrollVelocity = scrollVelocity - scrollAcceleration
 		elseif playdate.buttonIsPressed(Panels.Input.UP) then
-			if self.scrollPos < 0 then 
-				self.scrollPos = self.scrollPos + 2
-			end
+			scrollVelocity = scrollVelocity + scrollAcceleration 
+		else
+			scrollVelocity = scrollVelocity / 2
+		end
+		
+		-- constrain to min/max
+		if scrollVelocity > maxScrollVelocity then 	
+			scrollVelocity = maxScrollVelocity 	
+		elseif scrollVelocity < -maxScrollVelocity then
+			scrollVelocity = -maxScrollVelocity
+		end
+		
+		self.scrollPos = self.scrollPos + scrollVelocity
+		
+		-- snap to bounds
+		if self.scrollPos > 0 then
+			self.scrollPos = math.floor(self.scrollPos / snapStrength)		
+		elseif self.scrollPos < maxScroll then
+			local diff = self.scrollPos - maxScroll
+			self.scrollPos = math.floor(self.scrollPos - (diff - (diff / snapStrength )))
 		end
 	end
 	

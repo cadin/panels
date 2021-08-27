@@ -216,7 +216,6 @@ local function createChapterMenu(data)
 		BButtonDown = function()
 			Panels.chapterMenu:hide()
 		end
-		
 	}
 	
 	local menu = Panels.Menu.new(ScreenHeight - 2, redrawChapterMenu, inputHandlers)

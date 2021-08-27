@@ -478,7 +478,6 @@ function Panels.onGameDidStartOver()
 	currentSeqIndex = 1
 	loadSequence(currentSeqIndex)
 	createMenus(sequences)
-	-- createChapterMenu(sequences)
 end
 
 
@@ -508,7 +507,6 @@ end
 
 function Panels.start()
 	loadGameData()
-	
 	validateSettings()
 	createButtonIndicator()
 	updateSystemMenu()
