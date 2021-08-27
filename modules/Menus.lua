@@ -210,9 +210,7 @@ local function createChapterMenu(data)
 			local item = sections[chapterList:getSelectedRow()] 
 			Panels.onChapterSelected( item.index )
 			Panels.chapterMenu:hide()
-			if Panels.mainMenu:isActive() then 
-				Panels.mainMenu:hide()
-			end
+			Panels.mainMenu:hide()
 		end,
 		
 		BButtonDown = function()
