@@ -28,11 +28,16 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 	menu.state = MenuState.CLOSED
 	menu.isFullScreen = false
 	menu.onWillShow = nil
+	menu.onDidShow = nil
 	menu.onDidHide = nil
 	
 	local function drawBG(yPos)
 		gfx.setColor(Panels.Color.WHITE)
 		gfx.fillRoundRect(0, yPos, 400, ScreenHeight + 5, 4)
+		
+	end
+	
+	local function drawOutline(yPos)
 		gfx.setColor(Panels.Color.BLACK)
 		gfx.setLineWidth(2)
 		gfx.drawRoundRect(0, yPos, 400, ScreenHeight + 5, 4)
@@ -69,6 +74,7 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 			if self.state == MenuState.SHOWING then
 				self.state = MenuState.OPEN
 				Panels.onMenuDidShow(self)
+				if self.onDidShow then self:onDidShow() end
 			elseif self.state == MenuState.HIDING then
 				self.state = MenuState.CLOSED
 				Panels.onMenuDidHide(self)
@@ -83,6 +89,7 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 		if yPos < ScreenHeight then
 			drawBG(yPos)
 			redrawContent(yPos)
+			drawOutline(yPos)
 		end
 		
 		self:updateState()
@@ -274,6 +281,10 @@ local function onCreditsMenuWillShow()
 	credits.scrollPos = 0
 end
 
+local function onCreditsMenuDidShow()
+	credits:onDidShow()
+end
+
 local function createCreditsMenu()
 	credits = Panels.Credits.new()
 	
@@ -281,10 +292,14 @@ local function createCreditsMenu()
 		BButtonDown = function()
 			Panels.creditsMenu:hide()
 		end,
+		cranked = function(change)
+			credits:cranked(change)
+		end,
 	}
 	
 	local menu = Panels.Menu.new(ScreenHeight, redrawCreditsMenu, inputHandlers)
 	menu.onWillShow = onCreditsMenuWillShow
+	menu.onDidShow = onCreditsMenuDidShow
 	return menu
 end
 
