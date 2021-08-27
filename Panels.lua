@@ -16,7 +16,7 @@ import "./modules/ButtonIndicator"
 import "./modules/Color"
 import "./modules/Effect"
 import "./modules/Input"
-import "./modules/Menu"
+import "./modules/Menus"
 import "./modules/Font"
 import "./modules/Panel"
 import "./modules/Audio"
@@ -45,10 +45,9 @@ local transitionOutAnimator = nil
 local transitionInAnimator = nil
 
 local buttonIndicator = nil
-local menu = nil
-local menuIsActive = false
-local credits = nil
-local creditsAreActive = false
+
+local numMenusOpen = 0
+local menusAreFullScreen = false
 
 Panels.maxUnlockedSequence = 1
 
@@ -399,20 +398,16 @@ end
 
 -- Playdate update loop
 function playdate.update()
-	if not menuIsFullScreen then 	
+	if not menusAreFullScreen then 	
 		updateComic()
 		drawComic()
 		drawButtonIndicator()
 	end
 	
-	if menuIsActive then
-		drawMenu()
+	if numMenusOpen > 0 then
+		updateMenus()
 	end
 	
-	-- TODO: fix credits screen
-	if creditsAreActive then
-		credits:redraw()
-	end
 	playdate.timer.updateTimers()
 end
 
@@ -453,24 +448,27 @@ function Panels.onChapterSelected(chapter)
 	loadSequence(currentSeqIndex)
 end
 
-function Panels.onMenuWillShow()
-	menuIsActive = true
+function Panels.onMenuWillShow(menu)
+	numMenusOpen = numMenusOpen + 1
 	Panels.Audio.pauseBGAudio()
 	Panels.Audio.muteTypingSounds()
 end
 
 function Panels.onMenuDidShow()
-	menuIsFullScreen = true
+	menusAreFullScreen = true
 end
 
-function Panels.onMenuWillHide()
-	menuIsFullScreen = false
+function Panels.onMenuWillHide(menu)
+	if menu == Panels.mainMenu then 
+		loadSequence(currentSeqIndex)
+	end
+	menusAreFullScreen = false
 end
 
-function Panels.onMenuDidHide()
-	menuIsActive = false
+function Panels.onMenuDidHide(menu)
 	Panels.Audio.resumeBGAudio()
 	Panels.Audio.unmuteTypingSounds()
+	numMenusOpen = numMenusOpen - 1
 end
 
 function Panels.onGameDidStartOver() 
@@ -479,25 +477,20 @@ function Panels.onGameDidStartOver()
 	saveGameData()
 	currentSeqIndex = 1
 	loadSequence(currentSeqIndex)
-	createChapterMenu(sequences)
+	createMenus(sequences)
+	-- createChapterMenu(sequences)
 end
 
 
 -- -------------------------------------------------
 -- START GAME
 
-local function loadGame()
-	createChapterMenu(sequences)
-	createMainMenu()
-	credits = Panels.Credits.new()
-	loadSequence(currentSeqIndex)
-end
-
 local function updateSystemMenu()
 	local sysMenu = playdate.getSystemMenu()
 	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", 
 		function()
-			showChapterMenu()
+			Panels.creditsMenu:hide()
+			Panels.chapterMenu:show()
 		end
 	)
 	printError(error, "Error adding Chapters to system menu")
@@ -505,8 +498,8 @@ local function updateSystemMenu()
 	
 	local creditsItem, error2 = sysMenu:addMenuItem("Credits", 
 		function()
-			creditsAreActive = true
-			credits:show()
+			Panels.chapterMenu:hide()
+			Panels.creditsMenu:show()
 		end
 	)
 	printError(error2, "Error adding Credits to system menu:")
@@ -522,12 +515,13 @@ function Panels.start()
 	
 	sequences = Panels.Settings.comicData
 	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
-	
-	loadGame();
+	createMenus(sequences);
 	
 	if currentSeqIndex > 1 then 
-		menuIsActive = true
-		showMainMenu(false)
+		menusAreFullScreen = true
+		Panels.mainMenu:show()
+	else
+		loadSequence(currentSeqIndex)
 	end
 end
 
