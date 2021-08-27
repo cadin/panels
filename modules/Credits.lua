@@ -7,8 +7,12 @@ Panels.Credits = {}
 local qrCode = gfx.image.new(Panels.Settings.path .. "assets/images/panelsPagesQR.png")
 local url = "cadin.github.io/panels"
 
-local scrollPos = 0
+
 local maxScroll = 0
+local scrollAcceleration = 0.25
+local maxScrollVelocity = 6
+local scrollVelocity = 0
+local snapStrength = 1.5
 
 local headerHeight = 48
 local bottomPadding = 24
@@ -93,12 +97,7 @@ function Panels.Credits.new()
 	
 	maxScroll = -(gameCreditsHeight + headerHeight + bottomPadding + panelsCreditHeight - ScreenHeight)
 	
-	
-	function credits:show()
-		scrollPos = 0
-		self:redraw()
-	end
-	
+
 	function credits:drawPanelsCredits(x, y) 
 		gfx.drawLine(0, y, 400, y)
 		gfx.setColor(Panels.Color.BLACK)
@@ -106,32 +105,47 @@ function Panels.Credits.new()
 		self.panelsImg:draw(90, y + 12)
 	end
 	
-	function credits:drawHeader(scrollPos)
-		gfx.drawTextAligned("*Credits*", 200, scrollPos + 12, kTextAlignment.center)
+	function credits:drawHeader(posY)
+		gfx.drawTextAligned("*Credits*", 200, posY + 12, kTextAlignment.center)
 		gfx.setLineWidth(1)
-		gfx.drawLine(32, scrollPos + 20, 32 + 120, scrollPos + 20)
-		gfx.drawLine(368 - 120, scrollPos + 20, 368, scrollPos + 20)
+		gfx.drawLine(32, posY + 20, 32 + 120, posY + 20)
+		gfx.drawLine(368 - 120, posY + 20, 368, posY + 20)
 	end
 	
 	function credits:checkForInput()
+		-- button input
 		if playdate.buttonIsPressed(Panels.Input.DOWN) then
-			if scrollPos > maxScroll then
-				scrollPos = scrollPos - 2
-			end
+			scrollVelocity = scrollVelocity - scrollAcceleration
 		elseif playdate.buttonIsPressed(Panels.Input.UP) then
-			if scrollPos < 0 then 
-				scrollPos = scrollPos + 2
-			end
+			scrollVelocity = scrollVelocity + scrollAcceleration 
+		else
+			scrollVelocity = scrollVelocity / 2
+		end
+		
+		-- constrain to min/max
+		if scrollVelocity > maxScrollVelocity then 	
+			scrollVelocity = maxScrollVelocity 	
+		elseif scrollVelocity < -maxScrollVelocity then
+			scrollVelocity = -maxScrollVelocity
+		end
+		
+		self.scrollPos = self.scrollPos + scrollVelocity
+		
+		-- snap to bounds
+		if self.scrollPos > 0 then
+			self.scrollPos = math.floor(self.scrollPos / snapStrength)		
+		elseif self.scrollPos < maxScroll then
+			local diff = self.scrollPos - maxScroll
+			self.scrollPos = math.floor(self.scrollPos - (diff - (diff / snapStrength )))
 		end
 	end
 	
-	function credits:redraw()
+	function credits:redraw(yPos)
 		self:checkForInput()
 		
-		gfx.clear()
-		self:drawHeader(scrollPos)
-		self.gameCredits:draw(0, scrollPos + headerHeight)
-		self:drawPanelsCredits(0, scrollPos + gameCreditsHeight + bottomPadding + headerHeight)
+		self:drawHeader(self.scrollPos + yPos)
+		self.gameCredits:draw(0, self.scrollPos + headerHeight + yPos)
+		self:drawPanelsCredits(0, self.scrollPos + gameCreditsHeight + bottomPadding + headerHeight + yPos)
 	end
 	
 	
