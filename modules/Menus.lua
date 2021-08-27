@@ -3,6 +3,9 @@ local gfx <const> = playdate.graphics
 
 local ScreenHeight <const> = playdate.display.getHeight()
 
+local headerFont = gfx.getSystemFont("bold")
+local listFont = gfx.getSystemFont()
+
 Panels.Menu = {}
 
 -- -------------------------------------------------
@@ -218,7 +221,7 @@ local function createChapterMenu(data)
 		end
 	}
 	
-	local menu = Panels.Menu.new(ScreenHeight - 2, redrawChapterMenu, inputHandlers)
+	local menu = Panels.Menu.new(ScreenHeight, redrawChapterMenu, inputHandlers)
 	menu.onWillShow = onChapterMenuWillShow
 	return menu
 end
