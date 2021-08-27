@@ -109,27 +109,48 @@ local function createGameCredits(textAlignment)
 	return img
 end
 
+local autoScrollTimeout = nil
+local isAutoScrolling = false
+
+local function startAutoScroll()
+	isAutoScrolling = true
+end
+
+local function killAutoScrolling()
+	isAutoScrolling = false
+	if autoScrollTimeout then 
+		autoScrollTimeout:reset()
+	end
+end
+
+
 function Panels.Credits.new()
 	
 	local data = Panels.Settings.credits
 	if data.hideStandardHeader then headerHeight = 8 end
 	
+	
 	local credits = {
 		gameCredits = createGameCredits(data.alignment or kTextAlignment.center),
 		panelsImg = createPanelsCredits(),
 		showHeader = not data.hideStandardHeader,
-		scrollPos = 0
+		scrollPos = 0,
+		isScrollable = false,
+		shouldAutoScroll = data.autoScroll or false,
 	}
 	
 	local gameCreditsHeight = math.max(measureCreditsHeight(data), 138 - headerHeight)
+	if gameCreditsHeight > 138 - headerHeight then 
+		credits.isScrollable = true
+	end
 	
 	maxScroll = -(gameCreditsHeight + headerHeight + bottomPadding + panelsCreditHeight - ScreenHeight)
-	
+
 
 	function credits:drawPanelsCredits(x, y) 
 		gfx.drawLine(0, y, 400, y)
 		gfx.setColor(Panels.Color.BLACK)
-		gfx.fillRect(0, y, 400, 90) -- 78
+		gfx.fillRect(0, y, 400, 180) -- 78
 		self.panelsImg:draw(90, y + 12)
 	end
 	
@@ -140,12 +161,28 @@ function Panels.Credits.new()
 		gfx.drawLine(368 - 120, posY + 20, 368, posY + 20)
 	end
 	
+	function credits:cranked(change)
+		if self.isScrollable then 
+			self.scrollPos += change
+			killAutoScrolling()
+		end
+	end
+	
+	function credits:onDidShow()
+		if self.shouldAutoScroll then 
+			autoScrollTimeout = playdate.timer.new(1500, startAutoScroll)
+			autoScrollTimeout.discardOnCompletion = false
+		end
+	end
+	
 	function credits:checkForInput()
 		-- button input
 		if playdate.buttonIsPressed(Panels.Input.DOWN) then
 			scrollVelocity = scrollVelocity - scrollAcceleration
+			killAutoScrolling()
 		elseif playdate.buttonIsPressed(Panels.Input.UP) then
 			scrollVelocity = scrollVelocity + scrollAcceleration 
+			killAutoScrolling()
 		else
 			scrollVelocity = scrollVelocity / 2
 		end
@@ -169,7 +206,12 @@ function Panels.Credits.new()
 	end
 	
 	function credits:redraw(yPos)
-		self:checkForInput()
+		if self.isScrollable then 
+			self:checkForInput()
+			if isAutoScrolling then 
+				self.scrollPos = self.scrollPos - 1
+			end
+		end
 		
 		if self.showHeader then 
 			self:drawHeader(self.scrollPos + yPos)
