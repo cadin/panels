@@ -35,8 +35,14 @@ local function measureCreditsHeight(credits)
 	local height = 1
 	
 	for i, line in ipairs(credits) do
-		local w, h = gfx.getTextSize(line.text)
-		height = height + h + (line.spacing or 0)
+		if line.text then 
+			local w, h = gfx.getTextSize(line.text)
+			height = height + h + (line.spacing or 0)
+		elseif line.image then
+			local img = gfx.image.new(Panels.Settings.imageFolder .. line.image)
+			local w, h = img:getSize()
+			height = height + h + (line.spacing or 0)
+		end
 	end
 	
 	return height
@@ -51,6 +57,17 @@ local function getPositionForAlignment(alignment)
 	end
 
 	return x
+end
+
+local function getAnchorForAlignment(alignment)
+	local anchor = 0
+	if alignment == kTextAlignment.center then
+		anchor = 0.5
+	elseif alignment == kTextAlignment.right then
+		anchor = 1
+		
+	end
+	return anchor
 end
 
 local function createGameCredits(textAlignment)
@@ -73,9 +90,21 @@ local function createGameCredits(textAlignment)
 			x = defaultX
 		end
 		
-		gfx.drawTextAligned(line.text, x, y, alignment)
-		local w, h = gfx.getTextSize(line.text)
-		y = y + h
+		if line.text then 
+			gfx.drawTextAligned(line.text, x, y, alignment)
+			local w, h = gfx.getTextSize(line.text)
+			y = y + h
+			
+		elseif line.image then
+			local img = gfx.image.new(Panels.Settings.imageFolder .. line.image)
+			local w, h = img:getSize()
+			local anchorX = getAnchorForAlignment(alignment)
+			
+			print("draw: ", x, y, anchorX, 0)
+			img:drawAnchored(x, y, anchorX, 0)
+			
+			y = y + h
+		end
 	end
 	gfx.popContext()
 	
@@ -85,15 +114,16 @@ end
 function Panels.Credits.new()
 	
 	local data = Panels.Settings.credits
+	if data.hideStandardHeader then headerHeight = 8 end
 	
 	local credits = {
 		gameCredits = createGameCredits(data.alignment or kTextAlignment.center),
 		panelsImg = createPanelsCredits(),
-		
+		showHeader = not data.hideStandardHeader,
 		scrollPos = 0
 	}
 	
-	local gameCreditsHeight = math.max(measureCreditsHeight(data), 90)
+	local gameCreditsHeight = math.max(measureCreditsHeight(data), 138 - headerHeight)
 	
 	maxScroll = -(gameCreditsHeight + headerHeight + bottomPadding + panelsCreditHeight - ScreenHeight)
 	
@@ -143,7 +173,9 @@ function Panels.Credits.new()
 	function credits:redraw(yPos)
 		self:checkForInput()
 		
-		self:drawHeader(self.scrollPos + yPos)
+		if self.showHeader then 
+			self:drawHeader(self.scrollPos + yPos)
+		end
 		self.gameCredits:draw(0, self.scrollPos + headerHeight + yPos)
 		self:drawPanelsCredits(0, self.scrollPos + gameCreditsHeight + bottomPadding + headerHeight + yPos)
 	end

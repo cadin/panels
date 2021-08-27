@@ -31,10 +31,10 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 	
 	local function drawBG(yPos)
 		gfx.setColor(Panels.Color.WHITE)
-		gfx.fillRoundRect(0, yPos, 400, ScreenHeight + 5, 6)
+		gfx.fillRoundRect(0, yPos, 400, ScreenHeight + 5, 4)
 		gfx.setColor(Panels.Color.BLACK)
 		gfx.setLineWidth(2)
-		gfx.drawRoundRect(0, yPos, 400, ScreenHeight + 5, 6)
+		gfx.drawRoundRect(0, yPos, 400, ScreenHeight + 5, 4)
 	end
 	
 	function menu:show()
