@@ -99,8 +99,6 @@ local function createGameCredits(textAlignment)
 			local img = gfx.image.new(Panels.Settings.imageFolder .. line.image)
 			local w, h = img:getSize()
 			local anchorX = getAnchorForAlignment(alignment)
-			
-			print("draw: ", x, y, anchorX, 0)
 			img:drawAnchored(x, y, anchorX, 0)
 			
 			y = y + h

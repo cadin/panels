@@ -15,7 +15,8 @@ Panels.Settings = {
 	-- menu settings
 	menuImage = "menuImage.png",
 	listUnnamedSequences = true,
-	listLockedSequences = true
+	listLockedSequences = true,
+	chapterMenuHeaderImage = nil,
 }
 
 local function addSlashToFolderName(f)

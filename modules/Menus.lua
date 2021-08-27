@@ -1,6 +1,7 @@
 import 'CoreLibs/ui/gridview.lua'
 local gfx <const> = playdate.graphics
 
+local ScreenWidth <const> = playdate.display.getWidth()
 local ScreenHeight <const> = playdate.display.getHeight()
 
 local headerFont = gfx.getSystemFont("bold")
@@ -170,6 +171,7 @@ end
 -- CHAPTER MENU
 
 local chapterList = playdate.ui.gridview.new(0, 32)
+local headerImage = nil
 
 local function createSectionsFromData(data)
 	sections = {}
@@ -184,7 +186,7 @@ local function createSectionsFromData(data)
 end
 
 local function redrawChapterMenu(yPos)
-	chapterList:drawInRect(32, yPos + 3, 336, 240)
+	chapterList:drawInRect(32, yPos +1, 336, 240)
 end
 
 local function onChapterMenuWillShow() 
@@ -195,7 +197,14 @@ end
 local function createChapterMenu(data)
 	createSectionsFromData(data)
 	chapterList:setNumberOfRows(#sections)
-	chapterList:setSectionHeaderHeight(48)
+	
+	if Panels.Settings.chapterMenuHeaderImage then
+		headerImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.chapterMenuHeaderImage)
+		local w, h = headerImage:getSize()
+		chapterList:setSectionHeaderHeight(h + 12)
+	else 
+		chapterList:setSectionHeaderHeight(48)
+	end
 	chapterList:setCellPadding(0, 0, 0, 8)
 	
 	local inputHandlers = {
@@ -240,11 +249,15 @@ function chapterList:drawCell(section, row, column, selected, x, y, width, heigh
 end
 
 function chapterList:drawSectionHeader(section, x, y, width, height)
-	gfx.setFont(headerFont)
-	gfx.drawTextInRect("Chapters", x, y+12, width, height, nil, "...", kTextAlignment.center)
-	gfx.setLineWidth(1)
-	gfx.drawLine(x, y + 20, x + 120, y + 20)
-	gfx.drawLine(x + width - 120, y + 20, x + width, y + 20)
+	if Panels.Settings.chapterMenuHeaderImage then
+		headerImage:drawAnchored(x + width / 2, y + 4, 0.5, 0)
+	else
+		gfx.setFont(headerFont)
+		gfx.drawTextInRect("Chapters", x, y+12, width, height, nil, "...", kTextAlignment.center)
+		gfx.setLineWidth(1)
+		gfx.drawLine(x, y + 20, x + 120, y + 20)
+		gfx.drawLine(x + width - 120, y + 20, x + width, y + 20)
+	end
 end
 
 
