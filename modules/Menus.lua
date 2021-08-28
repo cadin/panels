@@ -229,7 +229,7 @@ local function createChapterMenu(data)
 			local item = sections[chapterList:getSelectedRow()] 
 			Panels.onChapterSelected( item.index )
 			Panels.chapterMenu:hide()
-			Panels.mainMenu:hide()
+			-- Panels.mainMenu:hide()
 		end,
 		
 		BButtonDown = function()
@@ -243,16 +243,16 @@ local function createChapterMenu(data)
 end
 
 function chapterList:drawCell(section, row, column, selected, x, y, width, height)
-	if selected then
-		gfx.setColor(gfx.kColorBlack)
-		gfx.fillRoundRect(x, y, width, height, 4)
-		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	else
-		gfx.setImageDrawMode(gfx.kDrawModeCopy)
-	end
-	
-	gfx.setFont(listFont)
-	gfx.drawTextInRect("" .. sections[row].title.. "", x + 16, y+8, width -32, height+2, nil, "...", kTextAlignment.left)
+		if selected then
+			gfx.setColor(gfx.kColorBlack)
+			gfx.fillRoundRect(x, y, width, height, 4)
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		else
+			gfx.setImageDrawMode(gfx.kDrawModeCopy)
+		end
+		
+		gfx.setFont(listFont)
+		gfx.drawTextInRect("" .. sections[row].title.. "", x + 16, y+8, width -32, height+2, nil, "...", kTextAlignment.left)
 end
 
 function chapterList:drawSectionHeader(section, x, y, width, height)
@@ -308,11 +308,11 @@ end
 -- ALL MENUS
 
 function updateMenus()	
-	if Panels.mainMenu:isActive() then 
-		local val = Panels.mainMenu.animator:currentValue()
-		displayMenuImage(val)	
-		Panels.mainMenu:update() 
-	end
+	-- if Panels.mainMenu:isActive() then 
+	-- 	local val = Panels.mainMenu.animator:currentValue()
+	-- 	displayMenuImage(val)	
+	-- 	Panels.mainMenu:update() 
+	-- end
 	
 	if Panels.chapterMenu:isActive() then
 		Panels.chapterMenu:update()
@@ -324,7 +324,7 @@ function updateMenus()
 end
 
 function createMenus(sequences)
-	Panels.mainMenu = createMainMenu()
+	-- Panels.mainMenu = createMainMenu()
 	Panels.chapterMenu = createChapterMenu(sequences)
 	Panels.creditsMenu = createCreditsMenu()
 end
