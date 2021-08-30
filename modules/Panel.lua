@@ -128,8 +128,8 @@ function Panels.Panel.new(data)
 	function panel:isOnScreen(offset) 
 		local isOn = false
 		local f = self.frame
-		if f.x + offset.x <= ScreenWidth and f.x + f.width + offset.x >= 0 and 
-		f.y + offset.y <= ScreenHeight and f.y + f.height+ offset.y >= 0 then
+		if f.x + offset.x <= ScreenWidth and f.x + f.width + offset.x > 0 and 
+		f.y + offset.y <= ScreenHeight and f.y + f.height+ offset.y > 0 then
 			isOn = true	
 		end
 	
@@ -262,12 +262,27 @@ function Panels.Panel.new(data)
 		gfx.setLineWidth(2)
 		gfx.drawRoundRect(1, 1, self.frame.width- 2, self.frame.height -2, 2)
 	end
+
+	local shouldAutoAdvance = false
+
+	function panel:shouldAutoAdvance()
+		if self.advanceFunction then 
+			return self:advanceFunction()
+		else
+			return false
+		end
+	end
 	
 	function panel:render(offset, borderColor)
 		gfx.pushContext(self.canvas)
 		gfx.clear()
 		
-		self:drawLayers(offset)
+		if self.renderFunction then
+			self:renderFunction(offset)	
+		else 
+			self:drawLayers(offset)
+		end
+
 		if not self.borderless then
 			self:drawBorder(borderColor)
 		end
