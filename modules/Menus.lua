@@ -193,7 +193,7 @@ local function createSectionsFromData(data)
 end
 
 local function redrawChapterMenu(yPos)
-	chapterList:drawInRect(32, yPos +1, 336, 240)
+	chapterList:drawInRect(13, yPos +1, 374, 240)
 end
 
 local function onChapterMenuWillShow() 
