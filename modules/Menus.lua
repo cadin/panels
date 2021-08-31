@@ -208,7 +208,7 @@ local function createChapterMenu(data)
 	if Panels.Settings.chapterMenuHeaderImage then
 		headerImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.chapterMenuHeaderImage)
 		local w, h = headerImage:getSize()
-		chapterList:setSectionHeaderHeight(h + 12)
+		chapterList:setSectionHeaderHeight(h + 24)
 	else 
 		chapterList:setSectionHeaderHeight(48)
 	end
@@ -246,6 +246,7 @@ function chapterList:drawCell(section, row, column, selected, x, y, width, heigh
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
 			gfx.fillRoundRect(x, y, width, height, 4)
+			-- gfx.drawRoundRect(x + 1, y, width - 2, height, 4)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		else
 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -257,8 +258,9 @@ end
 
 function chapterList:drawSectionHeader(section, x, y, width, height)
 	if Panels.Settings.chapterMenuHeaderImage then
-		headerImage:drawAnchored(x + width / 2, y + 4, 0.5, 0)
+		headerImage:drawAnchored(x + width / 2, y + 7, 0.5, 0)
 	else
+		gfx.setColor(gfx.kColorBlack)
 		gfx.setFont(headerFont)
 		gfx.drawTextInRect("Chapters", x, y+12, width, height, nil, "...", kTextAlignment.center)
 		gfx.setLineWidth(1)
