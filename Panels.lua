@@ -393,6 +393,7 @@ local function unloadSequence()
 			end
 		end
 	end
+	panelTransitionAnimator = nil
 end
 
 local function nextSequence()
@@ -525,7 +526,6 @@ local function drawComic(offset)
 	
 	for i, panel in ipairs(panels) do 
 		if(panel:isOnScreen(offset)) then
-			print(i)
 			panel:render(offset, sequence.foregroundColor)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
 		elseif panel.wasOnScreen and panel.resetFunction then 
