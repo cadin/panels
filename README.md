@@ -4,10 +4,21 @@ Build interactive comics for the Playdate console.
 
 ![Banner](./assets/images/panelsBanner.gif)
 
-<!-- <img src="./assets/images/PanelsLoop.gif" width="80%" style="image-rendering: pixelated;"/> -->
+<!--<img src="./assets/images/PanelsLoop.gif" width="800px"style="image-rendering: pixelated; margin:0 auto; text-align: center;"/> -->
 
-<!-- TODO: add a general description about what Panels is and what it does. -->
-<!-- would be nice to have an animation here too as a demonstration -->
+Provide Panels with a Lua table that describes the sequences in your comic (scroll direction, panel sizes, text, animation and effects) along with your layered graphics. Panels will handle layout, scrolling, animation, and even chapter navigation for you.
+
+Comics built with Panels can support these features:
+
+-   layered, parallax scrolling
+-   nested panels
+-   sequences with different scroll directions
+-   manual (crank) scrolling and auto advancing (panel-by-panel)
+-   panel effects like shake and blink
+-   animated transitions between sequences
+-   animations and transitions within panels based on scroll position
+-   animated text layers
+-   panels with fully custom render functions
 
 ## Getting Started
 
@@ -57,11 +68,83 @@ Panels will attempt to load images and audio files from the `images` and `audio`
 
 ## Comic Data
 
+The `comicData` table defines your entire comic. A Panels comic is broken down into [Sequences](#sequences), [Panels](#panels), and [Layers](#layers). Your `comicData` table can be defined as one large table in a single file, or it can be assembled from multiple smaller tables. Keeping each sequence in its own file can help keep things organized.
+
+The top level of the `comicData` table is a list of the sequences in your app. Each sequence is represented by its own table.
+No other information should appear at the top level of your table.
+
+```lua
+comicData = {
+    {
+        -- data for sequence 1
+    }, {
+        -- data for sequence 2
+    }, {
+        -- data for sequence 3
+    }
+}
+```
+
 ### Sequences
+
+A comic can contain multiple sequences. A sequence acts like a separate chapter in most instances.
+
+Each sequence can define different settings scroll direction and background color. Sequences can scroll manually (with the crank or arrows), or they can animate between panels automatically by pressing a button.
+
+#### Required Properties
+
+**`axis`**
+**`panels`**
+
+#### Optional Properties
+
+`advanceControl`
+`backgroundColor`
+`direction`
+`scroll`
+`title`
 
 ### Panels
 
+#### Required Properties
+
+**`layers`**
+
+#### Optional Properties
+
+`audio`
+`font`
+`frame`
+`parallaxDistance`
+
+#### Panel Effects
+
+`Panels.Effect.SHAKE_INDIVIDUAL`
+`Panels.Effect.SHAKE_UNISON`
+
 ### Layers
+
+#### Image Layers
+
+`animate`
+`effect`
+`image`
+`images`
+`parallax`
+`x` and `y`
+
+#### Text Layers
+
+`background`
+`effect`
+`text`
+`parallax`
+`x` and `y`
+
+#### Layer Effects
+
+`Panels.Effect.BLINK`
+`Panels.Effect.TYPE_ON`
 
 ## Image Format
 
@@ -83,6 +166,10 @@ If everything looks good, you may have found a bug! Please [report it](#bug-repo
 
 #### Unexpected Behavior
 
+Unexpected behavior with no errors is much harder to track down, but is usually caused by incorrectly defined (or even simply misspelled) properties in the data table.
+
+If something isn't working the way you'd expect please report it even if you were able to figure out the problem. Learning how others expect things to work will help me make the framework more intuitive for new users.
+
 ### Feature Requests
 
 Add feature requests to the [Issues](https://github.com/cadin/panels/issues) page.
@@ -98,3 +185,13 @@ Each bug should be listed as a separate issue. Please search first to see if som
 ### Contribute
 
 If you would like to contribute a feature or bug fix please contact me first and let me know which issue you want work on. If there isn't yet an issue for your change, go ahead and write one.
+
+## License
+
+Panels is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+
+**TLDR:** You can use or this code (or modified versions) to create anything you want, public or private, free or commercial. For attribution, please retain the Panels credit (with URL and QR code) on the Credits page of your game so that others may find their way here.
+
+---
+
+👨🏻‍🦲❤️🛠
