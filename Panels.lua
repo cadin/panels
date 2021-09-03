@@ -516,7 +516,7 @@ local function updateComic(offset)
 	end
 
 	if panels[panelNum]:shouldAutoAdvance() then
-		panels[panelNum].wasOnScreen = true
+		-- panels[panelNum].wasOnScreen = true
 		scrollToNextPanel()
 	end
 end
@@ -528,9 +528,12 @@ local function drawComic(offset)
 		if(panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
-		elseif panel.wasOnScreen and panel.resetFunction then 
+		elseif panel.wasOnScreen then
+			panel:reset()
+			if panel.resetFunction then 
+				panel:resetFunction()
+			end
 			panel.wasOnScreen = false
-			panel:resetFunction()
 		end
 	end
 
