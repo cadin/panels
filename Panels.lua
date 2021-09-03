@@ -391,10 +391,15 @@ local function unloadSequence()
 				if l.textAnimator then
 					l.textAnimator = nil
 				end
+
+				if l.animationLoop then
+					l.animationLoop = nil
+				end
 			end
 		end
 	end
 	panelTransitionAnimator = nil
+	Panels.Image.clearCache()
 end
 
 local function nextSequence()
