@@ -119,7 +119,9 @@ local function loadMenuImage()
 end
 
 local function redrawMainMenu(yPos)
-	mainMenuList:drawInRect(8, yPos + 3, 384, 42)
+	local w = 128 * #menuOptions
+	local x = (128 * 3) - w + 8
+	mainMenuList:drawInRect(x, yPos + 3, w, 42)
 end
 
 function mainMenuList:drawCell(section, row, column, selected, x, y, width, height)
@@ -140,10 +142,13 @@ end
 function createMainMenu()
 	mainMenuImage = loadMenuImage()
 	
+	if Panels.Settings.useChapterMenu == false then 
+		menuOptions = { "Restart",   "Continue"}
+	end
 	mainMenuList:setNumberOfRows(1)
 	mainMenuList:setNumberOfColumns(#menuOptions)
 	mainMenuList:setCellPadding(0, 0, 4, 4)
-	mainMenuList:setSelection(1, 1,3)
+	mainMenuList:setSelection(1, 1, #menuOptions)
 	
 	local inputHandlers = {
 		rightButtonUp = function()
@@ -156,15 +161,15 @@ function createMainMenu()
 		
 		AButtonDown = function()
 			local s, r, column = mainMenuList:getSelection()
-			if column == 3 then     -- Continue
+			if column == #menuOptions then  -- Continue
 				Panels.mainMenu:hide()
-			elseif column == 2 then -- Chapters
-				Panels.chapterMenu:show()
-			else                 -- Start Over
+			elseif column == 1 then         -- Start Over
 				-- TODO: 
 				-- confirm before resetting game data
 				Panels.onGameDidStartOver()
 				Panels.mainMenu:hide()
+			else                            -- Chapters
+				Panels.chapterMenu:show()
 			end	
 		end,
 	}
@@ -229,7 +234,7 @@ local function createChapterMenu(data)
 			local item = sections[chapterList:getSelectedRow()] 
 			Panels.onChapterSelected( item.index )
 			Panels.chapterMenu:hide()
-			-- Panels.mainMenu:hide()
+			if Panels.mainMenu then Panels.mainMenu:hide() end
 		end,
 		
 		BButtonDown = function()
@@ -310,13 +315,13 @@ end
 -- ALL MENUS
 
 function updateMenus()	
-	-- if Panels.mainMenu:isActive() then 
-	-- 	local val = Panels.mainMenu.animator:currentValue()
-	-- 	displayMenuImage(val)	
-	-- 	Panels.mainMenu:update() 
-	-- end
+	if Panels.mainMenu and Panels.mainMenu:isActive() then 
+		local val = Panels.mainMenu.animator:currentValue()
+		displayMenuImage(val)	
+		Panels.mainMenu:update() 
+	end
 	
-	if Panels.chapterMenu:isActive() then
+	if Panels.chapterMenu and Panels.chapterMenu:isActive() then
 		Panels.chapterMenu:update()
 	end
 	
@@ -326,8 +331,13 @@ function updateMenus()
 end
 
 function createMenus(sequences)
-	-- Panels.mainMenu = createMainMenu()
-	Panels.chapterMenu = createChapterMenu(sequences)
+	if Panels.Settings.useMainMenu then
+		Panels.mainMenu = createMainMenu()
+	end
+	if Panels.Settings.useChapterMenu then 
+		Panels.chapterMenu = createChapterMenu(sequences)
+	end
+
 	Panels.creditsMenu = createCreditsMenu()
 end
 

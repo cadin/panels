@@ -606,7 +606,9 @@ function Panels.onMenuWillHide(menu)
 	if menu == Panels.mainMenu then 
 		loadSequence(currentSeqIndex)
 	end
-	menusAreFullScreen = false
+	if numMenusOpen <= 1 then 
+		menusAreFullScreen = false
+	end
 end
 
 function Panels.onMenuDidHide(menu)
@@ -630,18 +632,20 @@ end
 
 local function updateSystemMenu()
 	local sysMenu = playdate.getSystemMenu()
-	local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", 
-		function()
-			Panels.creditsMenu:hide()
-			Panels.chapterMenu:show()
-		end
-	)
-	printError(error, "Error adding Chapters to system menu")
+	if Panels.Settings.useChapterMenu then 
+		local chaptersMenuItem, error = sysMenu:addMenuItem("Chapters", 
+			function()
+				Panels.creditsMenu:hide()
+				Panels.chapterMenu:show()
+			end
+		)
+		printError(error, "Error adding Chapters to system menu")
+	end
 	
 	
 	local creditsItem, error2 = sysMenu:addMenuItem("Credits", 
 		function()
-			Panels.chapterMenu:hide()
+			if Panels.chapterMenu then Panels.chapterMenu:hide() end
 			Panels.creditsMenu:show()
 		end
 	)
@@ -659,12 +663,12 @@ function Panels.start()
 	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences);
 	
-	-- if currentSeqIndex > 1 then 
-	-- 	menusAreFullScreen = true
-	-- 	Panels.mainMenu:show()
-	-- else
+	if Panels.Settings.useMainMenu and currentSeqIndex > 1 then 
+		menusAreFullScreen = true
+		Panels.mainMenu:show()
+	else
 		loadSequence(currentSeqIndex)
-	-- end
+	end
 end
 
 -- -------------------------------------------------
