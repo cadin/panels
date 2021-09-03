@@ -97,18 +97,20 @@ function Panels.Panel.new(data)
 			panel.panels[i] = Panels.Panel.new(p)
 		end
 	end
+	
+	local imageFolder = Panels.Settings.imageFolder
 
 	if panel.layers then
 		for i, layer in ipairs(panel.layers) do 
 			if layer.image then 
-				layer.img, error = gfx.image.new(Panels.Settings.imageFolder .. layer.image)
+				layer.img, error = Panels.Image.get(imageFolder .. layer.image)
 				printError(error, "Error loading image on layer")
 			end
 
 			if layer.images then 
 				layer.imgs = {}
 				for j, image in ipairs(layer.images) do
-					layer.imgs[j], error = gfx.image.new(Panels.Settings.imageFolder .. image)
+					layer.imgs[j], error = Panels.Image.get(imageFolder .. image)
 					printError(error, "Error loading images["..j.."] on layer")
 				end
 			end
