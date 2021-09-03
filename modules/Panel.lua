@@ -101,14 +101,26 @@ function Panels.Panel.new(data)
 	if panel.layers then
 		for i, layer in ipairs(panel.layers) do 
 			if layer.image then 
-				layer.img = gfx.image.new(Panels.Settings.imageFolder .. layer.image)
+				layer.img, error = gfx.image.new(Panels.Settings.imageFolder .. layer.image)
+				printError(error, "Error loading image on layer")
 			end
 
 			if layer.images then 
 				layer.imgs = {}
 				for j, image in ipairs(layer.images) do
-					layer.imgs[j] = gfx.image.new(Panels.Settings.imageFolder .. image)
+					layer.imgs[j], error = gfx.image.new(Panels.Settings.imageFolder .. image)
+					printError(error, "Error loading images["..j.."] on layer")
 				end
+			end
+
+			if layer.imageTable then 
+				local imgTable, error = gfx.imagetable.new(Panels.Settings.imageFolder .. layer.imageTable)
+				printError(error, "Error loading imagetable on layer")
+				
+				local anim = gfx.animation.loop.new(layer.delay or 200, imgTable, layer.loop or false)
+				anim.paused = true
+				if layer.trigger == nil then layer.trigger = 0 end
+				layer.animationLoop = anim
 			end
 
 			if layer.x == nil then layer.x = -panel.frame.margin end
@@ -202,12 +214,29 @@ function Panels.Panel.new(data)
 					if layer.visible then 
 						self:drawTextLayer(layer, xPos, yPos)
 					end
+				elseif layer.animationLoop then
+					if layer.visible then
+						if cntrlPct >= layer.trigger then 
+							layer.animationLoop.paused = false
+						end
+						layer.animationLoop:draw(xPos, yPos)
+					end
 				end
 	
 			end
 		end
 		
 		self.prevPct = cntrlPct
+	end
+
+	function panel:reset()
+		for i, layer in ipairs(self.layers) do
+			if layer.animationLoop then
+				layer.animationLoop.frame = 1
+				local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
+				layer.animationLoop.paused = true
+			end
+		end
 	end
 	
 	function panel:drawTextLayer(layer, xPos, yPos)
@@ -274,6 +303,7 @@ function Panels.Panel.new(data)
 	end
 	
 	function panel:render(offset, borderColor)
+		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
 		gfx.clear()
 		
