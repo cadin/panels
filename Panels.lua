@@ -460,8 +460,18 @@ local function checkInputs()
 	if sequence.scroll == Panels.ScrollType.AUTO then
 		local p = panels[panelNum]
 		if p.advanceFunction == nil then
-			if playdate.buttonJustPressed(p.advanceControl) then
-				scrollToNextPanel()
+			if p.advanceControlSequence then
+				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
+				if playdate.buttonJustPressed(trigger) then 
+					p.buttonsPressed[#p.buttonsPressed+1] = trigger
+					if #p.buttonsPressed == #p.advanceControlSequence then 
+						scrollToNextPanel()
+					end
+				end
+			else 
+				if playdate.buttonJustPressed(p.advanceControl) then
+					scrollToNextPanel()
+				end
 			end
 		end
 		if playdate.buttonJustPressed(p.backControl) then

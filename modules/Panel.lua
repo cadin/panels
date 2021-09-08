@@ -81,7 +81,7 @@ function Panels.Panel.new(data)
 	local panel = table.shallowcopy(data)
 	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
-	
+	panel.buttonsPressed = {}
 	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
 
 	if not panel.parallaxDistance then
@@ -127,7 +127,13 @@ function Panels.Panel.new(data)
 
 			if layer.x == nil then layer.x = -panel.frame.margin end
 			if layer.y == nil then layer.y = -panel.frame.margin end
-			layer.visible = true
+			if layer.visible == nil then layer.visible = true end
+			layer.alpha = layer.opacity or nil
+
+			if layer.animate then 
+				if layer.animate.delay == nil then layer.animate.delay = 0 end
+				if layer.animate.speed and layer.animate.speed < 1 then layer.animate.speed = 1 end
+			end
 		end
 	end
 	
@@ -149,6 +155,7 @@ function Panels.Panel.new(data)
 	
 		return isOn	
 	end
+
 	
 	function panel:drawLayers(offset)
 		local layers = self.layers
@@ -177,11 +184,37 @@ function Panels.Panel.new(data)
 				local xPos = math.floor(layer.x + (self.parallaxDistance * pct.x - self.parallaxDistance/2) * p)
 				local yPos = math.floor(layer.y + (self.parallaxDistance * pct.y - self.parallaxDistance/2) * p)
 				local rotation = 0
-	
+				
 				if layer.animate then 
-					if layer.animate.x then xPos = math.floor(xPos + ((layer.animate.x - layer.x) * cntrlPct)) end
-					if layer.animate.y then yPos = math.floor(yPos + ((layer.animate.y - layer.y) * cntrlPct)) end
-					if layer.animate.rotation then rotation = layer.animate.rotation * cntrlPct end
+					local anim = layer.animate
+					if anim.triggerSequence and not layer.animator then 
+						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
+						local triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
+						
+						if playdate.buttonJustPressed(triggerButton) then
+							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
+							if #layer.buttonsPressed == #anim.triggerSequence then 
+								layer.animator = gfx.animator.new((anim.speed or 200), 0, 1, anim.ease, anim.delay)
+							end
+						end
+					else
+						if layer.animator then 
+							cntrlPct = layer.animator:currentValue()
+						end
+
+						if anim.x then xPos = math.floor(xPos + ((anim.x - layer.x) * cntrlPct)) end
+						if anim.y then yPos = math.floor(yPos + ((anim.y - layer.y) * cntrlPct)) end
+						if anim.rotation then rotation = anim.rotation * cntrlPct end
+						if anim.opacity then 
+							local o = (anim.opacity - layer.opacity) * cntrlPct
+							layer.alpha = o
+							if o <= 0 then 
+								layer.visible = false 
+							else 
+								layer.visible = true 
+							end
+						end
+					end
 				end
 	
 				if self.effect then
@@ -201,7 +234,11 @@ function Panels.Panel.new(data)
 				
 				if layer.img then 
 					if layer.visible then
-						layer.img:draw(xPos, yPos)
+						if layer.alpha then
+							layer.img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
+						else 
+							layer.img:draw(xPos, yPos)
+						end
 					end
 
 				elseif layer.imgs then
@@ -209,7 +246,11 @@ function Panels.Panel.new(data)
 					p = p + (self.transitionOffset or 0)
 					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
 					if layer.visible then 
-						layer.imgs[j]:draw(xPos, yPos)
+						if layer.alpha then
+							layer.imgs[j]:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
+						else
+							layer.imgs[j]:draw(xPos, yPos)
+						end
 					end
 					
 				elseif layer.text then
@@ -232,13 +273,23 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
-		for i, layer in ipairs(self.layers) do
-			if layer.animationLoop then
-				layer.animationLoop.frame = 1
-				local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
-				layer.animationLoop.paused = true
+		if self.layers then
+			for i, layer in ipairs(self.layers) do
+				if layer.animationLoop then
+					layer.animationLoop.frame = 1
+					local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
+					layer.animationLoop.paused = true
+				end
+				if layer.animator then
+					layer.animator = nil
+				end
+				if layer.opacity then
+					layer.alpha = layer.opacity
+				end
+				layer.buttonsPressed = nil
 			end
 		end
+		panel.buttonsPressed = {}
 	end
 	
 	function panel:drawTextLayer(layer, xPos, yPos)
