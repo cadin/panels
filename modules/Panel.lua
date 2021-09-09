@@ -132,7 +132,8 @@ function Panels.Panel.new(data)
 
 			if layer.animate then 
 				if layer.animate.delay == nil then layer.animate.delay = 0 end
-				if layer.animate.speed and layer.animate.speed < 1 then layer.animate.speed = 1 end
+				if layer.animate.duration and layer.animate.duration < 1 then layer.animate.duration = 1 end
+				if layer.opacity == nil then layer.opacity = 1 end
 			end
 		end
 	end
@@ -194,7 +195,7 @@ function Panels.Panel.new(data)
 						if playdate.buttonJustPressed(triggerButton) then
 							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
 							if #layer.buttonsPressed == #anim.triggerSequence then 
-								layer.animator = gfx.animator.new((anim.speed or 200), 0, 1, anim.ease, anim.delay)
+								layer.animator = gfx.animator.new((anim.duration or 200), 0, 1, anim.ease, anim.delay)
 							end
 						end
 					else
