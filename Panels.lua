@@ -446,7 +446,9 @@ local function shouldGoBack(panel)
 end
 
 function playdate.cranked(change, accChange)
-	scrollPos = scrollPos + change
+	if sequence.scroll == Panels.ScrollType.MANUAL then 
+		scrollPos = scrollPos + change
+	end
 end
 
 local function checkInputs() 
