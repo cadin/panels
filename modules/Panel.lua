@@ -100,6 +100,16 @@ function Panels.Panel.new(data)
 	
 	local imageFolder = Panels.Settings.imageFolder
 
+	if panel.showAdvanceControl then 
+		panel.advanceButton = Panels.ButtonIndicator.new()
+		print('creating button')
+		panel.advanceButton:setButton(panel.advanceControl)
+		if panel.advanceControlPosition then 
+			print("setting position")
+			panel.advanceButton:setPosition(panel.advanceControlPosition.x, panel.advanceControlPosition.y)
+		end
+	end
+
 	if panel.layers then
 		for i, layer in ipairs(panel.layers) do 
 			if layer.image then 
@@ -369,6 +379,17 @@ function Panels.Panel.new(data)
 
 		if not self.borderless then
 			self:drawBorder(borderColor)
+		end
+
+		if self.advanceButton then 
+			if self.advanceButton.state == "hidden" then
+				self.advanceButton:show()
+			end
+			if playdate.buttonJustPressed(self.advanceControl) then
+				self.advanceButton:press()
+			end
+
+			self.advanceButton:draw()
 		end
 	
 		if self.panels then
