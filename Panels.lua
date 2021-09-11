@@ -467,7 +467,11 @@ local function checkInputs()
 				if playdate.buttonJustPressed(trigger) then 
 					p.buttonsPressed[#p.buttonsPressed+1] = trigger
 					if #p.buttonsPressed == #p.advanceControlSequence then 
-						scrollToNextPanel()
+						if p.advanceDelay then 
+							playdate.timer.performAfterDelay(p.advanceDelay, scrollToNextPanel)
+						else 
+							scrollToNextPanel()
+						end
 					end
 				end
 			else 
