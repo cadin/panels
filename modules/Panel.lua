@@ -350,10 +350,17 @@ function Panels.Panel.new(data)
 		gfx.popContext()
 	end
 	
-	function panel:drawBorder(color)
-		gfx.setColor(color)
-		gfx.setLineWidth(2)
-		gfx.drawRoundRect(1, 1, self.frame.width- 2, self.frame.height -2, 2)
+	function panel:drawBorder(color, bgColor)
+		local w = Panels.Settings.borderWidth
+		local b = gfx.image.new(self.frame.width, self.frame.height)
+		gfx.pushContext(b)
+			gfx.setColor(bgColor)
+			gfx.setLineWidth(w)
+			gfx.drawRect(0, 0, self.frame.width, self.frame.height)
+			gfx.setColor(color)
+			gfx.drawRoundRect(w/2, w/2, self.frame.width- w, self.frame.height -w, Panels.Settings.borderRadius)
+		gfx.popContext()
+		return b
 	end
 
 	local shouldAutoAdvance = false
@@ -366,7 +373,7 @@ function Panels.Panel.new(data)
 		end
 	end
 	
-	function panel:render(offset, borderColor)
+	function panel:render(offset, borderColor, bgColor)
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
 		gfx.clear()
@@ -378,7 +385,11 @@ function Panels.Panel.new(data)
 		end
 
 		if not self.borderless then
-			self:drawBorder(borderColor)
+			if self.borderImage then 
+				self.borderImage:draw(0,0)
+			else
+				self.borderImage = self:drawBorder(borderColor, bgColor)
+			end
 		end
 
 		if self.advanceButton then 

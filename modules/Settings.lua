@@ -11,6 +11,8 @@ Panels.Settings = {
 	snapToPanels = true,
 	sequenceTransitionDuration = 750,
 	defaultFont = nil,
+	borderWidth = 2,
+	borderRadius = 2,
 	
 	-- menu settings
 	menuImage = "menuImage.png",
