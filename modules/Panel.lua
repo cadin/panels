@@ -198,13 +198,16 @@ function Panels.Panel.new(data)
 				
 				if layer.animate then 
 					local anim = layer.animate
-					if anim.triggerSequence and not layer.animator then 
+					if (anim.triggerSequence or anim.autoStart) and not layer.animator then 
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
-						local triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
+						local triggerButton = nil
+						if not anim.autoStart then 
+							triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
+						end
 						
-						if playdate.buttonJustPressed(triggerButton) then
+						if anim.autoStart or playdate.buttonJustPressed(triggerButton) then
 							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
-							if #layer.buttonsPressed == #anim.triggerSequence then 
+							if anim.autoStart or #layer.buttonsPressed == #anim.triggerSequence then 
 								layer.animator = gfx.animator.new((anim.duration or 200), 0, 1, anim.ease, anim.delay)
 							end
 						end
