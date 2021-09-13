@@ -6,6 +6,7 @@ Panels.ScrollType = {
 Panels.ScrollAxis = {
 	VERTICAL = 1,
 	HORIZONTAL = 2,
+	NONE = 3,
 }
 
 Panels.ScrollDirection = {
@@ -20,4 +21,6 @@ Panels.ScrollDirection = {
 	
 	R_TO_L = 4,
 	RIGHT_TO_LEFT = 4,
+
+	NONE = 5,
 }

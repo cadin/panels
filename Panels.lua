@@ -247,7 +247,11 @@ local function scrollToNextPanel()
 			panelNum = panelNum + 1
 			target = getPanelScrollLocation(panels[panelNum])
 		end
-		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
+		if sequence.direction == Panels.ScrollDirection.NONE then 
+			scrollPos = target
+		else 
+			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
+		end
 	end
 end
 
@@ -280,6 +284,8 @@ local function startTransitionIn(direction)
 		start = scrollPos + ScreenHeight
 	elseif direction == Panels.ScrollDirection.LEFT_TO_RIGHT then
 		start = scrollPos + ScreenWidth
+	elseif direction == Panels.ScrollDirection.NONE then 
+		start = scrollPos
 	else 
 		start = scrollPos - ScreenWidth
 	end
@@ -299,10 +305,13 @@ local function startTransitionOut(direction)
 		target = maxScroll + ScreenHeight
 	elseif direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
 		target = maxScroll + ScreenWidth
+	elseif direction == Panels.ScrollDirection.NONE then 
+		target = scrollPos
 	else 
 		target = -maxScroll - ScreenWidth
 	end
 	
+
 	transitionOutAnimator = playdate.graphics.animator.new(
 		Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
 end
@@ -410,6 +419,7 @@ local function nextSequence()
 end
 
 local function updateSequenceTransition() 
+
 	if transitionOutAnimator then 
 		scrollPos = transitionOutAnimator:currentValue()
 		if transitionOutAnimator:ended() then
