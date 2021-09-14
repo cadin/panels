@@ -50,6 +50,7 @@ function Panels.Audio.stopTypingSound()
 	typingRetainCount = typingRetainCount - 1
 	
 	if typingRetainCount <=0 then
+		typingRetainCount = 0
 		typingSamplePlayer:stop()
 	end
 end

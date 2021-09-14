@@ -161,7 +161,8 @@ function Panels.Panel.new(data)
 		f.y + offset.y <= ScreenHeight and f.y + f.height+ offset.y > 0 then
 			isOn = true	
 		end
-	
+
+
 		return isOn	
 	end
 
@@ -285,6 +286,7 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
+		self:killTypingEffects()
 		if self.layers then
 			for i, layer in ipairs(self.layers) do
 				if layer.animationLoop then
@@ -374,6 +376,21 @@ function Panels.Panel.new(data)
 		end
 	end
 
+	function panel:killTypingEffects()
+		if self.layers then 
+			for i, l in ipairs(self.layers) do
+				if l.isTyping then 
+					l.isTyping = false
+					Panels.Audio.stopTypingSound()
+				end
+
+				if l.textAnimator then
+					l.textAnimator = nil
+				end
+			end
+		end
+	end
+
 	function panel:updateAdvanceButton()
 		if self.advanceButton.state == "hidden" then
 
@@ -385,7 +402,7 @@ function Panels.Panel.new(data)
 					self.advanceControlTimerDidEnd = true
 				end
 			end
-			
+
 		else
 			if playdate.buttonJustPressed(self.advanceControl) then
 				self.advanceButton:press()

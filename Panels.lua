@@ -404,15 +404,12 @@ end
 
 local function unloadSequence()
 	for i, p in ipairs(panels) do
+		p:killTypingEffects()
 		if p.layers then
 			for j, l in ipairs(p.layers) do
 				if l.timer then
 					l.timer:remove()
 					l.timer = nil
-				end
-				
-				if l.textAnimator then
-					l.textAnimator = nil
 				end
 
 				if l.animationLoop then
