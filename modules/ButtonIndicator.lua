@@ -21,6 +21,7 @@ function Panels.ButtonIndicator.new()
 		end
 	)
 	button.timer.repeats = true
+	button.timer.paused = true
 	
 	function button:setPosition(x, y)
 		self.x = x
@@ -28,10 +29,7 @@ function Panels.ButtonIndicator.new()
 	end
 	
 	function button:setButton(button)
-		print("setButton: " .. button)
-		print(self.button)
 		if self.button ~= button then 
-			print("setting")
 			local imgTable = nil
 			if button == Panels.Input.A then
 				imgTable = gfx.imagetable.new(
