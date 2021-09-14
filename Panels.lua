@@ -143,14 +143,16 @@ local function createButtonIndicator()
 end
 
 local function drawButtonIndicator() 
-	if transitionOutAnimator == nil and transitionOutAnimator == nil then
+	if transitionOutAnimator == nil then
 		if lastPanelIsShowing() then
 			buttonIndicator:show()
 		else 
 			buttonIndicator:hide()
 		end
 	end
-	buttonIndicator:draw()
+	if sequence.showAdvanceControl then 
+		buttonIndicator:draw()
+	end
 end
 
 local function getAdvanceControlForScrollDirection(dir)
@@ -236,7 +238,7 @@ function getPanelScrollLocation(panel, isTrailingEdge)
 end
 
 local function scrollToNextPanel()
-	if panelNum < #(panels) then
+	if panelNum < #panels then
 		local p = panels[panelNum]
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos > p.frame.y  * -1 then
@@ -298,6 +300,7 @@ end
 local function startTransitionOut(direction)
 	local target
 	local start = scrollPos
+	local duration = Panels.Settings.sequenceTransitionDuration
 	
 	if direction == Panels.ScrollDirection.TOP_DOWN then
 		target = maxScroll - ScreenHeight
@@ -307,13 +310,14 @@ local function startTransitionOut(direction)
 		target = maxScroll + ScreenWidth
 	elseif direction == Panels.ScrollDirection.NONE then 
 		target = scrollPos
+		duration = 200
 	else 
 		target = -maxScroll - ScreenWidth
 	end
 	
 
 	transitionOutAnimator = playdate.graphics.animator.new(
-		Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+		duration, start, target, playdate.easingFunctions.inOutQuart)
 end
 
 
@@ -327,6 +331,8 @@ local function setSequenceScrollDirection()
 		else 
 			sequence.direction = Panels.ScrollDirection.LEFT_TO_RIGHT 
 		end
+	elseif sequence.direction == Panels.ScrollDirection.NONE then
+		sequence.axis = Panels.ScrollAxis.HORIZONTAL
 	elseif sequence.direction == Panels.ScrollDirection.RIGHT_TO_LEFT 
 	or sequence.direction == Panels.ScrollDirection.BOTTOM_UP then
 		sequence.scrollingIsReversed = true
@@ -344,7 +350,7 @@ local function setSequenceColors()
 	end
 end
 
-local function loadSequence(num) 
+local function loadSequence(num) 	
 	sequence = sequences[num]
 	if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end	
 
@@ -358,6 +364,10 @@ local function loadSequence(num)
 	
 	if sequence.advanceControl == nil then 
 		sequence.advanceControl = getAdvanceControlForScrollDirection(sequence.direction)
+	end
+
+	if sequence.showAdvanceControl == nil then
+		sequence.showAdvanceControl = true
 	end
 
 	if sequence.backControl == nil then
@@ -382,10 +392,14 @@ local function loadSequence(num)
 
     setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
-	startTransitionIn(sequence.direction)
 	buttonIndicator:setButton(sequence.advanceControl)
-	buttonIndicator:setPositionForScrollDirection(sequence.direction)
-	
+	if sequence.advanceControlPosition then
+		buttonIndicator:setPosition(sequence.advanceControlPosition.x, sequence.advanceControlPosition.y)
+	else
+		buttonIndicator:setPositionForScrollDirection(sequence.direction)
+	end
+
+	startTransitionIn(sequence.direction)
 end
 
 local function unloadSequence()
@@ -424,9 +438,9 @@ local function updateSequenceTransition()
 		scrollPos = transitionOutAnimator:currentValue()
 		if transitionOutAnimator:ended() then
 			transitionOutAnimator = nil
-			nextSequence()
+			playdate.timer.performAfterDelay(1, nextSequence) -- prevent flash before transition in
 		end
-	else
+	elseif transitionInAnimator then 
 		scrollPos = transitionInAnimator:currentValue()
 		if transitionInAnimator:ended() then
 			transitionInAnimator = nil
@@ -549,13 +563,16 @@ local function updateComic(offset)
 
 	if panels[panelNum]:shouldAutoAdvance() then
 		-- panels[panelNum].wasOnScreen = true
-		scrollToNextPanel()
+		if panelNum > #panels then 
+			scrollToNextPanel()
+		else 
+			nextSequence()
+		end
 	end
 end
 
 local function drawComic(offset)
 	gfx.clear()
-	
 	for i, panel in ipairs(panels) do 
 		if(panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
@@ -573,7 +590,8 @@ end
 
 -- Playdate update loop
 function playdate.update()
-	if not menusAreFullScreen then 	
+
+	if not menusAreFullScreen then 		
 		local offset = getScrollOffset()
 		updateComic(offset)
 		drawComic(offset)
