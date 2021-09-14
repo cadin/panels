@@ -102,10 +102,8 @@ function Panels.Panel.new(data)
 
 	if panel.showAdvanceControl then 
 		panel.advanceButton = Panels.ButtonIndicator.new()
-		print('creating button')
 		panel.advanceButton:setButton(panel.advanceControl)
 		if panel.advanceControlPosition then 
-			print("setting position")
 			panel.advanceButton:setPosition(panel.advanceControlPosition.x, panel.advanceControlPosition.y)
 		end
 	end
@@ -397,13 +395,21 @@ function Panels.Panel.new(data)
 
 		if self.advanceButton then 
 			if self.advanceButton.state == "hidden" then
-				self.advanceButton:show()
-			end
-			if playdate.buttonJustPressed(self.advanceControl) then
-				self.advanceButton:press()
-			end
 
-			self.advanceButton:draw()
+				if self.advanceControlPosition.delay and self.advanceControlTimer == nil then 
+					self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
+				elseif self.advanceControlPosition.delay == nil or (self.advanceControlTimer and self.advanceControlTimer.currentTime >= self.advanceControlTimer.duration) then 
+					if not self.advanceControlTimerDidEnd then 
+						self.advanceButton:show()
+						self.advanceControlTimerDidEnd = true
+					end
+				end
+			else
+				if playdate.buttonJustPressed(self.advanceControl) then
+					self.advanceButton:press()
+				end
+				self.advanceButton:draw()
+			end
 		end
 	
 		if self.panels then
