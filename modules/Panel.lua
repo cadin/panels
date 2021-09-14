@@ -373,6 +373,26 @@ function Panels.Panel.new(data)
 			return false
 		end
 	end
+
+	function panel:updateAdvanceButton()
+		if self.advanceButton.state == "hidden" then
+
+			if self.advanceControlPosition.delay and self.advanceControlTimer == nil then 
+				self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
+			elseif self.advanceControlPosition.delay == nil or (self.advanceControlTimer and self.advanceControlTimer.currentTime >= self.advanceControlTimer.duration) then 
+				if not self.advanceControlTimerDidEnd then 
+					self.advanceButton:show()
+					self.advanceControlTimerDidEnd = true
+				end
+			end
+			
+		else
+			if playdate.buttonJustPressed(self.advanceControl) then
+				self.advanceButton:press()
+			end
+			self.advanceButton:draw()
+		end
+	end
 	
 	function panel:render(offset, borderColor, bgColor)
 		self.wasOnScreen = true
@@ -394,22 +414,7 @@ function Panels.Panel.new(data)
 		end
 
 		if self.advanceButton then 
-			if self.advanceButton.state == "hidden" then
-
-				if self.advanceControlPosition.delay and self.advanceControlTimer == nil then 
-					self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
-				elseif self.advanceControlPosition.delay == nil or (self.advanceControlTimer and self.advanceControlTimer.currentTime >= self.advanceControlTimer.duration) then 
-					if not self.advanceControlTimerDidEnd then 
-						self.advanceButton:show()
-						self.advanceControlTimerDidEnd = true
-					end
-				end
-			else
-				if playdate.buttonJustPressed(self.advanceControl) then
-					self.advanceButton:press()
-				end
-				self.advanceButton:draw()
-			end
+			self:updateAdvanceButton()
 		end
 	
 		if self.panels then
