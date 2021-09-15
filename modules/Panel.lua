@@ -142,6 +142,10 @@ function Panels.Panel.new(data)
 				if layer.animate.delay == nil then layer.animate.delay = 0 end
 				if layer.animate.duration and layer.animate.duration < 1 then layer.animate.duration = 1 end
 				if layer.opacity == nil then layer.opacity = 1 end
+
+				if layer.animate.audio then 
+					layer.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. layer.animate.audio.file)
+				end
 			end
 		end
 	end
@@ -151,7 +155,7 @@ function Panels.Panel.new(data)
 		if panel.audio.pan then 
 			panel.sfxPlayer:setVolume(1 - panel.audio.pan, panel.audio.pan)
 		end
-		panel.sfxTrigger = panel.audio.trigger or 0
+		panel.sfxTrigger = panel.audio.scrollTrigger or 0
 	end
 
 	function panel:isOnScreen(offset) 
@@ -165,7 +169,6 @@ function Panels.Panel.new(data)
 
 		return isOn	
 	end
-
 	
 	function panel:drawLayers(offset)
 		local layers = self.layers
@@ -183,9 +186,22 @@ function Panels.Panel.new(data)
 		end
 		
 		if self.sfxPlayer then 
-			if cntrlPct >= self.sfxTrigger and self.prevPct < self.sfxTrigger then
-				local count = 1
-				if panel.audio.loop then count = 0 end
+			local count = panel.audio.repeatCount or 1
+			if panel.audio.loop then count = 0 end
+			if self.audio.triggerSequence then
+				if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
+				local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
+
+				if playdate.buttonJustPressed(triggerButton) then
+					self.audioTriggersPressed[#self.audioTriggersPressed+1] = triggerButton
+					if #self.audioTriggersPressed == #self.audio.triggerSequence then 
+						playdate.timer.performAfterDelay(self.audio.delay or 0, function () 
+							self.sfxPlayer:play(count)
+						end)
+					end
+				end
+
+			elseif cntrlPct >= self.sfxTrigger and self.prevPct < self.sfxTrigger then
 				self.sfxPlayer:play(count)
 			end
 		end
@@ -200,6 +216,7 @@ function Panels.Panel.new(data)
 				if layer.animate then 
 					local anim = layer.animate
 					if (anim.triggerSequence or anim.autoStart) and not layer.animator then 
+
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
 						local triggerButton = nil
 						if not anim.autoStart then 
@@ -210,6 +227,13 @@ function Panels.Panel.new(data)
 							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
 							if anim.autoStart or #layer.buttonsPressed == #anim.triggerSequence then 
 								layer.animator = gfx.animator.new((anim.duration or 200), 0, 1, anim.ease, anim.delay)
+								if layer.sfxPlayer then 
+									local count = anim.audio.repeatCount or 1
+									if anim.audio.loop then count = 0 end
+									playdate.timer.performAfterDelay(anim.delay + (anim.audio.delay or 0), function () 
+										layer.sfxPlayer:play(count)
+									end)
+								end
 							end
 						end
 					else
@@ -304,6 +328,9 @@ function Panels.Panel.new(data)
 				end
 				if layer.opacity then
 					layer.alpha = layer.opacity
+				end
+				if layer.sfxPlayer then 
+					layer.sfxPlayer:stop()
 				end
 				layer.buttonsPressed = nil
 			end
