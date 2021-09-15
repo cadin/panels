@@ -9,6 +9,7 @@ local ScreenHeight <const> = playdate.display.getHeight()
 local ScreenWidth <const> = playdate.display.getWidth()
 
 Panels = {}
+import "./modules/Font"
 
 import "./modules/Settings"
 import "./modules/ScrollConstants"
@@ -18,7 +19,7 @@ import "./modules/Effect"
 import "./modules/Input"
 import "./modules/Image"
 import "./modules/Menus"
-import "./modules/Font"
+
 import "./modules/Panel"
 import "./modules/Audio"
 import "./modules/TextAlignment"
@@ -53,6 +54,7 @@ local menusAreFullScreen = false
 local panelTransitionAnimator = nil
 
 Panels.maxUnlockedSequence = 1
+local gameDidFinish = false
 
 local function setUpPanels(seq)
     panels = {}
@@ -424,9 +426,15 @@ end
 
 local function nextSequence()
 	unloadSequence()
-	-- TODO: detect the last sequence in the game
-	currentSeqIndex = currentSeqIndex + 1
-	loadSequence(currentSeqIndex)
+
+	if currentSeqIndex < #sequences then
+		currentSeqIndex = currentSeqIndex + 1
+		loadSequence(currentSeqIndex)
+	else 
+		gameDidFinish = true
+		menusAreFullScreen = true
+		Panels.mainMenu:show()
+	end
 end
 
 local function updateSequenceTransition() 
@@ -609,11 +617,12 @@ local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
 		Panels.maxUnlockedSequence = data.sequence
+		gameDidFinish = data.gameDidFinish
 	end
 end
 
 local function saveGameData() 
-	playdate.datastore.write({sequence = Panels.maxUnlockedSequence})
+	playdate.datastore.write({sequence = Panels.maxUnlockedSequence, gameDidFinish = gameDidFinish})
 end
 
 function playdate.gameWillTerminate()
@@ -710,7 +719,7 @@ function Panels.start()
 	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences);
 	
-	if Panels.Settings.useMainMenu and currentSeqIndex > 1 then 
+	if (Panels.Settings.useMainMenu and currentSeqIndex > 1) or gameDidFinish then 
 		menusAreFullScreen = true
 		Panels.mainMenu:show()
 	else

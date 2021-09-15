@@ -5,6 +5,8 @@ local ScreenWidth <const> = playdate.display.getWidth()
 local ScreenHeight <const> = playdate.display.getHeight()
 
 local headerFont = gfx.getSystemFont("bold")
+-- local listFont = Panels.Font.get(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")--gfx.getSystemFont()
+
 local listFont = gfx.getSystemFont()
 
 Panels.Menu = {}
@@ -103,7 +105,7 @@ end
 -- MAIN MENU
 
 local mainMenuList = playdate.ui.gridview.new(128, 32)
-local menuOptions = { "Restart", "Chapters",  "Continue", }
+local menuOptions = { "Start Over", "Select Chapter", "Continue" }
 local mainMenuImage = nil
 
 local function displayMenuImage(val)
@@ -143,7 +145,7 @@ function createMainMenu()
 	mainMenuImage = loadMenuImage()
 	
 	if Panels.Settings.useChapterMenu == false then 
-		menuOptions = { "Restart",   "Continue"}
+		menuOptions = { "Start Over", "Continue"}
 	end
 	mainMenuList:setNumberOfRows(1)
 	mainMenuList:setNumberOfColumns(#menuOptions)
@@ -331,9 +333,9 @@ function updateMenus()
 end
 
 function createMenus(sequences)
-	if Panels.Settings.useMainMenu then
+	-- if Panels.Settings.useMainMenu then
 		Panels.mainMenu = createMainMenu()
-	end
+	-- end
 	if Panels.Settings.useChapterMenu then 
 		Panels.chapterMenu = createChapterMenu(sequences)
 	end
