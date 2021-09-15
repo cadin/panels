@@ -184,7 +184,9 @@ function Panels.Panel.new(data)
 		
 		if self.sfxPlayer then 
 			if cntrlPct >= self.sfxTrigger and self.prevPct < self.sfxTrigger then
-				self.sfxPlayer:play()
+				local count = 1
+				if panel.audio.loop then count = 0 end
+				self.sfxPlayer:play(count)
 			end
 		end
 	
@@ -287,6 +289,9 @@ function Panels.Panel.new(data)
 
 	function panel:reset()
 		self:killTypingEffects()
+		if self.sfxPlayer then 
+			self.sfxPlayer:stop()
+		end
 		if self.layers then
 			for i, layer in ipairs(self.layers) do
 				if layer.animationLoop then
@@ -440,7 +445,7 @@ function Panels.Panel.new(data)
 			if offset.y == 0 then o.y = 0 end
 	
 			for i, subPanel in ipairs(self.panels) do
-				subPanel:render(o, borderColor)
+				subPanel:render(o, borderColor, bgColor)
 				subPanel.canvas:draw(subPanel.frame.x, subPanel.frame.y)
 			end
 		end
