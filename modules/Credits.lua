@@ -70,9 +70,9 @@ local function getAnchorForAlignment(alignment)
 	return anchor
 end
 
-local function createGameCredits(textAlignment)
-	local credits = Panels.Settings.credits
+local function createGameCredits(credits)
 	
+	local textAlignment = credits.alignment or kTextAlignment.center
 	local creditsHeight = measureCreditsHeight(credits)
 	local img = gfx.image.new(400, creditsHeight)
 	local defaultX = getPositionForAlignment(textAlignment)
@@ -126,12 +126,12 @@ end
 
 function Panels.Credits.new()
 	
-	local data = Panels.Settings.credits
+	local data = Panels.credits
 	if data.hideStandardHeader then headerHeight = 8 end
 	
 	
 	local credits = {
-		gameCredits = createGameCredits(data.alignment or kTextAlignment.center),
+		gameCredits = createGameCredits(data),
 		panelsImg = createPanelsCredits(),
 		showHeader = not data.hideStandardHeader,
 		scrollPos = 0,

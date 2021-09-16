@@ -9,6 +9,9 @@ local ScreenHeight <const> = playdate.display.getHeight()
 local ScreenWidth <const> = playdate.display.getWidth()
 
 Panels = {}
+Panels.comicData = {}
+Panels.credits = {}
+
 import "./modules/Font"
 
 import "./modules/Settings"
@@ -327,6 +330,10 @@ end
 -- SEQUENCE LIFECYCLE
 
 local function setSequenceScrollDirection()
+	if sequence.axis == nil and sequence.direction == nil then
+		sequence.axis = Panels.ScrollAxis.HORIZONTAL
+	end
+
 	if sequence.direction == nil then
 		if sequence.axis == Panels.ScrollAxis.VERTICAL then 
 			sequence.direction = Panels.ScrollDirection.TOP_DOWN
@@ -360,6 +367,10 @@ local function loadSequence(num)
 	setSequenceScrollDirection()
 	setSequenceColors()
 	
+	if sequence.scrollType == nil then
+		sequence.scrollType = Panels.ScrollType.MANUAL
+	end
+
 	if sequence.defaultFrame == nil then
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
@@ -715,7 +726,7 @@ function Panels.start()
 	createButtonIndicator()
 	updateSystemMenu()
 	
-	sequences = Panels.Settings.comicData
+	sequences = Panels.comicData
 	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences);
 	

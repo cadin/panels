@@ -1,8 +1,6 @@
 Panels.Settings = {
 	-- path settings
 	path = "libraries/panels/",
-	comicData = {},
-	credits = {},
 	imageFolder = "images/",
 	audioFolder = "audio/",
 	
