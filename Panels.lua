@@ -475,7 +475,7 @@ local function shouldGoBack(panel)
 end
 
 function playdate.cranked(change, accChange)
-	if sequence.scroll == Panels.ScrollType.MANUAL then 
+	if sequence.scrollType == Panels.ScrollType.MANUAL then 
 		scrollPos = scrollPos + change
 	end
 end
@@ -488,7 +488,7 @@ local function checkInputs()
 		end
 	end
 
-	if sequence.scroll == Panels.ScrollType.AUTO then
+	if sequence.scrollType == Panels.ScrollType.AUTO then
 		local p = panels[panelNum]
 		if p.advanceFunction == nil then
 			if p.advanceControlSequence then
@@ -560,7 +560,7 @@ local function updateComic(offset)
 		updateSequenceTransition()
 	else
 		updateScroll()
-		if sequence.scroll == Panels.ScrollType.MANUAL then
+		if sequence.scrollType == Panels.ScrollType.MANUAL then
 			updateArrowControls()
 		end
 		checkInputs()
