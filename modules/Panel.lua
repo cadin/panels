@@ -271,30 +271,31 @@ function Panels.Panel.new(data)
 					doLayerEffect(layer, xPos, yPos)
 				end
 				
-				if layer.img then 
-					if layer.visible then
-						if layer.alpha then
-							layer.img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
-						else 
-							layer.img:draw(xPos, yPos)
-						end
-					end
 
-				elseif layer.imgs then
+				local img 
+				if layer.img then 
+					img = layer.img
+				elseif layer.imgs then 
 					local p = cntrlPct
 					p = p + (self.transitionOffset or 0)
 					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
-					if layer.visible then 
-						if layer.alpha then
-							layer.imgs[j]:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
-						else
-							layer.imgs[j]:draw(xPos, yPos)
+					img = layer.imgs[j]
+				end
+
+				if img then 
+					if layer.visible then
+						if layer.alpha and layer.alpha < 1 then
+							img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
+						else 
+							img:draw(xPos, yPos)
 						end
 					end
 					
 				elseif layer.text then
 					if layer.visible then 
-						self:drawTextLayer(layer, xPos, yPos)
+						if layer.alpha == nil or layer.alpha > 0.5 then
+							self:drawTextLayer(layer, xPos, yPos)
+						end
 					end
 				elseif layer.animationLoop then
 					if layer.visible then
@@ -366,7 +367,7 @@ function Panels.Panel.new(data)
 				end
 			end
 		end
-		
+
 		if layer.background then
 			local w, h = gfx.getTextSize(txt)
 			gfx.setColor(layer.background)
@@ -381,7 +382,9 @@ function Panels.Panel.new(data)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		end
 
+		
 		gfx.drawText(txt, xPos, yPos)
+
 		gfx.popContext()
 	end
 	
