@@ -704,7 +704,7 @@ function onAlertDidStartOver()
 	currentSeqIndex = 1
 	Panels.mainMenu:hide()
 	loadSequence(currentSeqIndex)
-	createMenus(sequences)
+	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
 end
 
 function onAlertDidHide()
@@ -713,6 +713,21 @@ function onAlertDidHide()
 	end
 end
 
+
+function shouldShowMainMenu()
+	local should = false
+	if Panels.Settings.showMenuOnLaunch then
+		if currentSeqIndex > 1 or Panels.Settings.skipMenuOnFirstLaunch == false then
+			should = true
+		end
+	end
+
+	if gameDidFinish then
+		should = true
+	end
+
+	return should
+end
 
 -- -------------------------------------------------
 -- START GAME
@@ -751,9 +766,9 @@ function Panels.start()
 	
 	sequences = Panels.comicData
 	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
-	createMenus(sequences);
+	createMenus(sequences, gameDidFinish, currentSeqIndex > 1);
 	
-	if (Panels.Settings.useMainMenu and currentSeqIndex > 1) or gameDidFinish then 
+	if shouldShowMainMenu() then 
 		menusAreFullScreen = true
 		Panels.mainMenu:show()
 	else

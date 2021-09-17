@@ -105,8 +105,8 @@ end
 -- -------------------------------------------------
 -- MAIN MENU
 
-local mainMenuList = playdate.ui.gridview.new(128, 32)
-local menuOptions = { "Start Over", "Select Chapter", "Continue" }
+local mainMenuList = nil
+local menuOptions = { "Start Over" }
 local mainMenuImage = nil
 
 local function displayMenuImage(val)
@@ -122,36 +122,44 @@ local function loadMenuImage()
 end
 
 local function redrawMainMenu(yPos)
-	local w = 128 * #menuOptions
-	local x = (128 * 3) - w + 8
-	mainMenuList:drawInRect(x, yPos + 3, w, 42)
+	mainMenuList:drawInRect(8, yPos + 3, 384, 42)
 end
 
-function mainMenuList:drawCell(section, row, column, selected, x, y, width, height)
-	local text = menuOptions[column]
-	if selected then
-		gfx.setColor(gfx.kColorBlack)
-		gfx.fillRoundRect(x, y, width, height, 4)
-		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		text = "*" .. text .. "*"
-	else
-		gfx.setImageDrawMode(gfx.kDrawModeCopy)
-	end
-	
-	gfx.setFont(listFont)
-	gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
-end
-
-function createMainMenu()
+function createMainMenu(gameDidFinish, gameDidStart)
 	mainMenuImage = loadMenuImage()
 
-	if Panels.Settings.useChapterMenu == false then 
-		menuOptions = { "Start Over", "Continue"}
+	if Panels.Settings.useChapterMenu then
+		menuOptions[#menuOptions+1] = "Chapters"
 	end
+
+	if not gameDidFinish then
+		if gameDidStart then
+			menuOptions[#menuOptions+1] = "Resume"
+		else
+			menuOptions[#menuOptions+1] = "Start"
+		end
+	end
+
+	mainMenuList = playdate.ui.gridview.new(math.floor((ScreenWidth - 16) / #menuOptions), 32)
 	mainMenuList:setNumberOfRows(1)
 	mainMenuList:setNumberOfColumns(#menuOptions)
 	mainMenuList:setCellPadding(0, 0, 4, 4)
 	mainMenuList:setSelection(1, 1, #menuOptions)
+
+	function mainMenuList:drawCell(section, row, column, selected, x, y, width, height)
+		local text = menuOptions[column]
+		if selected then
+			gfx.setColor(gfx.kColorBlack)
+			gfx.fillRoundRect(x, y, width, height, 4)
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			text = "*" .. text .. "*"
+		else
+			gfx.setImageDrawMode(gfx.kDrawModeCopy)
+		end
+		
+		gfx.setFont(listFont)
+		gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
+	end
 	
 	local inputHandlers = {
 		rightButtonUp = function()
@@ -164,11 +172,13 @@ function createMainMenu()
 		
 		AButtonDown = function()
 			local s, r, column = mainMenuList:getSelection()
-			if column == #menuOptions then  -- Continue
+			local label
+
+			if column == #menuOptions and not gameDidFinish then  -- Continue
 				Panels.mainMenu:hide()
 			elseif column == 1 then         -- Start Over
 				Panels.onMenuDidStartOver()
-			else                            -- Chapters
+			elseif Panels.Settings.useChapterMenu then                           -- Chapters
 				Panels.chapterMenu:show()
 			end	
 		end,
@@ -330,10 +340,9 @@ function updateMenus()
 	end
 end
 
-function createMenus(sequences)
-	-- if Panels.Settings.useMainMenu then
-		Panels.mainMenu = createMainMenu()
-	-- end
+function createMenus(sequences, gameDidFinish, gameDidStart)
+	Panels.mainMenu = createMainMenu(gameDidFinish, gameDidStart)
+
 	if Panels.Settings.useChapterMenu then 
 		Panels.chapterMenu = createChapterMenu(sequences)
 	end

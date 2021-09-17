@@ -17,9 +17,9 @@ Panels.Settings = {
 	listUnnamedSequences = true,
 	listLockedSequences = true,
 	chapterMenuHeaderImage = nil,
-	useCreditsMenu = true,
-	useChapterMenu = true,
-	useMainMenu = false,
+	useChapterMenu = false,
+	showMenuOnLaunch = true,
+	skipMenuOnFirstLaunch = true,
 }
 
 local function addSlashToFolderName(f)
