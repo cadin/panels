@@ -22,6 +22,7 @@ import "./modules/Effect"
 import "./modules/Input"
 import "./modules/Image"
 import "./modules/Menus"
+import "./modules/Alert"
 
 import "./modules/Panel"
 import "./modules/Audio"
@@ -30,6 +31,7 @@ import "./modules/TextAlignment"
 
 import "./modules/Utils"
 import "./modules/Credits"
+
 
 
 local currentSeqIndex = 1
@@ -58,6 +60,8 @@ local panelTransitionAnimator = nil
 
 Panels.maxUnlockedSequence = 1
 local gameDidFinish = false
+
+local alert = nil
 
 local function setUpPanels(seq)
     panels = {}
@@ -617,7 +621,11 @@ function playdate.update()
 	if numMenusOpen > 0 then
 		updateMenus()
 	end
-	
+
+	if alert.isActive then
+		alert:udpate()
+	end
+
 	playdate.timer.updateTimers()
 end
 
@@ -685,12 +693,14 @@ function Panels.onMenuDidHide(menu)
 end
 
 function Panels.onGameDidStartOver() 
-	Panels.Audio.stopBGAudio()
-	Panels.maxUnlockedSequence = 1
-	saveGameData()
-	currentSeqIndex = 1
-	loadSequence(currentSeqIndex)
-	createMenus(sequences)
+	alert:show()
+
+	-- Panels.Audio.stopBGAudio()
+	-- Panels.maxUnlockedSequence = 1
+	-- saveGameData()
+	-- currentSeqIndex = 1
+	-- loadSequence(currentSeqIndex)
+	-- createMenus(sequences)
 end
 
 
@@ -721,6 +731,8 @@ local function updateSystemMenu()
 end
 
 function Panels.start()
+	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", "Start Over", "Cancel")
+
 	loadGameData()
 	validateSettings()
 	createButtonIndicator()

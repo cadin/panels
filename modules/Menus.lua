@@ -1,4 +1,5 @@
 import 'CoreLibs/ui/gridview.lua'
+
 local gfx <const> = playdate.graphics
 
 local ScreenWidth <const> = playdate.display.getWidth()
@@ -143,7 +144,7 @@ end
 
 function createMainMenu()
 	mainMenuImage = loadMenuImage()
-	
+
 	if Panels.Settings.useChapterMenu == false then 
 		menuOptions = { "Start Over", "Continue"}
 	end
@@ -168,8 +169,9 @@ function createMainMenu()
 			elseif column == 1 then         -- Start Over
 				-- TODO: 
 				-- confirm before resetting game data
+
 				Panels.onGameDidStartOver()
-				Panels.mainMenu:hide()
+				-- Panels.mainMenu:hide()
 			else                            -- Chapters
 				Panels.chapterMenu:show()
 			end	
