@@ -167,11 +167,7 @@ function createMainMenu()
 			if column == #menuOptions then  -- Continue
 				Panels.mainMenu:hide()
 			elseif column == 1 then         -- Start Over
-				-- TODO: 
-				-- confirm before resetting game data
-
-				Panels.onGameDidStartOver()
-				-- Panels.mainMenu:hide()
+				Panels.onMenuDidStartOver()
 			else                            -- Chapters
 				Panels.chapterMenu:show()
 			end	

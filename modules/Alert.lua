@@ -6,32 +6,52 @@ Panels.Alert = {}
 
 local titleFont = gfx.getSystemFont("bold")
 local textFont = gfx.getSystemFont()
+local listFont = gfx.getSystemFont()
 local animator = nil
 local dimScreen = gfx.image.new(ScreenWidth, ScreenHeight, Panels.Color.BLACK)
+local gridView = nil
 
-function Panels.Alert.new(title, text, bLabel, aLabel)
+function Panels.Alert.new(title, text, options, callback, selection)
     local width = 320
     local height = 150
     local x = (ScreenWidth - width) / 2
     local y = (ScreenHeight - height) / 2 - 8
 
-    local bButton = Panels.ButtonIndicator.new()
-    bButton:setButton(Panels.Input.B)
-    local bx = x + 16
-    bButton:setPosition(bx, y + height - 16- 40)
-    local aButton = Panels.ButtonIndicator.new()
-    local ax = x + width / 2
-    aButton:setButton(Panels.Input.A)
-    aButton:setPosition(ax, y + height - 16 - 40)
-
+    gridView = playdate.ui.gridview.new((width - 32) / 2, 32)
+    gridView:setNumberOfRows(1)
+	gridView:setNumberOfColumns(#options)
+	gridView:setCellPadding(0, 0, 4, 4)
+	gridView:setSelection(1, 1, selection or 1)
 
     local alert = {
         isActive = false,
         title = title,
         text = text,
-        bLabel = bLabel,
-        aLabel = aLabel,
+        options = options,
+        selection = selection or 1,
+        state = "hidden"
     }
+
+    function alert:getSelection()
+        return self.selection
+    end
+
+    function gridView:drawCell(section, row, column, selected, x, y, width, height)
+        gfx.pushContext()
+        local text = alert.options[column]
+        if selected then
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRoundRect(x, y, width, height, 4)
+            gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+            text = "*" .. text .. "*"
+        else
+            gfx.setImageDrawMode(gfx.kDrawModeCopy)
+        end
+        
+        gfx.setFont(listFont)
+        gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
+        gfx.popContext()
+    end
 
     function alert:drawBG(progress) 
         local w = width * progress
@@ -40,6 +60,7 @@ function Panels.Alert.new(title, text, bLabel, aLabel)
         local _x = x + (width - w) / 2
         local _y =  y + (height - h) / 2
 
+        gfx.pushContext()
         gfx.setColor(Panels.Color.WHITE)
         gfx.setLineWidth(6)
         gfx.drawRoundRect(_x, _y, w, h, 10)
@@ -47,6 +68,7 @@ function Panels.Alert.new(title, text, bLabel, aLabel)
         gfx.setColor(Panels.Color.BLACK)
         gfx.setLineWidth(2)
         gfx.drawRoundRect(_x, _y, w, h, 8)
+        gfx.popContext()
     end
 
     function alert:drawText()
@@ -56,20 +78,40 @@ function Panels.Alert.new(title, text, bLabel, aLabel)
         gfx.drawTextInRect(self.text, x + 16, y + 48, width - 32, height - 128, nil, "...", kTextAlignment.center)
     end
 
-    function alert:drawButtons()
-        gfx.setFont(titleFont)
+    function alert:hide()
+        self.state = "hiding"
+        animator = gfx.animator.new(250, 1, 0, playdate.easingFunctions.inOutQuad)
+        playdate.inputHandlers.pop()
 
-        gfx.drawText(bLabel, bx + 44, y + height - 16 - 28)
-        bButton:draw()
-        gfx.drawText(aLabel, ax + 44, y + height - 16 - 28)
-        aButton:draw()
     end
 
     function alert:show() 
+        self.state = "showing"
+        local inputHandlers = {
+            rightButtonUp = function()
+                gridView:selectNextColumn(false)
+            end,
+            
+            leftButtonUp = function()
+                gridView:selectPreviousColumn(false)
+            end,
+            
+            AButtonDown = function()
+                local s, r, column = gridView:getSelection()
+                self.selection = column
+                self:hide()
+            end,
+    
+            BButtonDown = function()
+                self.selection = 1
+                self:hide()
+            end,
+    
+        }
+
         self.isActive = true
-        bButton:show()
-        aButton:show()
         animator = gfx.animator.new(250, 0, 1, playdate.easingFunctions.inOutQuad)
+        playdate.inputHandlers.push(inputHandlers, true)
     end
 
     function alert:udpate()
@@ -79,7 +121,16 @@ function Panels.Alert.new(title, text, bLabel, aLabel)
         self:drawBG(progress)
         if progress >= 1 then 
             self:drawText()
-            self:drawButtons()
+            gridView:drawInRect(x + 16, y + height - 42 - 8, width - 32, 42)
+            self.state = "visible"
+        end
+
+        if self.state ~= "hidden" and progress <= 0 and animator:ended() then
+            print(self.state)
+            if self.onHide then
+                self.state = "hidden"
+                self:onHide()
+            end
         end
     end
 

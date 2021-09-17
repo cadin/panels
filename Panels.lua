@@ -692,15 +692,25 @@ function Panels.onMenuDidHide(menu)
 	numMenusOpen = numMenusOpen - 1
 end
 
-function Panels.onGameDidStartOver() 
+function Panels.onMenuDidStartOver() 
 	alert:show()
+end
 
-	-- Panels.Audio.stopBGAudio()
-	-- Panels.maxUnlockedSequence = 1
-	-- saveGameData()
-	-- currentSeqIndex = 1
-	-- loadSequence(currentSeqIndex)
-	-- createMenus(sequences)
+function onAlertDidStartOver()
+	Panels.Audio.stopBGAudio()
+	Panels.maxUnlockedSequence = 1
+	gameDidFinish = false
+	saveGameData()
+	currentSeqIndex = 1
+	Panels.mainMenu:hide()
+	loadSequence(currentSeqIndex)
+	createMenus(sequences)
+end
+
+function onAlertDidHide()
+	if alert.selection == 2 then
+		onAlertDidStartOver()
+	end
 end
 
 
@@ -731,7 +741,8 @@ local function updateSystemMenu()
 end
 
 function Panels.start()
-	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", "Start Over", "Cancel")
+	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", {"Cancel", "Start Over"})
+	alert.onHide = onAlertDidHide
 
 	loadGameData()
 	validateSettings()
@@ -755,6 +766,7 @@ end
 
 local function unlockAll()
 	Panels.maxUnlockedSequence = #sequences
+	gameDidFinish = true
 	saveGameData()
 end
 
