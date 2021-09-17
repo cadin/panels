@@ -54,6 +54,7 @@ local transitionInAnimator = nil
 local buttonIndicator = nil
 
 local numMenusOpen = 0
+local numMenusFullScreen = 0
 local menusAreFullScreen = false
 
 local panelTransitionAnimator = nil
@@ -675,13 +676,16 @@ end
 
 function Panels.onMenuDidShow()
 	menusAreFullScreen = true
+	numMenusFullScreen = numMenusFullScreen + 1
 end
 
 function Panels.onMenuWillHide(menu)
 	if menu == Panels.mainMenu then 
 		loadSequence(currentSeqIndex)
 	end
-	if numMenusOpen <= 1 then 
+	numMenusFullScreen = numMenusFullScreen - 1
+
+	if numMenusFullScreen <= 1 then 
 		menusAreFullScreen = false
 	end
 end
@@ -713,7 +717,6 @@ function onAlertDidHide()
 	end
 end
 
-
 function shouldShowMainMenu()
 	local should = false
 	if Panels.Settings.showMenuOnLaunch then
@@ -721,11 +724,7 @@ function shouldShowMainMenu()
 			should = true
 		end
 	end
-
-	if gameDidFinish then
-		should = true
-	end
-
+	if gameDidFinish then should = true end
 	return should
 end
 
