@@ -582,7 +582,7 @@ local function updateComic(offset)
 		checkInputs()
 	end
 
-	if panels[panelNum]:shouldAutoAdvance() then
+	if panels and panels[panelNum]:shouldAutoAdvance() then
 		-- panels[panelNum].wasOnScreen = true
 		if panelNum > #panels then 
 			scrollToNextPanel()
@@ -685,7 +685,7 @@ function Panels.onMenuWillHide(menu)
 	end
 	numMenusFullScreen = numMenusFullScreen - 1
 
-	if numMenusFullScreen <= 1 then 
+	if numMenusFullScreen < 1 then 
 		menusAreFullScreen = false
 	end
 end
