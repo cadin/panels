@@ -67,7 +67,12 @@ local function doLayerEffect(layer)
 				end
 			else 
 				if layer.timer.currentTime < layer.effect.durations.on then
-					layer.visible = true
+					if layer.visible == false then 
+						layer.visible = true
+						if layer.sfxPlayer then 
+							layer.sfxPlayer:play()
+						end
+					end
 				else 
 					layer.visible = false
 				end
@@ -137,6 +142,12 @@ function Panels.Panel.new(data)
 			if layer.y == nil then layer.y = -panel.frame.margin end
 			if layer.visible == nil then layer.visible = true end
 			layer.alpha = layer.opacity or nil
+
+			if layer.effect then
+				if layer.effect.type == Panels.Effect.BLINK and layer.effect.audio then
+					layer.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. layer.effect.audio.file)
+				end
+			end
 
 			if layer.animate then 
 				if layer.animate.delay == nil then layer.animate.delay = 0 end
