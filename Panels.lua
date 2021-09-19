@@ -581,11 +581,9 @@ local function updateComic(offset)
 	else
 		if panels and panels[panelNum]:shouldAutoAdvance() then
 			if panelNum < #panels then 
-				print("next panel")
 				scrollToNextPanel()
 
 			else 
-				print("finishSequence")
 				finishSequence()
 			end
 		else
