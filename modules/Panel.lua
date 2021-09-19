@@ -177,7 +177,6 @@ function Panels.Panel.new(data)
 			isOn = true	
 		end
 
-
 		return isOn	
 	end
 	
@@ -324,6 +323,10 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
+		if self.resetFunction then 
+			self:resetFunction()
+		end
+
 		self:killTypingEffects()
 		if self.sfxPlayer then 
 			self.sfxPlayer:stop()
@@ -343,6 +346,9 @@ function Panels.Panel.new(data)
 				end
 				if layer.sfxPlayer then 
 					layer.sfxPlayer:stop()
+				end
+				if layer.textAnimator then
+					layer.textAnimator = nil
 				end
 				layer.buttonsPressed = nil
 			end
@@ -370,7 +376,7 @@ function Panels.Panel.new(data)
 				if layer.isTyping then 
 					local j = math.ceil(layer.textAnimator:currentValue())
 					txt = string.sub(txt, 1, j)
-					
+
 					if txt == layer.text then
 						layer.isTyping = false
 						Panels.Audio.stopTypingSound()

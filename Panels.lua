@@ -438,6 +438,7 @@ local function unloadSequence()
 	end
 	panelTransitionAnimator = nil
 	Panels.Image.clearCache()
+	sequence.didFinish = false
 end
 
 local function nextSequence()
@@ -470,7 +471,10 @@ local function updateSequenceTransition()
 end
 
 local function finishSequence() 
-	startTransitionOut(sequence.direction)
+	if not sequence.didFinish then
+		sequence.didFinish = true
+		startTransitionOut(sequence.direction)
+	end
 end
 
 
@@ -575,21 +579,25 @@ local function updateComic(offset)
 	if transitionInAnimator or transitionOutAnimator then
 		updateSequenceTransition()
 	else
-		updateScroll()
-		if sequence.scrollType == Panels.ScrollType.MANUAL then
-			updateArrowControls()
+		if panels and panels[panelNum]:shouldAutoAdvance() then
+			if panelNum < #panels then 
+				print("next panel")
+				scrollToNextPanel()
+
+			else 
+				print("finishSequence")
+				finishSequence()
+			end
+		else
+			updateScroll()
+			if sequence.scrollType == Panels.ScrollType.MANUAL then
+				updateArrowControls()
+			end
+			checkInputs()
 		end
-		checkInputs()
 	end
 
-	if panels and panels[panelNum]:shouldAutoAdvance() then
-		-- panels[panelNum].wasOnScreen = true
-		if panelNum > #panels then 
-			scrollToNextPanel()
-		else 
-			nextSequence()
-		end
-	end
+	
 end
 
 local function drawComic(offset)
@@ -600,9 +608,6 @@ local function drawComic(offset)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
 		elseif panel.wasOnScreen then
 			panel:reset()
-			if panel.resetFunction then 
-				panel:resetFunction()
-			end
 			panel.wasOnScreen = false
 		end
 	end
