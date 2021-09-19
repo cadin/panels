@@ -14,11 +14,11 @@ Panels.Settings = {
 	
 	-- menu settings
 	menuImage = "menuImage.png",
-	listUnnamedSequences = true,
+	listUnnamedSequences = false,
 	listLockedSequences = true,
 	chapterMenuHeaderImage = nil,
 	useChapterMenu = true,
-	showMenuOnLaunch = true,
+	showMenuOnLaunch = false,
 	skipMenuOnFirstLaunch = false,
 }
 
