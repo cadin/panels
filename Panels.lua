@@ -757,7 +757,8 @@ local function updateSystemMenu()
 
 end
 
-function Panels.start()
+function Panels.start(comicData)
+	Panels.comicData = comicData
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", {"Cancel", "Start Over"})
 	alert.onHide = onAlertDidHide
 
