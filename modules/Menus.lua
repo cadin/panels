@@ -118,6 +118,9 @@ local function loadMenuImage()
 	img, error = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.menuImage)
 	printError(error, "Error loading main menu image:")
 	
+	if img == nil then 
+		img = gfx.image.new(Panels.Color.WHITE)
+	end
 	return img
 end
 

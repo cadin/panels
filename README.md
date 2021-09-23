@@ -184,7 +184,7 @@ Each bug should be listed as a separate issue. Please search first to see if som
 
 ### Contribute
 
-If you would like to contribute a feature or bug fix please contact me first and let me know which issue you want work on. If there isn't yet an issue for your change, go ahead and write one.
+If you would like to contribute a feature or bug fix please contact me first and let me know which issue you want work on. If there isn't yet an issue for your proposed change, go ahead and write one.
 
 ## License
 
