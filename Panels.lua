@@ -504,7 +504,11 @@ end
 
 function playdate.cranked(change, accChange)
 	if sequence.scrollType == Panels.ScrollType.MANUAL then 
-		scrollPos = scrollPos + change
+		if sequence.axis == Panels.ScrollAxis.VERTICAL then
+			scrollPos = scrollPos + change
+		else
+			scrollPos = scrollPos - change
+		end
 	end
 end
 
