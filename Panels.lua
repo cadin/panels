@@ -172,6 +172,8 @@ local function getAdvanceControlForScrollDirection(dir)
 		return Panels.Input.DOWN
 	elseif dir == Panels.ScrollDirection.BOTTOM_UP then
 		return Panels.Input.UP
+	elseif dir == Panels.ScrollDirection.NONE then
+		return nil
 	else
 		return Panels.Input.LEFT
 	end
@@ -184,6 +186,8 @@ local function getBackControlForScrollDirection(dir)
 		return Panels.Input.UP
 	elseif dir == Panels.ScrollDirection.BOTTOM_UP then
 		return Panels.Input.DOWN
+	elseif dir == Panels.ScrollDirection.NONE then
+		return nil
 	else
 		return Panels.Input.RIGHT
 	end
@@ -505,15 +509,15 @@ function playdate.cranked(change, accChange)
 end
 
 local function checkInputs() 
+	local p = panels[panelNum]
 	if lastPanelIsShowing() then
-		if playdate.buttonJustPressed(sequence.advanceControl) then 
+		if p.advanceFunction == nil and playdate.buttonJustPressed(sequence.advanceControl) then 
 			buttonIndicator:press()
 			finishSequence()
 		end
 	end
 
 	if sequence.scrollType == Panels.ScrollType.AUTO then
-		local p = panels[panelNum]
 		if p.advanceFunction == nil then
 			if p.advanceControlSequence then
 				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
