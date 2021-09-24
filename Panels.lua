@@ -32,7 +32,7 @@ import "./modules/TextAlignment"
 import "./modules/Utils"
 import "./modules/Credits"
 
-
+local sequenceDidStart = false
 
 local currentSeqIndex = 1
 local sequences = nil
@@ -154,7 +154,7 @@ end
 
 local function drawButtonIndicator() 
 	if transitionOutAnimator == nil then
-		if lastPanelIsShowing() then
+		if lastPanelIsShowing() and sequenceDidStart then
 			buttonIndicator:show()
 		else 
 			buttonIndicator:hide()
@@ -462,11 +462,13 @@ local function updateSequenceTransition()
 		scrollPos = transitionOutAnimator:currentValue()
 		if transitionOutAnimator:ended() then
 			transitionOutAnimator = nil
+			sequenceDidStart = false
 			playdate.timer.performAfterDelay(1, nextSequence) -- prevent flash before transition in
 		end
 	elseif transitionInAnimator then 
 		scrollPos = transitionInAnimator:currentValue()
 		if transitionInAnimator:ended() then
+			sequenceDidStart = true
 			transitionInAnimator = nil
 		end
 	end
