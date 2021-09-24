@@ -25,7 +25,7 @@ function Panels.Audio.stopBGAudio()
 end
 
 function Panels.Audio.pauseBGAudio() 
-	if bgAudioPlayer and bgAudioPlayer:isPlaying() then
+	if bgAudioPlayer and (bgAudioPlayer:isPlaying() or shouldResume) then
 		shouldResume = true
 		bgAudioPlayer:pause()
 	else

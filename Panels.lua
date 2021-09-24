@@ -692,6 +692,7 @@ end
 
 function Panels.onMenuWillHide(menu)
 	if menu == Panels.mainMenu then 
+		Panels.Audio.unmuteTypingSounds()
 		loadSequence(currentSeqIndex)
 	end
 	numMenusFullScreen = numMenusFullScreen - 1
@@ -702,9 +703,11 @@ function Panels.onMenuWillHide(menu)
 end
 
 function Panels.onMenuDidHide(menu)
-	Panels.Audio.resumeBGAudio()
-	Panels.Audio.unmuteTypingSounds()
 	numMenusOpen = numMenusOpen - 1
+	if numMenusOpen < 1 then 
+		Panels.Audio.resumeBGAudio()
+		Panels.Audio.unmuteTypingSounds()
+	end
 end
 
 function Panels.onMenuDidStartOver() 
@@ -718,7 +721,6 @@ function onAlertDidStartOver()
 	saveGameData()
 	currentSeqIndex = 1
 	Panels.mainMenu:hide()
-	loadSequence(currentSeqIndex)
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
 end
 
