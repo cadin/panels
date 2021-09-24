@@ -5,6 +5,10 @@ local gfx <const> = playdate.graphics
 local ScreenWidth <const> = playdate.display.getWidth()
 local ScreenHeight <const> = playdate.display.getHeight()
 
+local selectionSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/selection.wav")
+local selectionRevSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/selection-reverse.wav")
+local denialSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/denial.wav")
+
 local headerFont = gfx.getSystemFont("bold")
 -- local listFont = Panels.Font.get(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")--gfx.getSystemFont()
 
@@ -127,7 +131,7 @@ end
 local function redrawMainMenu(yPos)
 	mainMenuList:drawInRect(8, yPos + 3, 384, 42)
 end
-
+local mainOffset = 0
 local function updateMainMenu(gameDidFinish, gameDidStart)
 	menuOptions = { "Start Over" }
 
@@ -143,25 +147,26 @@ local function updateMainMenu(gameDidFinish, gameDidStart)
 		end
 	end
 
-	mainMenuList = playdate.ui.gridview.new(math.floor((ScreenWidth - 16) / #menuOptions), 32)
+	mainMenuList = playdate.ui.gridview.new(math.floor((ScreenWidth - 16) / #menuOptions) - 8, 32)
 	mainMenuList:setNumberOfRows(1)
 	mainMenuList:setNumberOfColumns(#menuOptions)
-	mainMenuList:setCellPadding(0, 0, 4, 4)
+	mainMenuList:setCellPadding(4, 4, 4, 4)
 	mainMenuList:setSelection(1, 1, #menuOptions)
 
 	function mainMenuList:drawCell(section, row, column, selected, x, y, width, height)
 		local text = menuOptions[column]
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
-			gfx.fillRoundRect(x, y, width, height, 4)
+			gfx.fillRoundRect(x + mainOffset, y, width , height, 4)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			text = "*" .. text .. "*"
+			mainOffset = 0
 		else
 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
 		end
 		
 		gfx.setFont(listFont)
-		gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
+		gfx.drawTextInRect(text, x, y+8, width, height+2, nil, "...", kTextAlignment.center)
 	end
 end
 
@@ -173,10 +178,24 @@ function createMainMenu(gameDidFinish, gameDidStart)
 	
 	local inputHandlers = {
 		rightButtonUp = function()
+			local s, r, column = mainMenuList:getSelection()
+			if column == #menuOptions then
+				denialSound:play()
+			else
+				selectionSound:play()
+			end
+			mainOffset = 4
 			mainMenuList:selectNextColumn(false)
 		end,
 		
 		leftButtonUp = function()
+			local s, r, column = mainMenuList:getSelection()
+			if column == 1 then
+				denialSound:play()
+			else
+				selectionRevSound:play()
+			end
+			mainOffset = -4
 			mainMenuList:selectPreviousColumn(false)
 		end,
 		
@@ -237,6 +256,7 @@ local function updateChapterMenu(data)
 	chapterList:setNumberOfRows(#sections)
 end
 
+local chapterOffset = 0
 local function createChapterMenu(data)
 	updateChapterMenu(data)
 	
@@ -251,12 +271,22 @@ local function createChapterMenu(data)
 	
 	local inputHandlers = {
 		downButtonUp = function()
+			chapterOffset = 4
 			if chapterList:getSelectedRow() < maxUnlockedChapter then 
 				chapterList:selectNextRow(false)
+				selectionSound:play()
+			else
+				denialSound:play()
 			end
 		end,
 		
 		upButtonUp = function()
+			chapterOffset = -4
+			if chapterList:getSelectedRow() > 1 then 
+				selectionRevSound:play()
+			else
+				denialSound:play()
+			end
 			chapterList:selectPreviousRow(false)
 		end,
 		
@@ -280,9 +310,10 @@ end
 function chapterList:drawCell(section, row, column, selected, x, y, width, height)
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
-			gfx.fillRoundRect(x, y, width, height, 4)
+			gfx.fillRoundRect(x, y + chapterOffset, width, height, 4)
 			-- gfx.drawRoundRect(x + 1, y, width - 2, height, 4)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			chapterOffset = 0
 		else
 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
 		end
