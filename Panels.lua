@@ -447,8 +447,10 @@ local function nextSequence()
 	if currentSeqIndex < #sequences then
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
+		updateMenuData(sequences, gameDidFinish)
 	else 
 		gameDidFinish = true
+		updateMenuData(sequences, gameDidFinish)
 		menusAreFullScreen = true
 		Panels.mainMenu:show()
 	end

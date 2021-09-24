@@ -128,8 +128,8 @@ local function redrawMainMenu(yPos)
 	mainMenuList:drawInRect(8, yPos + 3, 384, 42)
 end
 
-function createMainMenu(gameDidFinish, gameDidStart)
-	mainMenuImage = loadMenuImage()
+local function updateMainMenu(gameDidFinish, gameDidStart)
+	menuOptions = { "Start Over" }
 
 	if Panels.Settings.useChapterMenu then
 		menuOptions[#menuOptions+1] = "Chapters"
@@ -163,6 +163,13 @@ function createMainMenu(gameDidFinish, gameDidStart)
 		gfx.setFont(listFont)
 		gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
 	end
+end
+
+function createMainMenu(gameDidFinish, gameDidStart)
+	mainMenuImage = loadMenuImage()
+	updateMainMenu(gameDidFinish, gameDidStart)
+
+	
 	
 	local inputHandlers = {
 		rightButtonUp = function()
@@ -197,15 +204,21 @@ end
 
 local chapterList = playdate.ui.gridview.new(0, 32)
 local headerImage = nil
+local maxUnlockedChapter = 0
 
 local function createSectionsFromData(data)
 	sections = {}
+	maxUnlockedChapter = 0
 	for i, seq in ipairs(data) do
 		if (seq.title or Panels.Settings.listUnnamedSequences) 
 		and (i <= Panels.maxUnlockedSequence or Panels.Settings.listLockedSequences) then
 			local title = seq.title or "--"
-			if i <= Panels.maxUnlockedSequence then title = "*" .. title .. "*" end
+			if i <= Panels.maxUnlockedSequence then 
+				title = "*" .. title .. "*" 
+				maxUnlockedChapter = maxUnlockedChapter + 1
+			end
 			sections[#sections + 1] = {title = title, index = i}
+			
 		end
 	end
 end
@@ -219,9 +232,13 @@ local function onChapterMenuWillShow()
 	chapterList:selectPreviousRow()
 end
 
-local function createChapterMenu(data)
+local function updateChapterMenu(data)
 	createSectionsFromData(data)
 	chapterList:setNumberOfRows(#sections)
+end
+
+local function createChapterMenu(data)
+	updateChapterMenu(data)
 	
 	if Panels.Settings.chapterMenuHeaderImage then
 		headerImage = gfx.image.new(Panels.Settings.imageFolder .. Panels.Settings.chapterMenuHeaderImage)
@@ -234,7 +251,7 @@ local function createChapterMenu(data)
 	
 	local inputHandlers = {
 		downButtonUp = function()
-			if chapterList:getSelectedRow() < Panels.maxUnlockedSequence then 
+			if chapterList:getSelectedRow() < maxUnlockedChapter then 
 				chapterList:selectNextRow(false)
 			end
 		end,
@@ -354,3 +371,7 @@ function createMenus(sequences, gameDidFinish, gameDidStart)
 end
 
 
+function updateMenuData(sequences, gameDidFinish, gameDidStart)
+	updateMainMenu(gameDidFinish, gameDidStart)
+	updateChapterMenu(sequences)
+end
