@@ -343,6 +343,8 @@ function Panels.Panel.new(data)
 				end
 				if layer.opacity then
 					layer.alpha = layer.opacity
+				else 
+					layer.alpha = nil
 				end
 				if layer.sfxPlayer then 
 					layer.sfxPlayer:stop()
@@ -351,6 +353,7 @@ function Panels.Panel.new(data)
 					layer.textAnimator = nil
 				end
 				layer.buttonsPressed = nil
+				layer.visible = true
 			end
 		end
 		panel.buttonsPressed = {}
@@ -363,7 +366,7 @@ function Panels.Panel.new(data)
 		elseif self.font then
 			gfx.setFont(Panels.Font.get(self.font))
 		end
-		
+
 		local txt = layer.text
 		if layer.effect then
 			if layer.effect.type == Panels.Effect.TYPE_ON then
