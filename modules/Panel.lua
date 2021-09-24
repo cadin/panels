@@ -179,6 +179,40 @@ function Panels.Panel.new(data)
 
 		return isOn	
 	end
+
+	function panel:fadePanelVolume(pct)
+		local vol = 1
+		if  pct < 0.25 then
+			vol = pct / 0.25
+		elseif pct > 0.75 then
+			vol = (1 - pct) / 0.25 
+		end
+
+		self.sfxPlayer:setVolume(vol)
+	end
+
+	function panel:updatePanelAudio(pct)
+		local count = panel.audio.repeatCount or 1
+			if panel.audio.loop then count = 0 end
+			if self.audio.triggerSequence then
+				if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
+				local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
+
+				if playdate.buttonJustPressed(triggerButton) then
+					self.audioTriggersPressed[#self.audioTriggersPressed+1] = triggerButton
+					if #self.audioTriggersPressed == #self.audio.triggerSequence then 
+						playdate.timer.performAfterDelay(self.audio.delay or 0, function () 
+							self.sfxPlayer:play(count)
+						end)
+					end
+				end
+
+			elseif pct >= self.sfxTrigger and self.prevPct < self.sfxTrigger then
+				self.sfxPlayer:play(count)
+			end
+
+			self:fadePanelVolume(pct)
+	end
 	
 	function panel:drawLayers(offset)
 		local layers = self.layers
@@ -196,24 +230,7 @@ function Panels.Panel.new(data)
 		end
 		
 		if self.sfxPlayer then 
-			local count = panel.audio.repeatCount or 1
-			if panel.audio.loop then count = 0 end
-			if self.audio.triggerSequence then
-				if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
-				local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
-
-				if playdate.buttonJustPressed(triggerButton) then
-					self.audioTriggersPressed[#self.audioTriggersPressed+1] = triggerButton
-					if #self.audioTriggersPressed == #self.audio.triggerSequence then 
-						playdate.timer.performAfterDelay(self.audio.delay or 0, function () 
-							self.sfxPlayer:play(count)
-						end)
-					end
-				end
-
-			elseif cntrlPct >= self.sfxTrigger and self.prevPct < self.sfxTrigger then
-				self.sfxPlayer:play(count)
-			end
+			self:updatePanelAudio(cntrlPct)
 		end
 	
 		if layers then
