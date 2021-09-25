@@ -11,16 +11,26 @@ local animator = nil
 local dimScreen = gfx.image.new(ScreenWidth, ScreenHeight, Panels.Color.BLACK)
 local gridView = nil
 
+local selectionSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/selection.wav")
+local selectionRevSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/selection-reverse.wav")
+local denialSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/denial.wav")
+local confirmSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/confirm.wav")
+
+local hideSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/swish-out.wav")
+local showSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/swish-in.wav")
+
+
 function Panels.Alert.new(title, text, options, callback, selection)
     local width = 320
     local height = 150
     local x = (ScreenWidth - width) / 2
     local y = (ScreenHeight - height) / 2 - 8
+    local offset = 0
 
-    gridView = playdate.ui.gridview.new((width - 32) / 2, 32)
+    gridView = playdate.ui.gridview.new((width - 32) / 2 - 8, 32)
     gridView:setNumberOfRows(1)
 	gridView:setNumberOfColumns(#options)
-	gridView:setCellPadding(0, 0, 4, 4)
+	gridView:setCellPadding(4,4, 4, 4)
 	gridView:setSelection(1, 1, selection or 1)
 
     local alert = {
@@ -41,15 +51,16 @@ function Panels.Alert.new(title, text, options, callback, selection)
         local text = alert.options[column]
         if selected then
             gfx.setColor(gfx.kColorBlack)
-            gfx.fillRoundRect(x, y, width, height, 4)
+            gfx.fillRoundRect(x + offset, y, width, height, 4)
             gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
             text = "*" .. text .. "*"
+            offset = 0
         else
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
         end
         
         gfx.setFont(listFont)
-        gfx.drawTextInRect(text, x + 8, y+8, width -16, height+2, nil, "...", kTextAlignment.center)
+        gfx.drawTextInRect(text, x, y+8, width, height+2, nil, "...", kTextAlignment.center)
         gfx.popContext()
     end
 
@@ -80,19 +91,42 @@ function Panels.Alert.new(title, text, options, callback, selection)
 
     function alert:hide()
         self.state = "hiding"
-        animator = gfx.animator.new(250, 1, 0, playdate.easingFunctions.inOutQuad)
+        animator = gfx.animator.new(200, 1, 0, playdate.easingFunctions.inOutQuad)
         playdate.inputHandlers.pop()
 
+        if Panels.Settings.playMenuSounds then
+            hideSound:play()
+        end
     end
 
     function alert:show() 
         self.state = "showing"
         local inputHandlers = {
             rightButtonUp = function()
+                local s, r, column = gridView:getSelection()
+                if Panels.Settings.playMenuSounds then 
+                    if column == #self.options then
+                        denialSound:play()
+                    else
+                        selectionSound:play()
+                    end
+                end
+                offset = 4
                 gridView:selectNextColumn(false)
+
             end,
             
             leftButtonUp = function()
+                local s, r, column = gridView:getSelection()
+                if Panels.Settings.playMenuSounds then 
+                    if column == 1 then
+                        denialSound:play()
+                    else
+                        selectionRevSound:play()
+                    end
+                end
+
+                offset = -4
                 gridView:selectPreviousColumn(false)
             end,
             
@@ -100,6 +134,10 @@ function Panels.Alert.new(title, text, options, callback, selection)
                 local s, r, column = gridView:getSelection()
                 self.selection = column
                 self:hide()
+
+                if Panels.Settings.playMenuSounds then
+                    confirmSound:play()
+                end
             end,
     
             BButtonDown = function()
@@ -112,6 +150,9 @@ function Panels.Alert.new(title, text, options, callback, selection)
         self.isActive = true
         animator = gfx.animator.new(250, 0, 1, playdate.easingFunctions.inOutQuad)
         playdate.inputHandlers.push(inputHandlers, true)
+        if Panels.Settings.playMenuSounds then
+            showSound:play()
+        end
     end
 
     function alert:udpate()
@@ -126,7 +167,6 @@ function Panels.Alert.new(title, text, options, callback, selection)
         end
 
         if self.state ~= "hidden" and progress <= 0 and animator:ended() then
-            print(self.state)
             if self.onHide then
                 self.state = "hidden"
                 self:onHide()

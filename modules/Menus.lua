@@ -8,6 +8,10 @@ local ScreenHeight <const> = playdate.display.getHeight()
 local selectionSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/selection.wav")
 local selectionRevSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/selection-reverse.wav")
 local denialSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/denial.wav")
+local confirmSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/confirm.wav")
+
+local hideSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/swish-out.wav")
+local showSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/swish-in.wav")
 
 local headerFont = gfx.getSystemFont("bold")
 -- local listFont = Panels.Font.get(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")--gfx.getSystemFont()
@@ -60,6 +64,12 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 		self.state = MenuState.SHOWING
 		playdate.inputHandlers.push(inputHandlers, true)
 		self.animator = gfx.animator.new(menuAnimationDuration, 0, 1, playdate.easingFunctions.inOutQuad)
+
+		if Panels.Settings.playMenuSounds then
+			if self ~= Panels.mainMenu  then
+				showSound:play()
+			end
+		end
 	end
 	
 	function menu:hide()
@@ -70,6 +80,10 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 		self.state = MenuState.HIDING
 		playdate.inputHandlers.pop()
 		self.animator = gfx.animator.new(menuAnimationDuration, 1, 0, playdate.easingFunctions.inOutQuad)
+
+		if Panels.Settings.playMenuSounds then
+			hideSound:play()
+		end
 	end
 	
 	function menu:isActive()
@@ -179,10 +193,12 @@ function createMainMenu(gameDidFinish, gameDidStart)
 	local inputHandlers = {
 		rightButtonUp = function()
 			local s, r, column = mainMenuList:getSelection()
-			if column == #menuOptions then
-				denialSound:play()
-			else
-				selectionSound:play()
+			if Panels.Settings.playMenuSounds then 
+				if column == #menuOptions then
+					denialSound:play()
+				else
+					selectionSound:play()
+				end
 			end
 			mainOffset = 4
 			mainMenuList:selectNextColumn(false)
@@ -190,10 +206,12 @@ function createMainMenu(gameDidFinish, gameDidStart)
 		
 		leftButtonUp = function()
 			local s, r, column = mainMenuList:getSelection()
-			if column == 1 then
-				denialSound:play()
-			else
-				selectionRevSound:play()
+			if Panels.Settings.playMenuSounds then 
+				if column == 1 then
+					denialSound:play()
+				else
+					selectionRevSound:play()
+				end
 			end
 			mainOffset = -4
 			mainMenuList:selectPreviousColumn(false)
@@ -202,6 +220,10 @@ function createMainMenu(gameDidFinish, gameDidStart)
 		AButtonDown = function()
 			local s, r, column = mainMenuList:getSelection()
 			local label
+
+			if Panels.Settings.playMenuSounds then
+				confirmSound:play()
+			end
 
 			if column == #menuOptions and not gameDidFinish then  -- Continue
 				Panels.mainMenu:hide()
@@ -274,18 +296,24 @@ local function createChapterMenu(data)
 			chapterOffset = 4
 			if chapterList:getSelectedRow() < maxUnlockedChapter then 
 				chapterList:selectNextRow(false)
-				selectionSound:play()
+				if Panels.Settings.playMenuSounds then 
+					selectionSound:play()
+				end
 			else
-				denialSound:play()
+				if Panels.Settings.playMenuSounds then 
+					denialSound:play()
+				end
 			end
 		end,
 		
 		upButtonUp = function()
 			chapterOffset = -4
-			if chapterList:getSelectedRow() > 1 then 
-				selectionRevSound:play()
-			else
-				denialSound:play()
+			if Panels.Settings.playMenuSounds then 
+				if chapterList:getSelectedRow() > 1 then 
+					selectionRevSound:play()
+				else
+					denialSound:play()
+				end
 			end
 			chapterList:selectPreviousRow(false)
 		end,
@@ -295,6 +323,9 @@ local function createChapterMenu(data)
 			Panels.onChapterSelected( item.index )
 			Panels.chapterMenu:hide()
 			if Panels.mainMenu then Panels.mainMenu:hide() end
+			if Panels.Settings.playMenuSounds then
+				confirmSound:play()
+			end
 		end,
 		
 		BButtonDown = function()

@@ -20,6 +20,7 @@ Panels.Settings = {
 	useChapterMenu = true,
 	showMenuOnLaunch = false,
 	skipMenuOnFirstLaunch = false,
+	playMenuSounds = true,
 }
 
 local function addSlashToFolderName(f)
