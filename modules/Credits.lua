@@ -33,8 +33,9 @@ end
 
 local function measureCreditsHeight(credits)
 	local height = 1
-	
-	for i, line in ipairs(credits) do
+	if credits.lines == nil then return height end
+
+	for i, line in ipairs(credits.lines) do
 		if line.text then 
 			local w, h = gfx.getTextSize(line.text)
 			height = height + h + (line.spacing or 0)
@@ -80,28 +81,30 @@ local function createGameCredits(credits)
 	gfx.pushContext(img)
 	local y = 0
 	
-	for i, line in ipairs(credits) do
-		y = y +  (line.spacing or 0)
-		if line.alignment then 
-			alignment = line.alignment
-			x = getPositionForAlignment(line.alignment)
-		else
-			alignment = textAlignment
-			x = defaultX
-		end
-		
-		if line.text then 
-			gfx.drawTextAligned(line.text, x, y, alignment)
-			local w, h = gfx.getTextSize(line.text)
-			y = y + h
+	if credits.lines then 
+		for i, line in ipairs(credits.lines) do
+			y = y +  (line.spacing or 0)
+			if line.alignment then 
+				alignment = line.alignment
+				x = getPositionForAlignment(line.alignment)
+			else
+				alignment = textAlignment
+				x = defaultX
+			end
 			
-		elseif line.image then
-			local img = gfx.image.new(Panels.Settings.imageFolder .. line.image)
-			local w, h = img:getSize()
-			local anchorX = getAnchorForAlignment(alignment)
-			img:drawAnchored(x, y, anchorX, 0)
-			
-			y = y + h
+			if line.text then 
+				gfx.drawTextAligned(line.text, x, y, alignment)
+				local w, h = gfx.getTextSize(line.text)
+				y = y + h
+				
+			elseif line.image then
+				local img = gfx.image.new(Panels.Settings.imageFolder .. line.image)
+				local w, h = img:getSize()
+				local anchorX = getAnchorForAlignment(alignment)
+				img:drawAnchored(x, y, anchorX, 0)
+				
+				y = y + h
+			end
 		end
 	end
 	gfx.popContext()
