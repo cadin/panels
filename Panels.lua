@@ -235,6 +235,22 @@ end
 -- -------------------------------------------------
 -- PANEL TRANSITIONS
 
+local function isLastPanel(num)
+	if (num == #panels and not sequence.scrollingIsReversed) or (sequence.scrollingIsReversed and num <= 1) then
+		return true
+	else
+		return false
+	end
+end
+
+local function isFirstPanel(num)
+	if (num == 1 and not sequence.scrollingIsReversed) or (sequence.scrollingIsReversed and num == #panels) then
+		return true
+	else 
+		return false
+	end
+end
+
 function getPanelScrollLocation(panel, isTrailingEdge)
 	if sequence.axis == Panels.ScrollAxis.VERTICAL then
 		if isTrailingEdge == true then
@@ -252,7 +268,7 @@ function getPanelScrollLocation(panel, isTrailingEdge)
 end
 
 local function scrollToNextPanel()
-	if panelNum < #panels then
+	if not isLastPanel(panelNum) then
 		local p = panels[panelNum]
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos > p.frame.y  * -1 then
@@ -260,7 +276,11 @@ local function scrollToNextPanel()
 		elseif p.frame.width > ScreenWidth and scrollPos > p.frame.x * -1 then
 			target = getPanelScrollLocation(p, true)
 		else 
-			panelNum = panelNum + 1
+			if sequence.scrollingIsReversed then
+				panelNum = panelNum -1
+			else
+				panelNum = panelNum + 1
+			end
 			target = getPanelScrollLocation(panels[panelNum])
 		end
 		if sequence.direction == Panels.ScrollDirection.NONE then 
@@ -272,7 +292,7 @@ local function scrollToNextPanel()
 end
 
 local function scrollToPreviousPanel()
-	if panelNum > 1 then
+	if not isFirstPanel(panelNum) then
 		local p = panels[panelNum]
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos < p.frame.y * -1 then
@@ -280,7 +300,11 @@ local function scrollToPreviousPanel()
 		elseif p.frame.width > ScreenWidth and scrollPos < p.frame.x * -1 then
 			target = getPanelScrollLocation(p)
 		else 
-			panelNum = panelNum - 1
+			if sequence.scrollingIsReversed then
+				panelNum = panelNum + 1
+			else
+				panelNum = panelNum - 1
+			end
 			target = getPanelScrollLocation(panels[panelNum], true)
 		end
 		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
@@ -592,9 +616,8 @@ local function updateComic(offset)
 		updateSequenceTransition()
 	else
 		if panels and panels[panelNum]:shouldAutoAdvance() then
-			if panelNum < #panels then 
+			if not isLastPanel(panelNum) then 
 				scrollToNextPanel()
-
 			else 
 				finishSequence()
 			end
