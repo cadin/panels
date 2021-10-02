@@ -205,7 +205,6 @@ function Panels.Panel.new(data)
 					self.audioTriggersPressed[#self.audioTriggersPressed+1] = triggerButton
 					if #self.audioTriggersPressed == #self.audio.triggerSequence then 
 						playdate.timer.performAfterDelay(self.audio.delay or 0, function () 
-							print("play panel audio")
 							self.sfxPlayer:play(count)
 						end)
 					end
@@ -309,7 +308,9 @@ function Panels.Panel.new(data)
 				elseif layer.imgs then
 					if layer.advanceControl then
 						if playdate.buttonJustPressed(layer.advanceControl) then
-							layer.currentImage = layer.currentImage + 1
+							if layer.currentImage < #layer.imgs then 
+								layer.currentImage = layer.currentImage + 1
+							end
 						end
 						img = layer.imgs[layer.currentImage]
 					else
