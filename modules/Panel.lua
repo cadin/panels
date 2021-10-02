@@ -110,6 +110,8 @@ function Panels.Panel.new(data)
 		panel.advanceButton:setButton(panel.advanceControl)
 		if panel.advanceControlPosition then 
 			panel.advanceButton:setPosition(panel.advanceControlPosition.x, panel.advanceControlPosition.y)
+		else 
+			panel.advanceButton:setPositionForScrollDirection(panel.direction)
 		end
 	end
 
@@ -122,6 +124,7 @@ function Panels.Panel.new(data)
 
 			if layer.images then 
 				layer.imgs = {}
+				layer.currentImage = 1
 				for j, image in ipairs(layer.images) do
 					layer.imgs[j], error = Panels.Image.get(imageFolder .. image)
 					printError(error, "Error loading images["..j.."] on layer")
@@ -134,7 +137,7 @@ function Panels.Panel.new(data)
 				
 				local anim = gfx.animation.loop.new(layer.delay or 200, imgTable, layer.loop or false)
 				anim.paused = true
-				if layer.trigger == nil then layer.trigger = 0 end
+				if layer.scrollTrigger == nil then layer.scrollTrigger = 0 end
 				layer.animationLoop = anim
 			end
 
@@ -202,6 +205,7 @@ function Panels.Panel.new(data)
 					self.audioTriggersPressed[#self.audioTriggersPressed+1] = triggerButton
 					if #self.audioTriggersPressed == #self.audio.triggerSequence then 
 						playdate.timer.performAfterDelay(self.audio.delay or 0, function () 
+							print("play panel audio")
 							self.sfxPlayer:play(count)
 						end)
 					end
@@ -302,11 +306,18 @@ function Panels.Panel.new(data)
 				local img 
 				if layer.img then 
 					img = layer.img
-				elseif layer.imgs then 
-					local p = cntrlPct
-					p = p + (self.transitionOffset or 0)
-					local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
-					img = layer.imgs[j]
+				elseif layer.imgs then
+					if layer.advanceControl then
+						if playdate.buttonJustPressed(layer.advanceControl) then
+							layer.currentImage = layer.currentImage + 1
+						end
+						img = layer.imgs[layer.currentImage]
+					else
+						local p = cntrlPct
+						p = p + (self.transitionOffset or 0)
+						local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
+						img = layer.imgs[j]
+					end
 				end
 
 				if img then 
@@ -326,7 +337,7 @@ function Panels.Panel.new(data)
 					end
 				elseif layer.animationLoop then
 					if layer.visible then
-						if cntrlPct >= layer.trigger then 
+						if cntrlPct >= layer.scrollTrigger then 
 							layer.animationLoop.paused = false
 						end
 						layer.animationLoop:draw(xPos, yPos)
@@ -352,7 +363,7 @@ function Panels.Panel.new(data)
 			for i, layer in ipairs(self.layers) do
 				if layer.animationLoop then
 					layer.animationLoop.frame = 1
-					local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
+					-- local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
 					layer.animationLoop.paused = true
 				end
 				if layer.animator then
@@ -369,11 +380,21 @@ function Panels.Panel.new(data)
 				if layer.textAnimator then
 					layer.textAnimator = nil
 				end
+				if layer.images then
+					layer.currentImage = 1
+				end
 				layer.buttonsPressed = nil
 				layer.visible = true
 			end
 		end
 		panel.buttonsPressed = {}
+		panel.audioTriggersPressed = {}
+	end
+
+	function startLayerTypingSound(layer)
+		if layer.isTyping then
+			Panels.Audio.startTypingSound()
+		end
 	end
 	
 	function panel:drawTextLayer(layer, xPos, yPos)
@@ -390,7 +411,7 @@ function Panels.Panel.new(data)
 				if layer.textAnimator == nil then
 					layer.isTyping = true
 					layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(txt), playdate.easingFunctions.linear, layer.effect.delay or 0)
-					playdate.timer.performAfterDelay(layer.effect.delay or 0, Panels.Audio.startTypingSound)
+					playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
 				end
 				
 				if layer.isTyping then 
@@ -466,9 +487,10 @@ function Panels.Panel.new(data)
 	function panel:updateAdvanceButton()
 		if self.advanceButton.state == "hidden" then
 
-			if self.advanceControlPosition.delay and self.advanceControlTimer == nil then 
+			
+			if self.advanceControlPosition and self.advanceControlPosition.delay and self.advanceControlTimer == nil then 
 				self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
-			elseif self.advanceControlPosition.delay == nil or (self.advanceControlTimer and self.advanceControlTimer.currentTime >= self.advanceControlTimer.duration) then 
+			elseif self.advanceControlPosition == nil or self.advanceControlPosition.delay == nil or (self.advanceControlTimer and self.advanceControlTimer.currentTime >= self.advanceControlTimer.duration) then 
 				if not self.advanceControlTimerDidEnd then 
 					self.advanceButton:show()
 					self.advanceControlTimerDidEnd = true
