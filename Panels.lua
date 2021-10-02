@@ -81,9 +81,18 @@ local function setUpPanels(seq)
 		
 		panel.axis = seq.axis
 		panel.scrollingIsReversed = seq.scrollingIsReversed or false
+		panel.direction = seq.direction
 
 		if panel.advanceControl == nil then
-			panel.advanceControl = sequence.advanceControl
+			if panel.advanceControlSequence and #panel.advanceControlSequence == 1 then
+				panel.advanceControl = panel.advanceControlSequence[1]
+			else 
+				panel.advanceControl = sequence.advanceControl
+			end
+		end
+
+		if panel.advanceControlSequence == nil then
+			panel.advanceControlSequence = {panel.advanceControl}
 		end
 
 		if panel.backControl == nil then
