@@ -388,8 +388,10 @@ function Panels.Panel.new(data)
 				layer.visible = true
 			end
 		end
-		panel.buttonsPressed = {}
-		panel.audioTriggersPressed = {}
+		self.buttonsPressed = {}
+		self.audioTriggersPressed = {}
+		self.advanceControlTimerDidEnd = false
+		self.advanceControlTimer = nil
 	end
 
 	function startLayerTypingSound(layer)
