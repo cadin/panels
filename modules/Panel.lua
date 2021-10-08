@@ -316,7 +316,7 @@ function Panels.Panel.new(data)
 						img = layer.imgs[layer.currentImage]
 					else
 						local p = cntrlPct
-						p = p + (self.transitionOffset or 0)
+						p = p - (self.transitionOffset or 0)
 						local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
 						img = layer.imgs[j]
 					end
