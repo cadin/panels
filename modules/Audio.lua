@@ -39,6 +39,10 @@ function Panels.Audio.resumeBGAudio()
 	end
 end
 
+function Panels.Audio.bgAudioIsPlaying()
+	return bgAudioPlayer and bgAudioPlayer:isPlaying()
+end
+
 function Panels.Audio.startTypingSound()
 	if not typingIsMuted then
 		typingRetainCount = typingRetainCount + 1

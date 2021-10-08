@@ -56,6 +56,7 @@ local buttonIndicator = nil
 local numMenusOpen = 0
 local numMenusFullScreen = 0
 local menusAreFullScreen = false
+local chapterDidSelect = false
 
 local panelTransitionAnimator = nil
 
@@ -430,7 +431,7 @@ local function loadSequence(num)
 	end
 	
 	if sequence.audio then
-		if sequence.audio.continuePrevious then
+		if sequence.audio.continuePrevious and Panels.Audio.bgAudioIsPlaying() then
 			
 		else
 			if sequence.audio.file then
@@ -709,6 +710,7 @@ end
 -- MENU HANDLERS
 
 function Panels.onChapterSelected(chapter)
+	chapterDidSelect = true
 	Panels.Audio.stopBGAudio()
 	unloadSequence(currentSeqIndex)
 	currentSeqIndex = chapter
@@ -727,7 +729,8 @@ function Panels.onMenuDidShow()
 end
 
 function Panels.onMenuWillHide(menu)
-	if menu == Panels.mainMenu then 
+	if menu == Panels.mainMenu and not chapterDidSelect then 
+		chapterDidSelect = false
 		Panels.Audio.unmuteTypingSounds()
 		loadSequence(currentSeqIndex)
 	end
