@@ -79,6 +79,8 @@ local function doLayerEffect(layer)
 			end
 			
 		end
+	
+		
 	end
 end
 
@@ -218,6 +220,19 @@ function Panels.Panel.new(data)
 		self:fadePanelVolume(pct)
 	end
 	
+	function panel:layerShouldShake(layer)
+		local result = false
+		if self.effect and (self.effect.type == Panels.Effect.SHAKE_UNISON or self.effect.type == Panels.Effect.SHAKE_INDIVIDUAL) then 
+			result = true
+		end
+
+		if layer.effect and layer.effect.type == Panels.Effect.SHAKE then
+			result = true
+		end
+
+		return result
+	end
+
 	function panel:drawLayers(offset)
 		local layers = self.layers
 		local frame = self.frame
@@ -287,15 +302,15 @@ function Panels.Panel.new(data)
 					end
 				end
 	
-				if self.effect then
-					if self.effect.type == Panels.Effect.SHAKE_UNISON or self.effect.type == Panels.Effect.SHAKE_INDIVIDUAL then
-						if self.effect.type == Panels.Effect.SHAKE_INDIVIDUAL then
-							shake = calculateShake(self.effect.strength)
-						end
-	
-						xPos = xPos + shake.x * (1-p*p)
-						yPos = yPos + shake.y * (1-p*p)
+				if self:layerShouldShake(layer) then
+					if self.effect and self.effect.type == Panels.Effect.SHAKE_INDIVIDUAL then
+						shake = calculateShake(self.effect.strength or 2)
+					elseif layer.effect and layer.effect.type == Panels.Effect.SHAKE then
+						shake = calculateShake(layer.effect.strength or 2)
 					end
+
+					xPos = xPos + shake.x * (1-p*p)
+					yPos = yPos + shake.y * (1-p*p)
 				end
 				
 				if layer.effect then
