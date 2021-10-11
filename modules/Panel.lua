@@ -158,13 +158,16 @@ function Panels.Panel.new(data)
 				if layer.animate.delay == nil then layer.animate.delay = 0 end
 				if layer.animate.duration then 
 					if layer.animate.duration < 1 then layer.animate.duration = 1 end
-					-- if layer.animate.scrollTrigger == nil then layer.animate.scrollTrigger = 0 end
 				end
 				if layer.animate.autoStart then layer.animate.scrollTrigger = 0 end
 				if layer.animate.scrollTrigger and layer.animate.duration == nil then
 					layer.animate.duration = 200
 				end
 				if layer.opacity == nil then layer.opacity = 1 end
+
+				if layer.animate.trigger then 
+					layer.animate.triggerSequence = {layer.animate.trigger}
+				end
 
 				if layer.animate.audio then 
 					layer.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. layer.animate.audio.file)
@@ -207,7 +210,6 @@ function Panels.Panel.new(data)
 		local count = panel.audio.repeatCount or 1
 		if panel.audio.loop then count = 0 end
 		if self.audio.triggerSequence then
-			print("triggerseq: " .. self.audio.triggerSequence)
 			if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
 			local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
 
