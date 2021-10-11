@@ -156,7 +156,14 @@ function Panels.Panel.new(data)
 
 			if layer.animate then 
 				if layer.animate.delay == nil then layer.animate.delay = 0 end
-				if layer.animate.duration and layer.animate.duration < 1 then layer.animate.duration = 1 end
+				if layer.animate.duration then 
+					if layer.animate.duration < 1 then layer.animate.duration = 1 end
+					-- if layer.animate.scrollTrigger == nil then layer.animate.scrollTrigger = 0 end
+				end
+				if layer.animate.autoStart then layer.animate.scrollTrigger = 0 end
+				if layer.animate.scrollTrigger and layer.animate.duration == nil then
+					layer.animate.duration = 200
+				end
 				if layer.opacity == nil then layer.opacity = 1 end
 
 				if layer.animate.audio then 
@@ -261,17 +268,17 @@ function Panels.Panel.new(data)
 				
 				if layer.animate then 
 					local anim = layer.animate
-					if (anim.triggerSequence or anim.autoStart) and not layer.animator then 
+					if (anim.triggerSequence or anim.scrollTrigger ~= nill) and not layer.animator then 
 
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
 						local triggerButton = nil
-						if not anim.autoStart then 
+						if not anim.scrollTrigger then 
 							triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
 						end
 						
-						if anim.autoStart or playdate.buttonJustPressed(triggerButton) then
+						if anim.scrollTrigger ~= nill or playdate.buttonJustPressed(triggerButton) then
 							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
-							if anim.autoStart or #layer.buttonsPressed == #anim.triggerSequence then 
+							if (anim.scrollTrigger ~= nill and cntrlPct >= anim.scrollTrigger) or (anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then 
 								layer.animator = gfx.animator.new((anim.duration or 200), 0, 1, anim.ease, anim.delay)
 								if layer.sfxPlayer then 
 									local count = anim.audio.repeatCount or 1
