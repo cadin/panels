@@ -712,7 +712,7 @@ end
 function Panels.onChapterSelected(chapter)
 	chapterDidSelect = true
 	Panels.Audio.stopBGAudio()
-	unloadSequence(currentSeqIndex)
+	unloadSequence()
 	currentSeqIndex = chapter
 	loadSequence(currentSeqIndex)
 end
@@ -729,16 +729,17 @@ function Panels.onMenuDidShow()
 end
 
 function Panels.onMenuWillHide(menu)
-	if menu == Panels.mainMenu and not chapterDidSelect then 
-		chapterDidSelect = false
-		Panels.Audio.unmuteTypingSounds()
-		loadSequence(currentSeqIndex)
+	if menu == Panels.mainMenu then
+		if not chapterDidSelect then 
+			Panels.Audio.unmuteTypingSounds()
+			loadSequence(currentSeqIndex)
+		end
 	end
 	numMenusFullScreen = numMenusFullScreen - 1
 
 	if numMenusFullScreen < 1 then 
 		menusAreFullScreen = false
-	end
+	end	
 end
 
 function Panels.onMenuDidHide(menu)
@@ -746,8 +747,10 @@ function Panels.onMenuDidHide(menu)
 	if numMenusOpen < 1 then 
 		Panels.Audio.resumeBGAudio()
 		Panels.Audio.unmuteTypingSounds()
+		chapterDidSelect = false
 	end
 end
+
 
 function Panels.onMenuDidStartOver() 
 	alert:show()
@@ -758,7 +761,9 @@ function onAlertDidStartOver()
 	Panels.maxUnlockedSequence = 1
 	gameDidFinish = false
 	saveGameData()
+	unloadSequence()
 	currentSeqIndex = 1
+
 	Panels.mainMenu:hide()
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
 end
