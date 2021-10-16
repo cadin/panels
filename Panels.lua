@@ -351,7 +351,7 @@ local function startTransitionOut(direction)
 	local duration = Panels.Settings.sequenceTransitionDuration
 	
 	if direction == Panels.ScrollDirection.TOP_DOWN then
-		target = maxScroll - ScreenHeight
+		target = -maxScroll - ScreenHeight
 	elseif direction == Panels.ScrollDirection.BOTTOM_UP then 
 		target = maxScroll + ScreenHeight
 	elseif direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
