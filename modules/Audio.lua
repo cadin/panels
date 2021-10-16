@@ -9,6 +9,10 @@ local typingIsMuted = false
 Panels.Audio = {}
 
 function Panels.Audio.startBGAudio(path, loop)
+	if string.sub(path, -4) == ".wav" then
+		path = string.sub(path, 0, -5)
+	end
+
 	bgAudioPlayer, error = playdate.sound.fileplayer.new(path)
 	if bgAudioPlayer then 
 		if loop then repeatCount = 0 else repeatCount = 1 end
