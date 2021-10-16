@@ -369,12 +369,24 @@ local function startTransitionOut(direction)
 end
 
 
+local function getAxisForScrollDirection(dir)
+	if dir == Panels.ScrollDirection.TOP_TO_BOTTOM or dir == Panels.ScrollDirection.BOTTOM_UP then
+		return Panels.ScrollAxis.VERTICAL
+	else
+		return Panels.ScrollAxis.HORIZONTAL
+	end
+end
+
 -- -------------------------------------------------
 -- SEQUENCE LIFECYCLE
 
 local function setSequenceScrollDirection()
 	if sequence.axis == nil and sequence.direction == nil then
 		sequence.axis = Panels.ScrollAxis.HORIZONTAL
+	end
+
+	if sequence.axis == nil then
+		sequence.axis = getAxisForScrollDirection(sequence.direction)
 	end
 
 	if sequence.direction == nil then
