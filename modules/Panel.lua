@@ -476,14 +476,31 @@ function Panels.Panel.new(data)
 	end
 	
 	function panel:drawBorder(color, bgColor)
-		local w = Panels.Settings.borderWidth
-		local b = gfx.image.new(self.frame.width, self.frame.height)
-		gfx.pushContext(b)
+		local frameW = self.frame.width
+		local frameH = self.frame.height
+		local borderW = Panels.Settings.borderWidth
+		local b = gfx.image.new(frameW, frameH)
+		local matte = gfx.image.new(frameW, frameH)
+		gfx.pushContext(matte)
+			-- create the corner matte
 			gfx.setColor(bgColor)
-			gfx.setLineWidth(w)
-			gfx.drawRect(0, 0, self.frame.width, self.frame.height)
+			gfx.setLineWidth(borderW)
+			gfx.fillRect(0, 0, frameW, frameH)
+			gfx.setColor(Panels.Color.invert(bgColor))
+			gfx.fillRoundRect(0, 0, frameW, frameH, Panels.Settings.borderRadius)
+		gfx.popContext()
+
+		gfx.pushContext(b)
+			-- draw corner matte with center transparency
+			if bgColor == Panels.Color.WHITE then
+				gfx.setImageDrawMode(gfx.kDrawModeBlackTransparent)
+			else
+				gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
+			end
+			matte:draw(0,0)
+			
 			gfx.setColor(color)
-			gfx.drawRoundRect(w/2, w/2, self.frame.width- w, self.frame.height -w, Panels.Settings.borderRadius)
+			gfx.drawRoundRect(borderW/2, borderW/2, frameW- borderW, frameH -borderW, Panels.Settings.borderRadius)
 		gfx.popContext()
 		return b
 	end
