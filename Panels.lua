@@ -406,7 +406,7 @@ end
 local function setSequenceColors()
 	if sequence.backgroundColor == nil then
 		if sequence.foregroundColor then
-			sequence.backgroundColor = getInverseColor(sequence.backgroundColor)
+			sequence.backgroundColor = Panels.Color.invert(sequence.backgroundColor)
 		else
 			sequence.foregroundColor = Panels.Color.BLACK
 			sequence.backgroundColor = Panels.Color.WHITE
