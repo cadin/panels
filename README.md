@@ -19,17 +19,24 @@ Comics built with Panels can support these features:
 -   panels with fully custom render functions
 
 # Documentation
+Check out the full set of documentation here:
+### [📄 Panels Documentation](//cadin.github.io/panels)
 
-[View the complete docs here](//cadin.github.io/panels/)
-
-## Getting Started
-
-### Requirements
+## Requirements
 
 -   [Playdate SDK](https://play.date/dev/)
 -   [Playdate Console](https://shop.play.date) (optional)
 
-### Setup
+## Setup
+
+### From Template Project
+
+1. Clone the [Panels Project Template](https://github.com/cadin/panels-project-template).
+    This is a [Template Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template). Click "Use this template" to create your own fresh repo with all the contents of the project template.
+2. The template project includes the Panels framework as a git submodule. Be sure to properly [initialize the submodule](https://www.w3docs.com/snippets/git/how-to-clone-including-submodules.html) when cloning the repo.
+3. Start editing table in `myComicData.lua`.
+
+### Manual Setup
 
 1. Clone this repo into your project into a `libraries` folder.
 2. Inside your `main.lua` file import Panels.
