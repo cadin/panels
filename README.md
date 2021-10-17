@@ -18,7 +18,7 @@ Comics built with Panels can support these features:
 -   animated text layers
 -   panels with fully custom render functions
 
-# Documentation
+## Documentation
 Check out the full set of documentation here:
 ### [📄 Panels Documentation](//cadin.github.io/panels)
 
