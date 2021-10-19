@@ -13,7 +13,6 @@ Panels.comicData = {}
 Panels.credits = {}
 
 import "./modules/Font"
-
 import "./modules/Settings"
 import "./modules/ScrollConstants"
 import "./modules/ButtonIndicator"
@@ -23,12 +22,9 @@ import "./modules/Input"
 import "./modules/Image"
 import "./modules/Menus"
 import "./modules/Alert"
-
 import "./modules/Panel"
 import "./modules/Audio"
 import "./modules/TextAlignment"
-
-
 import "./modules/Utils"
 import "./modules/Credits"
 

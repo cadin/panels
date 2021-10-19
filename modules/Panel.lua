@@ -469,8 +469,11 @@ function Panels.Panel.new(data)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		end
 
-		
-		gfx.drawText(txt, xPos, yPos)
+		if layer.rect then
+			gfx.drawTextInRect(txt, xPos, yPos, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...", layer.alignment or Panels.TextAlignment.LEFT)
+		else
+			gfx.drawText(txt, xPos, yPos)
+		end
 
 		gfx.popContext()
 	end
