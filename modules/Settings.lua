@@ -11,6 +11,7 @@ Panels.Settings = {
 	defaultFont = nil,
 	borderWidth = 2,
 	borderRadius = 2,
+	typingSound = Panels.Audio.TypingSound.DEFAULT,
 	
 	-- menu settings
 	menuImage = "menuImage.png",

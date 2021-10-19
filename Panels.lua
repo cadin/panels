@@ -13,6 +13,7 @@ Panels.comicData = {}
 Panels.credits = {}
 
 import "./modules/Font"
+import "./modules/Audio"
 import "./modules/Settings"
 import "./modules/ScrollConstants"
 import "./modules/ButtonIndicator"
@@ -23,7 +24,7 @@ import "./modules/Image"
 import "./modules/Menus"
 import "./modules/Alert"
 import "./modules/Panel"
-import "./modules/Audio"
+
 import "./modules/TextAlignment"
 import "./modules/Utils"
 import "./modules/Credits"
@@ -98,6 +99,10 @@ local function setUpPanels(seq)
 
 		if panel.preventBacktracking == nil then
 			panel.preventBacktracking = sequence.preventBacktracking or false
+		end
+
+		if sequence.font and panel.font == nil then
+			panel.font = sequence.font
 		end
 
 		local p = Panels.Panel.new(panel)
@@ -823,6 +828,7 @@ function Panels.start(comicData)
 	Panels.comicData = comicData
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", {"Cancel", "Start Over"})
 	alert.onHide = onAlertDidHide
+	Panels.Audio.createTypingSound()
 
 	loadGameData()
 	validateSettings()
