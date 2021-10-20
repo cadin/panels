@@ -79,10 +79,22 @@ local function createGameCredits(credits)
 	local defaultX = getPositionForAlignment(textAlignment)
 	local alignment = textAlignment
 	gfx.pushContext(img)
+
+	local font = gfx.getSystemFont()
+	if credits.font then 
+		font = Panels.Font.get(credits.font)
+	end
 	local y = 0
 	
 	if credits.lines then 
 		for i, line in ipairs(credits.lines) do
+		
+			local f = font
+			if line.font then
+				f = Panels.Font.get(line.font)
+			end
+			gfx.setFont(f)
+
 			y = y +  (line.spacing or 0)
 			if line.alignment then 
 				alignment = line.alignment
