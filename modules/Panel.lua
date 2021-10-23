@@ -203,7 +203,15 @@ function Panels.Panel.new(data)
 			vol = (1 - pct) / 0.25 
 		end
 
-		self.sfxPlayer:setVolume(vol * (self.audio.volume or 1))
+		local leftPan = self.audio.volume or 1
+		local rightPan = self.audio.volume or 1
+
+		if self.audio.pan then
+			leftPan = 1 - self.audio.pan
+			rightPan = self.audio.pan
+		end
+
+		self.sfxPlayer:setVolume(vol * leftPan, vol * rightPan)
 	end
 
 	function panel:updatePanelAudio(pct)
@@ -223,7 +231,9 @@ function Panels.Panel.new(data)
 			end
 
 		elseif pct >= self.sfxTrigger and self.prevPct <= self.sfxTrigger then
-			self.sfxPlayer:play(count)
+			if not self.sfxPlayer:isPlaying() then
+				self.sfxPlayer:play(count)
+			end
 		end
 
 		self:fadePanelVolume(pct)
