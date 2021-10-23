@@ -486,6 +486,9 @@ local function unloadSequence()
 				end
 			end
 		end
+		if p.wasOnScreen then
+			p:reset()
+		end
 	end
 	panelTransitionAnimator = nil
 	Panels.Image.clearCache()
@@ -734,6 +737,14 @@ function Panels.onMenuWillShow(menu)
 	numMenusOpen = numMenusOpen + 1
 	Panels.Audio.pauseBGAudio()
 	Panels.Audio.muteTypingSounds()
+
+	if panels then 
+		for i, p in ipairs(panels) do
+			if p.wasOnScreen then
+				p:pauseSounds()
+			end
+		end
+	end
 end
 
 function Panels.onMenuDidShow()
@@ -760,6 +771,13 @@ function Panels.onMenuDidHide(menu)
 	if numMenusOpen < 1 then 
 		Panels.Audio.resumeBGAudio()
 		Panels.Audio.unmuteTypingSounds()
+		if panels then 
+			for i, p in ipairs(panels) do
+				if p.wasOnScreen then
+					p:unPauseSounds()
+				end
+			end
+		end
 		chapterDidSelect = false
 	end
 end

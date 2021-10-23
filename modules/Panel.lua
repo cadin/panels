@@ -214,6 +214,20 @@ function Panels.Panel.new(data)
 		self.sfxPlayer:setVolume(vol * leftPan, vol * rightPan)
 	end
 
+	function panel:pauseSounds()
+		if self.sfxPlayer then
+			self.soundIsPaused = true
+			self.sfxPlayer:setPaused(true)
+		end
+	end
+
+	function panel:unPauseSounds()
+		if self.sfxPlayer then
+			self.soundIsPaused = false
+			self.sfxPlayer:setPaused(false)
+		end
+	end
+
 	function panel:updatePanelAudio(pct)
 		local count = panel.audio.repeatCount or 1
 		if panel.audio.loop then count = 0 end
@@ -230,8 +244,8 @@ function Panels.Panel.new(data)
 				end
 			end
 
-		elseif pct >= self.sfxTrigger and self.prevPct <= self.sfxTrigger and pct < 1 then
-			if not self.sfxPlayer:isPlaying() then
+		elseif (pct < 1 and pct >= self.sfxTrigger) and (self.prevPct <= self.sfxTrigger or self.audio.loop) then
+			if not self.sfxPlayer:isPlaying() and not self.soundIsPaused then
 				self.sfxPlayer:play(count)
 			end
 		end
@@ -427,7 +441,11 @@ function Panels.Panel.new(data)
 		self.audioTriggersPressed = {}
 		self.advanceControlTimerDidEnd = false
 		self.advanceControlTimer = nil
-		-- self.prevPct = 0
+		if self.prevPct > 0.5 then
+			self.prevPct = 1 
+		else
+			self.prevPct = 0
+		end
 	end
 
 	function startLayerTypingSound(layer)
