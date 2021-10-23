@@ -383,7 +383,7 @@ function Panels.Panel.new(data)
 	
 			end
 		end
-		
+		self.prevPct = cntrlPct
 	end
 
 	function panel:reset()
