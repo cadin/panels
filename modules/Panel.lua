@@ -230,7 +230,7 @@ function Panels.Panel.new(data)
 				end
 			end
 
-		elseif pct >= self.sfxTrigger and self.prevPct <= self.sfxTrigger then
+		elseif pct >= self.sfxTrigger and self.prevPct <= self.sfxTrigger and pct < 1 then
 			if not self.sfxPlayer:isPlaying() then
 				self.sfxPlayer:play(count)
 			end
@@ -302,15 +302,16 @@ function Panels.Panel.new(data)
 							end
 						end
 					else
+						local layerPct = cntrlPct
 						if layer.animator then 
-							cntrlPct = layer.animator:currentValue()
+							layerPct = layer.animator:currentValue()
 						end
 
-						if anim.x then xPos = math.floor(xPos + ((anim.x - layer.x) * cntrlPct)) end
-						if anim.y then yPos = math.floor(yPos + ((anim.y - layer.y) * cntrlPct)) end
-						if anim.rotation then rotation = anim.rotation * cntrlPct end
+						if anim.x then xPos = math.floor(xPos + ((anim.x - layer.x) * layerPct)) end
+						if anim.y then yPos = math.floor(yPos + ((anim.y - layer.y) * layerPct)) end
+						if anim.rotation then rotation = anim.rotation * layerPct end
 						if anim.opacity then 
-							local o = (anim.opacity - layer.opacity) * cntrlPct
+							local o = (anim.opacity - layer.opacity) * layerPct
 							layer.alpha = o
 							if o <= 0 then 
 								layer.visible = false 
@@ -383,7 +384,6 @@ function Panels.Panel.new(data)
 			end
 		end
 		
-		self.prevPct = cntrlPct
 	end
 
 	function panel:reset()
@@ -427,7 +427,7 @@ function Panels.Panel.new(data)
 		self.audioTriggersPressed = {}
 		self.advanceControlTimerDidEnd = false
 		self.advanceControlTimer = nil
-		self.prevPct = 0
+		-- self.prevPct = 0
 	end
 
 	function startLayerTypingSound(layer)
