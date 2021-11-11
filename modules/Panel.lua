@@ -529,7 +529,8 @@ function Panels.Panel.new(data)
 				gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
 			end
 			matte:draw(0,0)
-			
+
+			gfx.setLineWidth(borderW)
 			gfx.setColor(color)
 			gfx.drawRoundRect(borderW/2, borderW/2, frameW- borderW, frameH -borderW, Panels.Settings.borderRadius)
 		gfx.popContext()
