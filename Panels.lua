@@ -452,11 +452,11 @@ local function loadSequence(num)
 					Panels.Settings.audioFolder .. sequence.audio.file, sequence.audio.loop or false
 				)
 			else
-				Panels.Audio.stopBGAudio()
+				Panels.Audio.killBGAudio()
 			end
 		end
 	else
-		Panels.Audio.stopBGAudio()
+		Panels.Audio.killBGAudio()
 	end
 
     setUpPanels(sequence)
