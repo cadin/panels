@@ -40,6 +40,15 @@ end
 function Panels.Audio.stopBGAudio() 
 	if bgAudioPlayer then
 		bgAudioPlayer:stop()
+		shouldResume = false
+	end
+end
+
+function Panels.Audio.killBGAudio() 
+	if bgAudioPlayer then
+		bgAudioPlayer:stop()
+		shouldResume = false
+		bgAudioPlayer = nil
 	end
 end
 
