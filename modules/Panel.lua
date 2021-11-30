@@ -383,7 +383,7 @@ function Panels.Panel.new(data)
 				elseif layer.text then
 					if layer.visible then 
 						if layer.alpha == nil or layer.alpha > 0.5 then
-							self:drawTextLayer(layer, xPos, yPos)
+							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
 						end
 					end
 				elseif layer.animationLoop then
