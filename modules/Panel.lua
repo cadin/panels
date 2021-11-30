@@ -294,7 +294,7 @@ function Panels.Panel.new(data)
 				
 				if layer.animate then 
 					local anim = layer.animate
-					if (anim.triggerSequence or anim.scrollTrigger ~= nill) and not layer.animator then 
+					if (anim.triggerSequence or anim.scrollTrigger ~= nil) and not layer.animator then 
 
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
 						local triggerButton = nil
@@ -302,9 +302,9 @@ function Panels.Panel.new(data)
 							triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
 						end
 						
-						if anim.scrollTrigger ~= nill or playdate.buttonJustPressed(triggerButton) then
+						if anim.scrollTrigger ~= nil or playdate.buttonJustPressed(triggerButton) then
 							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
-							if (anim.scrollTrigger ~= nill and cntrlPct >= anim.scrollTrigger) or (anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then 
+							if (anim.scrollTrigger ~= nil and cntrlPct >= anim.scrollTrigger) or (anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then 
 								layer.animator = gfx.animator.new((anim.duration or 200), 0, 1, anim.ease, anim.delay)
 								if layer.sfxPlayer then 
 									local count = anim.audio.repeatCount or 1
@@ -454,7 +454,7 @@ function Panels.Panel.new(data)
 		end
 	end
 	
-	function panel:drawTextLayer(layer, xPos, yPos)
+	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
 		gfx.pushContext()
 		if layer.font then
 			gfx.setFont(Panels.Font.get(layer.font))
@@ -465,15 +465,20 @@ function Panels.Panel.new(data)
 		local txt = layer.text
 		if layer.effect then
 			if layer.effect.type == Panels.Effect.TYPE_ON then
+				
 				if layer.textAnimator == nil then
-					layer.isTyping = true
-					layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(txt), playdate.easingFunctions.linear, layer.effect.delay or 0)
-					playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+					if layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
+						layer.isTyping = true
+						layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text), playdate.easingFunctions.linear, layer.effect.delay or 0)
+						playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+					else
+						txt = ""
+					end
 				end
 				
 				if layer.isTyping then 
 					local j = math.ceil(layer.textAnimator:currentValue())
-					txt = string.sub(txt, 1, j)
+					txt = string.sub(layer.text, 1, j)
 
 					if txt == layer.text then
 						layer.isTyping = false
