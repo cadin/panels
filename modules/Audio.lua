@@ -23,15 +23,22 @@ function Panels.Audio.createTypingSound()
 	end
 end
 
-function Panels.Audio.startBGAudio(path, loop)
+function Panels.Audio.startBGAudio(path, loop, volume)
 	if string.sub(path, -4) == ".wav" then
 		path = string.sub(path, 0, -5)
 	end
 
+	if bgAudioPlayer then
+		Panels.Audio.fadeOut(bgAudioPlayer)
+	end
 	bgAudioPlayer, error = playdate.sound.fileplayer.new(path)
 	if bgAudioPlayer then 
 		if loop then repeatCount = 0 else repeatCount = 1 end
 		bgAudioPlayer:play(repeatCount)
+
+		if volume then 
+			bgAudioPlayer:setVolume(volume)
+		end
 	else 
 		printError(error, "Error loading background audio:")
 	end
@@ -97,4 +104,13 @@ end
 
 function Panels.Audio.unmuteTypingSounds()
 	typingIsMuted = false
+end
+
+function Panels.Audio.fadeOut(player)
+	local function onFadeComplete(player)
+		player:stop()
+	end
+
+	player:setVolume(0,0, 1, onFadeComplete, player)
+
 end

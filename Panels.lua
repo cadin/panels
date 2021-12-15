@@ -449,7 +449,9 @@ local function loadSequence(num)
 		else
 			if sequence.audio.file then
 				Panels.Audio.startBGAudio(
-					Panels.Settings.audioFolder .. sequence.audio.file, sequence.audio.loop or false
+					Panels.Settings.audioFolder .. sequence.audio.file, 
+					sequence.audio.loop or false,
+					sequence.audio.volume or 1
 				)
 			else
 				Panels.Audio.killBGAudio()
