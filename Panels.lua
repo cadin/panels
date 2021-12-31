@@ -640,9 +640,15 @@ local function getScrollOffset()
 end
 
 local function updateComic(offset)
+	
+
 	if transitionInAnimator or transitionOutAnimator then
 		updateSequenceTransition()
 	else
+		if panels and #panels < 1 then
+			printError("`panels` table is empty", "This sequence has invalid panel definitions.")
+		end
+
 		if panels and panels[panelNum]:shouldAutoAdvance() then
 			if not isLastPanel(panelNum) then 
 				scrollToNextPanel()
