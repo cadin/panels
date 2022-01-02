@@ -672,7 +672,8 @@ local function updateComic(offset)
 end
 
 local function drawComic(offset)
-	gfx.clear()
+	gfx.clear(sequence.backgroundColor)
+	
 	for i, panel in ipairs(panels) do 
 		if(panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
