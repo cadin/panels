@@ -850,11 +850,41 @@ local function updateSystemMenu()
 
 end
 
+local function createCreditsSequence() 
+	local credits = Panels.Credits.new()
+	local img = gfx.image.new(400, credits.height + 70)
+	gfx.lockFocus(img)
+		credits:redraw(0)
+	gfx.unlockFocus()
+
+	credits = nil
+
+	local seq = {
+		-- delay = 1000,
+		-- transitionDuration = 1000,
+		direction = Panels.ScrollDirection.TOP_DOWN,
+		panels = {
+			{
+				frame = { width = 400, height = img.height},
+				borderless = true,
+				layers = {
+					{ img = img, y = 10 }
+				}
+			}
+		}
+	}
+
+	table.insert(Panels.comicData, seq)
+end
+
 function Panels.start(comicData)
 	Panels.comicData = comicData
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", {"Cancel", "Start Over"})
 	alert.onHide = onAlertDidHide
 	Panels.Audio.createTypingSound()
+	if Panels.Settings.showCreditsOnGameOver then
+		createCreditsSequence()
+	end
 
 	loadGameData()
 	validateSettings()

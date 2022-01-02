@@ -144,7 +144,8 @@ function Panels.Credits.new()
 	local data = Panels.credits
 	if data.hideStandardHeader then headerHeight = 8 end
 	
-	
+	local gameCreditsHeight = math.max(measureCreditsHeight(data), 138 - headerHeight)
+
 	local credits = {
 		gameCredits = createGameCredits(data),
 		panelsImg = createPanelsCredits(),
@@ -152,9 +153,9 @@ function Panels.Credits.new()
 		scrollPos = 0,
 		isScrollable = false,
 		shouldAutoScroll = data.autoScroll or false,
+		height = gameCreditsHeight + headerHeight + bottomPadding + panelsCreditHeight
 	}
 	
-	local gameCreditsHeight = math.max(measureCreditsHeight(data), 138 - headerHeight)
 	if gameCreditsHeight > 138 - headerHeight then 
 		credits.isScrollable = true
 	end
