@@ -56,6 +56,9 @@ local menusAreFullScreen = false
 local chapterDidSelect = false
 
 local panelTransitionAnimator = nil
+local previousBGColor = nil
+local transitionFader = nil
+local shouldFadeBG = false
 
 Panels.maxUnlockedSequence = 1
 local gameDidFinish = false
@@ -325,7 +328,7 @@ end
 -- -------------------------------------------------
 -- SEQUENCE TRANSITIONS
 
-local function startTransitionIn(direction) 
+local function startTransitionIn(direction, delay) 
 	local target = scrollPos
 	local start
 
@@ -342,8 +345,24 @@ local function startTransitionIn(direction)
 	end
 
 	scrollPos = start
-	transitionInAnimator = playdate.graphics.animator.new(
-		Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+
+	-- make a dummy animator to hold scoll pos until delayed transition starts
+	transitionInAnimator = playdate.graphics.animator.new(math.max(delay * 2, 2000), start, start)
+
+	if previousBGColor then 
+		gfx.lockFocus(transitionFader)
+			gfx.setColor(previousBGColor)
+			gfx.fillRect(0,0, ScreenWidth, ScreenHeight)
+		gfx.unlockFocus()
+	end
+	shouldFadeBG = previousBGColor ~= nil and previousBGColor ~= sequence.backgroundColor
+
+	local function delayedStart()
+		transitionInAnimator = playdate.graphics.animator.new(
+			Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+	end
+
+	playdate.timer.performAfterDelay(delay, delayedStart)
 end
 
 local function startTransitionOut(direction)
@@ -407,10 +426,14 @@ end
 local function setSequenceColors()
 	if sequence.backgroundColor == nil then
 		if sequence.foregroundColor then
-			sequence.backgroundColor = Panels.Color.invert(sequence.backgroundColor)
+			sequence.backgroundColor = Panels.Color.invert(sequence.foregroundColor)
 		else
 			sequence.foregroundColor = Panels.Color.BLACK
 			sequence.backgroundColor = Panels.Color.WHITE
+		end
+	else
+		if sequence.foregroundColor == nil then 
+			sequence.foregroundColor = Panels.Color.invert(sequence.backgroundColor)
 		end
 	end
 end
@@ -469,8 +492,8 @@ local function loadSequence(num)
 	else
 		buttonIndicator:setPositionForScrollDirection(sequence.direction)
 	end
-
-	startTransitionIn(sequence.direction)
+	
+	startTransitionIn(sequence.direction, sequence.delay or 0)
 end
 
 local function unloadSequence()
@@ -495,6 +518,7 @@ local function unloadSequence()
 	panelTransitionAnimator = nil
 	Panels.Image.clearCache()
 	sequence.didFinish = false
+	previousBGColor = sequence.backgroundColor
 end
 
 local function nextSequence()
@@ -526,6 +550,7 @@ local function updateSequenceTransition()
 		if transitionInAnimator:ended() then
 			sequenceDidStart = true
 			transitionInAnimator = nil
+			shouldFadeBG = false
 		end
 	end
 end
@@ -668,7 +693,15 @@ local function updateComic(offset)
 end
 
 local function drawComic(offset)
-	gfx.clear()
+	gfx.clear(sequence.backgroundColor)
+
+
+	if shouldFadeBG then 
+		local pct = 1 - (transitionInAnimator:currentValue() - transitionInAnimator.startValue) / (transitionInAnimator.endValue - transitionInAnimator.startValue) 
+		transitionFader:drawFaded(0, 0, pct, gfx.image.kDitherTypeBayer8x8)
+	end
+
+	
 	for i, panel in ipairs(panels) do 
 		if(panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
@@ -850,11 +883,46 @@ local function updateSystemMenu()
 
 end
 
+local function createCreditsSequence() 
+	local credits = Panels.Credits.new()
+	local img = gfx.image.new(400, credits.height + 44)
+	gfx.lockFocus(img)
+		credits:redraw(0)
+	gfx.unlockFocus()
+
+	credits = nil
+
+	local seq = {
+		delay = 1000,
+		transitionDuration = 1000,
+		direction = Panels.ScrollDirection.TOP_DOWN,
+		advanceControl = Panels.Input.A,
+
+		panels = {
+			{	
+				frame = { height = img.height, margin=4 },
+				borderless = true,
+
+				layers = {
+					{ img = img, y = 10 }
+				}
+			},
+		}
+	}
+
+	table.insert(Panels.comicData, seq)
+end
+
 function Panels.start(comicData)
 	Panels.comicData = comicData
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", {"Cancel", "Start Over"})
 	alert.onHide = onAlertDidHide
 	Panels.Audio.createTypingSound()
+	if Panels.Settings.showCreditsOnGameOver then
+		createCreditsSequence()
+	end
+
+	transitionFader = gfx.image.new(ScreenWidth, ScreenHeight)
 
 	loadGameData()
 	validateSettings()
