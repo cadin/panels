@@ -885,7 +885,7 @@ end
 
 local function createCreditsSequence() 
 	local credits = Panels.Credits.new()
-	local img = gfx.image.new(400, credits.height + 58)
+	local img = gfx.image.new(400, credits.height + 44)
 	gfx.lockFocus(img)
 		credits:redraw(0)
 	gfx.unlockFocus()
@@ -897,11 +897,12 @@ local function createCreditsSequence()
 		transitionDuration = 1000,
 		direction = Panels.ScrollDirection.TOP_DOWN,
 		advanceControl = Panels.Input.A,
-		backgroundColor = Panels.Color.BLACK,
+
 		panels = {
 			{	
-				frame = { height = img.height },
+				frame = { height = img.height, margin=4 },
 				borderless = true,
+
 				layers = {
 					{ img = img, y = 10 }
 				}

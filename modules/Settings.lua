@@ -24,7 +24,7 @@ Panels.Settings = {
 	playMenuSounds = true,
 
 	-- credits
-	showCreditsOnGameOver = true,
+	showCreditsOnGameOver = false,
 }
 
 local function addSlashToFolderName(f)
