@@ -347,7 +347,7 @@ local function startTransitionIn(direction, delay)
 	scrollPos = start
 
 	-- make a dummy animator to hold scoll pos until delayed transition starts
-	transitionInAnimator = playdate.graphics.animator.new(delay * 2, start, start)
+	transitionInAnimator = playdate.graphics.animator.new(math.max(delay * 2, 2000), start, start)
 
 	if previousBGColor then 
 		gfx.lockFocus(transitionFader)
@@ -356,9 +356,8 @@ local function startTransitionIn(direction, delay)
 		gfx.unlockFocus()
 	end
 	shouldFadeBG = previousBGColor ~= nil and previousBGColor ~= sequence.backgroundColor
-	
+
 	local function delayedStart()
-		
 		transitionInAnimator = playdate.graphics.animator.new(
 			Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
 	end
@@ -696,11 +695,10 @@ end
 local function drawComic(offset)
 	gfx.clear(sequence.backgroundColor)
 
+
 	if shouldFadeBG then 
-		local pct = (transitionInAnimator:currentValue() - transitionInAnimator.startValue) / (transitionInAnimator.endValue - transitionInAnimator.startValue) 
-		transitionFader:drawFaded(0, 0, 1 - pct, gfx.image.kDitherTypeBayer8x8)
-		-- gfx.setPattern({ 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 })
-		-- gfx.fillRect(0,0, ScreenWidth, ScreenHeight)
+		local pct = 1 - (transitionInAnimator:currentValue() - transitionInAnimator.startValue) / (transitionInAnimator.endValue - transitionInAnimator.startValue) 
+		transitionFader:drawFaded(0, 0, pct, gfx.image.kDitherTypeBayer8x8)
 	end
 
 	
