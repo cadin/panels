@@ -56,6 +56,9 @@ local menusAreFullScreen = false
 local chapterDidSelect = false
 
 local panelTransitionAnimator = nil
+local previousBGColor = nil
+local transitionFader = nil
+local shouldFadeBG = false
 
 Panels.maxUnlockedSequence = 1
 local gameDidFinish = false
@@ -325,7 +328,7 @@ end
 -- -------------------------------------------------
 -- SEQUENCE TRANSITIONS
 
-local function startTransitionIn(direction) 
+local function startTransitionIn(direction, delay) 
 	local target = scrollPos
 	local start
 
@@ -342,8 +345,25 @@ local function startTransitionIn(direction)
 	end
 
 	scrollPos = start
-	transitionInAnimator = playdate.graphics.animator.new(
-		Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+
+	-- make a dummy animator to hold scoll pos until delayed transition starts
+	transitionInAnimator = playdate.graphics.animator.new(delay * 2, start, start)
+
+	if previousBGColor then 
+		gfx.lockFocus(transitionFader)
+			gfx.setColor(previousBGColor)
+			gfx.fillRect(0,0, ScreenWidth, ScreenHeight)
+		gfx.unlockFocus()
+	end
+	shouldFadeBG = previousBGColor ~= nil and previousBGColor ~= sequence.backgroundColor
+	
+	local function delayedStart()
+		
+		transitionInAnimator = playdate.graphics.animator.new(
+			Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+	end
+
+	playdate.timer.performAfterDelay(delay, delayedStart)
 end
 
 local function startTransitionOut(direction)
@@ -473,8 +493,8 @@ local function loadSequence(num)
 	else
 		buttonIndicator:setPositionForScrollDirection(sequence.direction)
 	end
-
-	startTransitionIn(sequence.direction)
+	
+	startTransitionIn(sequence.direction, sequence.delay or 0)
 end
 
 local function unloadSequence()
@@ -499,6 +519,7 @@ local function unloadSequence()
 	panelTransitionAnimator = nil
 	Panels.Image.clearCache()
 	sequence.didFinish = false
+	previousBGColor = sequence.backgroundColor
 end
 
 local function nextSequence()
@@ -530,6 +551,7 @@ local function updateSequenceTransition()
 		if transitionInAnimator:ended() then
 			sequenceDidStart = true
 			transitionInAnimator = nil
+			shouldFadeBG = false
 		end
 	end
 end
@@ -673,6 +695,14 @@ end
 
 local function drawComic(offset)
 	gfx.clear(sequence.backgroundColor)
+
+	if shouldFadeBG then 
+		local pct = (transitionInAnimator:currentValue() - transitionInAnimator.startValue) / (transitionInAnimator.endValue - transitionInAnimator.startValue) 
+		transitionFader:drawFaded(0, 0, 1 - pct, gfx.image.kDitherTypeBayer8x8)
+		-- gfx.setPattern({ 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 })
+		-- gfx.fillRect(0,0, ScreenWidth, ScreenHeight)
+	end
+
 	
 	for i, panel in ipairs(panels) do 
 		if(panel:isOnScreen(offset)) then
@@ -857,7 +887,7 @@ end
 
 local function createCreditsSequence() 
 	local credits = Panels.Credits.new()
-	local img = gfx.image.new(400, credits.height + 70)
+	local img = gfx.image.new(400, credits.height + 58)
 	gfx.lockFocus(img)
 		credits:redraw(0)
 	gfx.unlockFocus()
@@ -865,17 +895,19 @@ local function createCreditsSequence()
 	credits = nil
 
 	local seq = {
-		-- delay = 1000,
-		-- transitionDuration = 1000,
+		delay = 1000,
+		transitionDuration = 1000,
 		direction = Panels.ScrollDirection.TOP_DOWN,
+		advanceControl = Panels.Input.A,
+		backgroundColor = Panels.Color.BLACK,
 		panels = {
-			{
-				frame = { width = 400, height = img.height},
+			{	
+				frame = { height = img.height },
 				borderless = true,
 				layers = {
 					{ img = img, y = 10 }
 				}
-			}
+			},
 		}
 	}
 
@@ -890,6 +922,8 @@ function Panels.start(comicData)
 	if Panels.Settings.showCreditsOnGameOver then
 		createCreditsSequence()
 	end
+
+	transitionFader = gfx.image.new(ScreenWidth, ScreenHeight)
 
 	loadGameData()
 	validateSettings()
