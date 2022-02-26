@@ -1,0 +1,28 @@
+.prop-default {
+    color: $grey-dk-000;
+    font-size: $font-size-4;
+    font-family: $mono-font-family;
+}
+
+.prop-required {
+    color: $red-300;
+    font-size: $font-size-4;
+    font-family: $mono-font-family;
+}
+
+.profile-pic {
+    width: 100px;
+    border-radius: 8px;
+    // border-radius: 100%;
+    float: left;
+    margin-right: 24px;
+}
+
+.screenshot {
+    width: 200px;
+    border-radius: 4px;
+    border: 1px solid #000;
+    image-rendering: pixelated;
+    float: left;
+    margin: 16px 16px 0 0;
+}
