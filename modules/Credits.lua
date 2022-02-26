@@ -79,10 +79,22 @@ local function createGameCredits(credits)
 	local defaultX = getPositionForAlignment(textAlignment)
 	local alignment = textAlignment
 	gfx.pushContext(img)
+
+	local font = gfx.getSystemFont()
+	if credits.font then 
+		font = Panels.Font.get(credits.font)
+	end
 	local y = 0
 	
 	if credits.lines then 
 		for i, line in ipairs(credits.lines) do
+		
+			local f = font
+			if line.font then
+				f = Panels.Font.get(line.font)
+			end
+			gfx.setFont(f)
+
 			y = y +  (line.spacing or 0)
 			if line.alignment then 
 				alignment = line.alignment
@@ -132,7 +144,8 @@ function Panels.Credits.new()
 	local data = Panels.credits
 	if data.hideStandardHeader then headerHeight = 8 end
 	
-	
+	local gameCreditsHeight = math.max(measureCreditsHeight(data), 138 - headerHeight)
+
 	local credits = {
 		gameCredits = createGameCredits(data),
 		panelsImg = createPanelsCredits(),
@@ -140,9 +153,9 @@ function Panels.Credits.new()
 		scrollPos = 0,
 		isScrollable = false,
 		shouldAutoScroll = data.autoScroll or false,
+		height = gameCreditsHeight + headerHeight + bottomPadding + panelsCreditHeight
 	}
 	
-	local gameCreditsHeight = math.max(measureCreditsHeight(data), 138 - headerHeight)
 	if gameCreditsHeight > 138 - headerHeight then 
 		credits.isScrollable = true
 	end

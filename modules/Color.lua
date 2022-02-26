@@ -4,7 +4,7 @@ Panels.Color = {
 	CLEAR = playdate.graphics.kColorClear,
 }
 
-function getInverseColor(color)
+function Panels.Color.invert(color)
 	if color == Panels.Color.BLACK then
 		return Panels.Color.WHITE
 	else

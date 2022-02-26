@@ -203,7 +203,29 @@ function Panels.Panel.new(data)
 			vol = (1 - pct) / 0.25 
 		end
 
-		self.sfxPlayer:setVolume(vol * (self.audio.volume or 1))
+		local leftPan = self.audio.volume or 1
+		local rightPan = self.audio.volume or 1
+
+		if self.audio.pan then
+			leftPan = 1 - self.audio.pan
+			rightPan = self.audio.pan
+		end
+
+		self.sfxPlayer:setVolume(vol * leftPan, vol * rightPan)
+	end
+
+	function panel:pauseSounds()
+		if self.sfxPlayer then
+			self.soundIsPaused = true
+			self.sfxPlayer:setPaused(true)
+		end
+	end
+
+	function panel:unPauseSounds()
+		if self.sfxPlayer then
+			self.soundIsPaused = false
+			self.sfxPlayer:setPaused(false)
+		end
 	end
 
 	function panel:updatePanelAudio(pct)
@@ -222,8 +244,10 @@ function Panels.Panel.new(data)
 				end
 			end
 
-		elseif pct >= self.sfxTrigger and self.prevPct <= self.sfxTrigger then
-			self.sfxPlayer:play(count)
+		elseif (pct < 1 and pct >= self.sfxTrigger) and (self.prevPct <= self.sfxTrigger or self.audio.loop) then
+			if not self.sfxPlayer:isPlaying() and not self.soundIsPaused then
+				self.sfxPlayer:play(count)
+			end
 		end
 
 		self:fadePanelVolume(pct)
@@ -270,7 +294,7 @@ function Panels.Panel.new(data)
 				
 				if layer.animate then 
 					local anim = layer.animate
-					if (anim.triggerSequence or anim.scrollTrigger ~= nill) and not layer.animator then 
+					if (anim.triggerSequence or anim.scrollTrigger ~= nil) and not layer.animator then 
 
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
 						local triggerButton = nil
@@ -278,9 +302,9 @@ function Panels.Panel.new(data)
 							triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
 						end
 						
-						if anim.scrollTrigger ~= nill or playdate.buttonJustPressed(triggerButton) then
+						if anim.scrollTrigger ~= nil or playdate.buttonJustPressed(triggerButton) then
 							layer.buttonsPressed[#layer.buttonsPressed+1] = triggerButton
-							if (anim.scrollTrigger ~= nill and cntrlPct >= anim.scrollTrigger) or (anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then 
+							if (anim.scrollTrigger ~= nil and cntrlPct >= anim.scrollTrigger) or (anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then 
 								layer.animator = gfx.animator.new((anim.duration or 200), 0, 1, anim.ease, anim.delay)
 								if layer.sfxPlayer then 
 									local count = anim.audio.repeatCount or 1
@@ -292,15 +316,16 @@ function Panels.Panel.new(data)
 							end
 						end
 					else
+						local layerPct = cntrlPct
 						if layer.animator then 
-							cntrlPct = layer.animator:currentValue()
+							layerPct = layer.animator:currentValue()
 						end
 
-						if anim.x then xPos = math.floor(xPos + ((anim.x - layer.x) * cntrlPct)) end
-						if anim.y then yPos = math.floor(yPos + ((anim.y - layer.y) * cntrlPct)) end
-						if anim.rotation then rotation = anim.rotation * cntrlPct end
+						if anim.x then xPos = math.floor(xPos + ((anim.x - layer.x) * layerPct)) end
+						if anim.y then yPos = math.floor(yPos + ((anim.y - layer.y) * layerPct)) end
+						if anim.rotation then rotation = anim.rotation * layerPct end
 						if anim.opacity then 
-							local o = (anim.opacity - layer.opacity) * cntrlPct
+							local o = (anim.opacity - layer.opacity) * layerPct
 							layer.alpha = o
 							if o <= 0 then 
 								layer.visible = false 
@@ -358,7 +383,7 @@ function Panels.Panel.new(data)
 				elseif layer.text then
 					if layer.visible then 
 						if layer.alpha == nil or layer.alpha > 0.5 then
-							self:drawTextLayer(layer, xPos, yPos)
+							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
 						end
 					end
 				elseif layer.animationLoop then
@@ -372,7 +397,6 @@ function Panels.Panel.new(data)
 	
 			end
 		end
-		
 		self.prevPct = cntrlPct
 	end
 
@@ -417,7 +441,11 @@ function Panels.Panel.new(data)
 		self.audioTriggersPressed = {}
 		self.advanceControlTimerDidEnd = false
 		self.advanceControlTimer = nil
-		self.prevPct = 0
+		if self.prevPct > 0.5 then
+			self.prevPct = 1 
+		else
+			self.prevPct = 0
+		end
 	end
 
 	function startLayerTypingSound(layer)
@@ -426,7 +454,7 @@ function Panels.Panel.new(data)
 		end
 	end
 	
-	function panel:drawTextLayer(layer, xPos, yPos)
+	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
 		gfx.pushContext()
 		if layer.font then
 			gfx.setFont(Panels.Font.get(layer.font))
@@ -437,15 +465,20 @@ function Panels.Panel.new(data)
 		local txt = layer.text
 		if layer.effect then
 			if layer.effect.type == Panels.Effect.TYPE_ON then
+				
 				if layer.textAnimator == nil then
-					layer.isTyping = true
-					layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(txt), playdate.easingFunctions.linear, layer.effect.delay or 0)
-					playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+					if layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
+						layer.isTyping = true
+						layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text), playdate.easingFunctions.linear, layer.effect.delay or 0)
+						playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+					else
+						txt = ""
+					end
 				end
 				
 				if layer.isTyping then 
 					local j = math.ceil(layer.textAnimator:currentValue())
-					txt = string.sub(txt, 1, j)
+					txt = string.sub(layer.text, 1, j)
 
 					if txt == layer.text then
 						layer.isTyping = false
@@ -469,21 +502,42 @@ function Panels.Panel.new(data)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		end
 
-		
-		gfx.drawText(txt, xPos, yPos)
+		if layer.rect then
+			gfx.drawTextInRect(txt, xPos, yPos, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...", layer.alignment or Panels.TextAlignment.LEFT)
+		else
+			gfx.drawText(txt, xPos, yPos)
+		end
 
 		gfx.popContext()
 	end
 	
 	function panel:drawBorder(color, bgColor)
-		local w = Panels.Settings.borderWidth
-		local b = gfx.image.new(self.frame.width, self.frame.height)
-		gfx.pushContext(b)
+		local frameW = self.frame.width
+		local frameH = self.frame.height
+		local borderW = Panels.Settings.borderWidth
+		local b = gfx.image.new(frameW, frameH)
+		local matte = gfx.image.new(frameW, frameH)
+		gfx.pushContext(matte)
+			-- create the corner matte
 			gfx.setColor(bgColor)
-			gfx.setLineWidth(w)
-			gfx.drawRect(0, 0, self.frame.width, self.frame.height)
+			gfx.setLineWidth(borderW)
+			gfx.fillRect(0, 0, frameW, frameH)
+			gfx.setColor(Panels.Color.invert(bgColor))
+			gfx.fillRoundRect(0, 0, frameW, frameH, Panels.Settings.borderRadius)
+		gfx.popContext()
+
+		gfx.pushContext(b)
+			-- draw corner matte with center transparency
+			if bgColor == Panels.Color.WHITE then
+				gfx.setImageDrawMode(gfx.kDrawModeBlackTransparent)
+			else
+				gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
+			end
+			matte:draw(0,0)
+
+			gfx.setLineWidth(borderW)
 			gfx.setColor(color)
-			gfx.drawRoundRect(w/2, w/2, self.frame.width- w, self.frame.height -w, Panels.Settings.borderRadius)
+			gfx.drawRoundRect(borderW/2, borderW/2, frameW- borderW, frameH -borderW, Panels.Settings.borderRadius)
 		gfx.popContext()
 		return b
 	end
