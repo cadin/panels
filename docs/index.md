@@ -9,8 +9,6 @@ nav_order: 1
 
 # Build interactive comics for Playdate
 
-
-
 <!--<img src="./assets/images/PanelsLoop.gif" width="800px"style="image-rendering: pixelated; margin:0 auto; text-align: center;"/> -->
 
 Provide Panels with a Lua table that describes the sequences in your comic (scroll direction, panel sizes, text, animation and effects) along with your layered graphics. Panels will handle layout, scrolling, animation, and even chapter navigation for you.
