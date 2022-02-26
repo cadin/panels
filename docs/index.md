@@ -5,7 +5,7 @@ permalink: /
 nav_order: 1
 ---
 
-![Banner](./assets/images/banner.gif)
+![Banner](assets/images/banner.gif)
 
 # Build interactive comics for Playdate
 

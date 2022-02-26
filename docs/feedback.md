@@ -6,7 +6,7 @@ nav_order: 10
 
 # Feedback
 
-![Cadin and Sparkles](assets/images/Cadin_w_Sparkles.jpg){: .profile-pic}
+![Cadin and Sparkles]({{site.baseurl}}/assets/images/Cadin_w_Sparkles.jpg){: .profile-pic}
 
 Hi, I'm Cadin. I built this tool in my spare time. For fun! I make no money from this. I love to hear feedback and suggestions on how to make Panels a better tool for everyone. Please be kind and patient when communicating about your issue.
 

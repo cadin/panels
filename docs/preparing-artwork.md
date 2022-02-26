@@ -20,13 +20,13 @@ Be mindful of which areas of your images are transparent since different parts o
 
 You may be tempted to slice your image layers as small as possible, cutting out unused empty space:
 
-![Cut image to size](assets/images/cut-to-size.png)
+![Cut image to size]({{ site.baseurl }}/assets/images/cut-to-size.png)
 
 You certainly _can_ do this, but this means you'll need to measure the image's position in the frame, and then position the layer in your `comicData` file using the `x` and `y` properties.
 
 Instead, you might simply save the image at full frame (including the emtpy areas as transparency):
 
-![Full frame image](assets/images/cut-full-frame.png)
+![Full frame image]({{site.baseurl}}/assets/images/cut-full-frame.png)
 
 This keeps your layer position at `x:0`, `y:0` — making it much easier to set up the layers in your data file.
 
