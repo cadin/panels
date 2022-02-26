@@ -6,6 +6,7 @@ parent: Comic Data
 ---
 
 # Sequences
+
 {: .no_toc}
 
 A comic contains one or more sequences. In most cases, a sequence acts like a separate chapter of your comic.
@@ -24,6 +25,7 @@ Each sequence can define different settings for scroll direction and background 
 ---
 
 ## Properties
+
 {: .no_toc}
 
 ### panels
@@ -31,7 +33,7 @@ Each sequence can define different settings for scroll direction and background 
 required
 {: .prop-required}
 
-A list of tables that define each [panel](/docs/comic-data/panels) in the sequence.
+A list of tables that define each [panel]({{site.baseurl}}/docs/comic-data/panels) in the sequence.
 
 Usage:
 {: .text-delta}
@@ -92,9 +94,9 @@ OPTIONS:
 default: Panels.ScrollType.MANUAL
 {: .prop-default}
 
-A _manually_ scrolling sequence moves incrementally as the user turns the crank or presses the d-pad.  
+A _manually_ scrolling sequence moves incrementally as the user turns the crank or presses the d-pad.
 
-An _auto_-scrolling sequence moves panel-by-panel as the user presses the panel's [`advanceControl`](/docs/comic-data/panels#advancecontrol) button or triggers the panel's [`advanceControlSequence`](/docs/comic-data/panels#advancecontrolsequence).
+An _auto_-scrolling sequence moves panel-by-panel as the user presses the panel's [`advanceControl`]({{site.baseurl}}/docs/comic-data/panels#advancecontrol) button or triggers the panel's [`advanceControlSequence`]({{site.baseurl}}/docs/comic-data/panels#advancecontrolsequence).
 
 OPTIONS:
 {: .text-delta}
@@ -115,14 +117,15 @@ Properties:
 -   `file` (string)
 -   `loop` (boolean)
 -   `continuePrevious` (boolean)
-- `volume` (number [0.0–1.0])
+-   `volume` (number [0.0–1.0])
 
-**Note:** the `file` path should be relative to your comic's [`audioFolder` setting](/docs/settings#audiofolder).
+**Note:** the `file` path should be relative to your comic's [`audioFolder` setting]({{site.baseurl}}/docs/settings#audiofolder).
 
 Examples:
 {: .text-delta}
 
 ##### Set a looping background song:
+
 {: .no_toc}
 
 ```
@@ -132,6 +135,7 @@ audio = { file = "sequence1/bgSong", loop = true, volume = 0.6 },
 The `loop` property is false by default.
 
 ##### Continue audio from the previous sequence:
+
 {: .no_toc}
 
 ```

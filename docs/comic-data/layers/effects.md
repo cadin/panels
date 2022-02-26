@@ -7,6 +7,7 @@ grand_parent: Comic Data
 ---
 
 # Layer Effects
+
 {: .no_toc}
 
 Apply simple animation effects to a single layer.
@@ -30,9 +31,10 @@ Panels.Effect.SHAKE
 
 Shake a layer randomly in both the x and y directions.
 
-If you want to shake every layer in a panel, use the [panel effect](/docs/comic-data/panels/#effect) instead.
+If you want to shake every layer in a panel, use the [panel effect]({{site.baseurl}}/docs/comic-data/panels/#effect) instead.
 
 ### strength
+
 default: 2
 {: .prop-default}
 
@@ -46,6 +48,7 @@ Example:
     effect = { type = Panels.Effect.SHAKE, strength = 3 }
 },
 ```
+
 This layer will shake randomly approximately 3 pixels in each frame.
 
 ## Blink
@@ -56,12 +59,14 @@ Panels.Effect.BLINK
 Blink a layer on and off (with no fading).
 
 ### durations
+
 required
 {: .prop-required}
 
 A table that defines the duration (in milliseconds) for which a layer should be visible (`on`) and invisible (`off`).
 
 ### delay
+
 default: 0
 {: .prop-default}
 
@@ -76,6 +81,7 @@ Example:
     effect = { type = Panels.Effect.BLINK, durations = {on = 500, off = 200} }
 }
 ```
+
 This layer remains visible for 500 milliseconds, then turns off for 200 milliseconds before repeating.
 
 ## Type On
@@ -89,12 +95,14 @@ FOR TEXT LAYERS ONLY
 Reveal a line of text character by character.
 
 ### duration
+
 default: 500
 {: .prop-default}
 
 Set the total length of time (in milliseconds) to take to animate the full line of text.
 
 ### delay
+
 default: 0
 {: .prop-default}
 
@@ -104,6 +112,7 @@ The layer will remain **invisible** until the delay times out.
 This property is useful for coordinating multiple lines of animated text.
 
 ### scrollTrigger
+
 default: 0
 {: .prop-default}
 
@@ -117,4 +126,5 @@ Example:
     effect = { type = Panels.Effect.TYPE_ON, duration = 500 }
 },
 ```
+
 This line of text types on character by character over 500 milliseconds.

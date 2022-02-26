@@ -6,6 +6,7 @@ parent: Comic Data
 ---
 
 # Custom Panel Functions
+
 {: .no_toc}
 
 Any panel can assign a custom function to render the panel, determine when an auto-advance conditions is met, or reset custom properties when the panel leaves the screen.
@@ -21,13 +22,14 @@ Any panel can assign a custom function to render the panel, determine when an au
 
 ## Render
 
-Assign a custom render function to a panel's [`renderFunction`](/docs/comic-data/panels#renderfunction) property.
+Assign a custom render function to a panel's [`renderFunction`]({{site.baseurl}}/docs/comic-data/panels#renderfunction) property.
 This function will be called every frame while your panel is on screen.
 
 A render function should accept two parameters. The first is a table that represents the panel being rendered. The second parameter is a table with the current x and y scroll offset. The function returns nothing.
 
 Example:
 {: .text-delta}
+
 ```lua
 local function renderPanel6B(panel, offset)
  -- render the panel
@@ -38,7 +40,7 @@ end
 
 Setting a render function for a panel ejects it from the framework's normal rendering flow. This means your function becomes responsible for _all_ the logic and drawing in your panel.
 
-You can access your panel's layers with the `panel.layers` property.  Loop through them to draw the contents of your panel. An image layer will have the `playdate.graphics.image` stored in its `img` property.
+You can access your panel's layers with the `panel.layers` property. Loop through them to draw the contents of your panel. An image layer will have the `playdate.graphics.image` stored in its `img` property.
 
 Example:
 {: .text-delta}
@@ -55,10 +57,9 @@ end
 
 Since your panel has been taken out of the render flow, you'll need to calculate layer position yourself if you want parallax scrolling.
 
-
 The example below shows how you might calculate x position for layers in a horizontally-scrolling sequence. A vertical sequence would be the same, substituting `y` for `x` and `height` for `width`.
 
-Example: 
+Example:
 {: .text-delta}
 
 ```lua
@@ -78,7 +79,7 @@ local function renderPanel6B(panel, offset)
         local p = layer.parallax or 0
         local xPos = math.floor(layer.x + (panel.parallaxDistance * scrollPct - panel.parallaxDistance/2) * p)
 
-        layer.img:draw(xPos, layer.y) 
+        layer.img:draw(xPos, layer.y)
     end
 end
 
@@ -90,20 +91,20 @@ end
 FOR AUTO-SCROLLING SEQUENCES ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
-Assign a custom advance function to a panel's [`advanceFunction`](/docs/comic-data/panels#advancefunction) property. This function will be called every frame until your panel advances.
+Assign a custom advance function to a panel's [`advanceFunction`]({{site.baseurl}}/docs/comic-data/panels#advancefunction) property. This function will be called every frame until your panel advances.
 
 In an auto-scrolling sequence, you can use this to determine whether the panel should advance or not. Simply return true or false to indicate whether the advance condition has been met.
 
-Example: 
+Example:
 {: .text-delta}
 
 ```lua
-local function advancePanel06B() 
-    -- this condition is often based on 
+local function advancePanel06B()
+    -- this condition is often based on
     -- things happening in a custom render function
-    if zoomLevel > 6.75 then 
+    if zoomLevel > 6.75 then
         return true  -- ready to advance
-    else 
+    else
         return false -- stay on this panel
     end
 end
@@ -112,12 +113,12 @@ end
 
 ## Reset
 
-Assign a custom reset function to a panel's [`resetFunction`](/docs/comic-data/panels#resetfunction) property.
+Assign a custom reset function to a panel's [`resetFunction`]({{site.baseurl}}/docs/comic-data/panels#resetfunction) property.
 This function will be called once when your panel leaves the screen.
 
 If the user navigates back to a panel with an advance function, the advance condition will still be true, so they’ll immediately advance again. To avoid this, you can reset the panel state here. This is also a good place to kill any sound effects, timers or handle any other cleanup (like turning off the accelerometer) that may have been initiated in the render function.
 
-Example: 
+Example:
 {: .text-delta}
 
 ```lua
