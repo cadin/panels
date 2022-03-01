@@ -175,15 +175,6 @@ Disable the menu navigation and select sounds.
 
 ## Chapter Menu Settings
 
-### listUnnamedSequences
-
-default: false
-{: .prop-default }
-
-By default, sequences that don't list a [`title`]({{site.baseurl}}/docs/comic-data/sequences#title) property are not listed in the chapter menu.
-
-Set this to `true` to make unnamed sequences selectable. This is useful to more easily skip to a sub-chapter during testing and debugging. Unnamed sequences appear in the chapter menu as "--", therefore it is not recommended to ship your game with this option turned on.
-
 ### listLockedSequences
 
 default: true
@@ -210,3 +201,25 @@ default: true
 Set this to `false` if you don't wish to use a chapter menu in your comic. This will remove the "Chapters" items from the system menu and the comic's main menu.
 
 Without the chapter menu, users will be forced to play through your comic in strict linear order (or start over from the beginning).
+
+## Debug Settings
+
+### listUnnamedSequences
+
+default: false
+{: .prop-default }
+
+By default, sequences that don't list a [`title`]({{site.baseurl}}/docs/comic-data/sequences#title) property are not listed in the chapter menu.
+
+Set this to `true` to make unnamed sequences selectable. This is useful to more easily skip to a sub-chapter during testing and debugging. Unnamed sequences appear in the chapter menu as "--", therefore it is not recommended to ship your game with this option turned on.
+
+### debugControlsEnabled
+
+default: false
+{: .prop-default }
+
+Set this to `true` to enable debugging controls.
+
+Current debugging controls are:
+
+-   press `0` key to unlock all sequences (requires restart)
