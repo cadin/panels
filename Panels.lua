@@ -346,7 +346,7 @@ local function startTransitionIn(direction, delay)
 
 	scrollPos = start
 
-	-- make a dummy animator to hold scoll pos until delayed transition starts
+	-- make a dummy animator to hold scroll pos until delayed transition starts
 	transitionInAnimator = playdate.graphics.animator.new(math.max(delay * 2, 2000), start, start)
 
 	if previousBGColor then 
@@ -494,6 +494,7 @@ local function loadSequence(num)
 	end
 	
 	startTransitionIn(sequence.direction, sequence.delay or 0)
+
 end
 
 local function unloadSequence()
@@ -666,7 +667,6 @@ end
 
 local function updateComic(offset)
 	
-
 	if transitionInAnimator or transitionOutAnimator then
 		updateSequenceTransition()
 	else
@@ -688,8 +688,6 @@ local function updateComic(offset)
 			checkInputs()
 		end
 	end
-
-	
 end
 
 local function drawComic(offset)
