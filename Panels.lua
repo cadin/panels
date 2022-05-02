@@ -70,6 +70,10 @@ local function setUpPanels(seq)
     local pos = 0
 	local j = 1
 	
+	if seq.panels == nil then
+		printError(seq.title or "Untitled sequence", "No panel data found in sequence:")
+	end
+	
 	local list = table.shallowcopy(seq.panels)
 	if seq.scrollingIsReversed then 
 		reverseTable(list)
