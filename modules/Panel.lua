@@ -8,7 +8,7 @@ local AxisHorizontal = Panels.ScrollAxis.HORIZONTAL
 
 
 local function createFrameFromPartialFrame(frame) 
-	if frame.margin == nil then frame.margin = 0 end
+	if frame.margin == nil then frame.margin = Panels.Settings.defaultFrame.margin end
 
 	if frame.width == nil then
 		frame.width = ScreenWidth - frame.margin * 2
@@ -24,6 +24,10 @@ local function createFrameFromPartialFrame(frame)
 
 	if frame.y == nil then
 		frame.y = frame.margin
+	end
+	
+	if frame.gap == nil then 
+		frame.gap = Panels.Settings.defaultFrame.gap
 	end
 
 	return frame
