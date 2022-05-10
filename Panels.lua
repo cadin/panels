@@ -178,7 +178,7 @@ local function drawButtonIndicator()
 			buttonIndicator:hide()
 		end
 	end
-	if sequence.showAdvanceControl then 
+	if sequence.showAdvanceControl and sequenceDidStart then 
 		buttonIndicator:draw()
 	end
 end
