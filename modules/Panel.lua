@@ -156,6 +156,14 @@ function Panels.Panel.new(data)
 				if layer.effect.type == Panels.Effect.BLINK and layer.effect.audio then
 					layer.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. layer.effect.audio.file)
 				end
+				
+				if playdate.getReduceFlashing() 
+				and layer.effect.type == Panels.Effect.BLINK
+				and layer.effect.reduceFlashingDurations ~= nil 
+				then
+					layer.effect.durations.on = layer.effect.reduceFlashingDurations.on  
+					layer.effect.durations.off = layer.effect.reduceFlashingDurations.off
+				end
 			end
 
 			if layer.animate then 
