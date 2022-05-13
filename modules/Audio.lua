@@ -14,13 +14,17 @@ Panels.Audio = {
 }
 
 function Panels.Audio.createTypingSound()
-	local path = Panels.Settings.path .. "assets/audio/typingBeep.wav"
+	local path = Panels.Settings.path .. "assets/audio/typingBeep"
 	if Panels.Settings.typingSound ~= Panels.Audio.TypingSound.NONE then
 		if Panels.Settings.typingSound ~= Panels.Audio.TypingSound.DEFAULT then
 			path = Panels.Settings.audioFolder .. Panels.Settings.typingSound	
 		end
 		typingSamplePlayer = playdate.sound.sampleplayer.new(path)
 	end
+end
+
+function onBGFinished(player)
+	printError("", "Background audio fileplayer stopped due to buffer underrun")
 end
 
 function Panels.Audio.startBGAudio(path, loop, volume)
@@ -31,17 +35,22 @@ function Panels.Audio.startBGAudio(path, loop, volume)
 	if bgAudioPlayer then
 		Panels.Audio.fadeOut(bgAudioPlayer)
 	end
-	bgAudioPlayer, error = playdate.sound.fileplayer.new(path)
+	bgAudioPlayer, error = playdate.sound.fileplayer.new(path, 2)
+	bgAudioPlayer:setFinishCallback(onBGFinished, bgAudioPlayer)
 	if bgAudioPlayer then 
-		if loop then repeatCount = 0 else repeatCount = 1 end
-		bgAudioPlayer:play(repeatCount)
 
-		if volume then 
-			bgAudioPlayer:setVolume(volume)
+		if loop then repeatCount = 0 else repeatCount = 1 end
+		success, e = bgAudioPlayer:play(repeatCount)
+		if e then	
+			printError(e, "Error playing bg audio:") 
+		else
+			bgAudioPlayer:setVolume(volume or 1)
 		end
+		
 	else 
 		printError(error, "Error loading background audio:")
 	end
+	
 end
 
 function Panels.Audio.stopBGAudio() 

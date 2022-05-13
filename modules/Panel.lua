@@ -8,7 +8,7 @@ local AxisHorizontal = Panels.ScrollAxis.HORIZONTAL
 
 
 local function createFrameFromPartialFrame(frame) 
-	if frame.margin == nil then frame.margin = 0 end
+	if frame.margin == nil then frame.margin = Panels.Settings.defaultFrame.margin end
 
 	if frame.width == nil then
 		frame.width = ScreenWidth - frame.margin * 2
@@ -24,6 +24,10 @@ local function createFrameFromPartialFrame(frame)
 
 	if frame.y == nil then
 		frame.y = frame.margin
+	end
+	
+	if frame.gap == nil then 
+		frame.gap = Panels.Settings.defaultFrame.gap
 	end
 
 	return frame
@@ -151,6 +155,14 @@ function Panels.Panel.new(data)
 			if layer.effect then
 				if layer.effect.type == Panels.Effect.BLINK and layer.effect.audio then
 					layer.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. layer.effect.audio.file)
+				end
+				
+				if playdate.getReduceFlashing() 
+				and layer.effect.type == Panels.Effect.BLINK
+				and layer.effect.reduceFlashingDurations ~= nil 
+				then
+					layer.effect.durations.on = layer.effect.reduceFlashingDurations.on  
+					layer.effect.durations.off = layer.effect.reduceFlashingDurations.off
 				end
 			end
 

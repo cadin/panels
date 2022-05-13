@@ -70,6 +70,10 @@ local function setUpPanels(seq)
     local pos = 0
 	local j = 1
 	
+	if seq.panels == nil then
+		printError(seq.title or "Untitled sequence", "No panel data found in sequence:")
+	end
+	
 	local list = table.shallowcopy(seq.panels)
 	if seq.scrollingIsReversed then 
 		reverseTable(list)
@@ -174,7 +178,7 @@ local function drawButtonIndicator()
 			buttonIndicator:hide()
 		end
 	end
-	if sequence.showAdvanceControl then 
+	if sequence.showAdvanceControl and sequenceDidStart then 
 		buttonIndicator:draw()
 	end
 end
@@ -346,7 +350,7 @@ local function startTransitionIn(direction, delay)
 
 	scrollPos = start
 
-	-- make a dummy animator to hold scoll pos until delayed transition starts
+	-- make a dummy animator to hold scroll pos until delayed transition starts
 	transitionInAnimator = playdate.graphics.animator.new(math.max(delay * 2, 2000), start, start)
 
 	if previousBGColor then 
@@ -494,6 +498,7 @@ local function loadSequence(num)
 	end
 	
 	startTransitionIn(sequence.direction, sequence.delay or 0)
+
 end
 
 local function unloadSequence()
@@ -666,7 +671,6 @@ end
 
 local function updateComic(offset)
 	
-
 	if transitionInAnimator or transitionOutAnimator then
 		updateSequenceTransition()
 	else
@@ -688,8 +692,6 @@ local function updateComic(offset)
 			checkInputs()
 		end
 	end
-
-	
 end
 
 local function drawComic(offset)
@@ -952,6 +954,6 @@ end
 
 function playdate.keyPressed(key)
 	if key == "0" then 
-		unlockAll()
+		if Panels.Settings.debugControlsEnabled then unlockAll() end
 	end
 end

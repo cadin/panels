@@ -15,7 +15,6 @@ Panels.Settings = {
 	
 	-- menu settings
 	menuImage = "menuImage.png",
-	listUnnamedSequences = false,
 	listLockedSequences = true,
 	chapterMenuHeaderImage = nil,
 	useChapterMenu = true,
@@ -25,6 +24,10 @@ Panels.Settings = {
 
 	-- credits
 	showCreditsOnGameOver = false,
+
+	-- debug
+	debugControlsEnabled = false,
+	listUnnamedSequences = false,
 }
 
 local function addSlashToFolderName(f)
