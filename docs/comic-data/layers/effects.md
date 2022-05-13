@@ -89,7 +89,7 @@ This layer remains visible for 500 milliseconds, then turns off for 200 millisec
 default: nil
 {: .prop-default}
 
-Define an alternate blink durations to be used when the user has Playdate's "Reduce Flashing" accessibility setting enabled.
+Define an alternate set of blink durations to be used when the user has Playdate's "Reduce Flashing" accessibility setting enabled.
 
 ## Type On
 
