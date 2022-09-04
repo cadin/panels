@@ -718,7 +718,7 @@ local function drawComic(offset)
 end
 
 -- Playdate update loop
-function playdate.update()
+function Panels.update()
 
 	if not menusAreFullScreen then
 		local offset = getScrollOffset()
@@ -940,6 +940,8 @@ function Panels.start(comicData)
 	else
 		loadSequence(currentSeqIndex)
 	end
+
+	playdate.update = Panels.update
 end
 
 -- -------------------------------------------------
