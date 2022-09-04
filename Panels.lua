@@ -65,6 +65,9 @@ local gameDidFinish = false
 
 local alert = nil
 
+local isCutscene = false
+local cutsceneFinishCallback = nil
+
 local function setUpPanels(seq)
 	panels = {}
 	local pos = 0
@@ -533,6 +536,9 @@ local function nextSequence()
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
+	elseif isCutscene then
+		gameDidFinish = true
+		cutsceneFinishCallback()
 	else
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
@@ -912,6 +918,23 @@ local function createCreditsSequence()
 	}
 
 	table.insert(Panels.comicData, seq)
+end
+
+function Panels.startCutscene(comicData, callback)
+	isCutscene = true
+	cutsceneFinishCallback = callback
+	Panels.comicData = comicData
+	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", { "Cancel", "Start Over" })
+	alert.onHide = onAlertDidHide
+
+	Panels.Audio.createTypingSound()
+	validateSettings()
+	createButtonIndicator()
+
+	sequences = Panels.comicData
+	currentSeqIndex = 1
+
+	loadSequence(currentSeqIndex)
 end
 
 function Panels.start(comicData)
