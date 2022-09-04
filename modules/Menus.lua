@@ -434,6 +434,8 @@ end
 
 
 function updateMenuData(sequences, gameDidFinish, gameDidStart)
-	updateMainMenu(gameDidFinish, gameDidStart)
+	-- updateMainMenu(gameDidFinish, gameDidStart)
+	-- just recreate the damn thing so the inputHandlers have the right state
+	Panels.mainMenu = createMainMenu(gameDidFinish, gameDidStart) 
 	updateChapterMenu(sequences)
 end
