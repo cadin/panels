@@ -109,6 +109,33 @@ default: playdate.graphics.getSystemFont()
 
 Set a default font for all text layers in this panel.
 
+### fontFamily 
+
+default: nil
+{: .prop-default}
+
+Set a default font family for all text layers in this panel.
+
+Setting a font family allows text layers to use **bold** and _italic_ formatting with a custom font.
+
+Font variants:
+{: .text-delta}
+- `Panels.Font.NORMAL`
+- `Panels.Font.BOLD`
+- `Panels.Font.ITALIC`
+
+Example:
+{: .text-delta}
+
+```
+fontFamily = {
+    [Panels.Font.NORMAL] = "fonts/SasserSlab/Sasser-Slab",
+    [Panels.Font.BOLD] = "fonts/SasserSlab/Sasser-Slab-Bold",
+    [Panels.Font.ITALIC] = "fonts/SasserSlab/Sasser-Slab-Italic"
+},
+```
+
+
 ### frame
 
 default: Panels.Settings.defaultFrame

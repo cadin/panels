@@ -157,6 +157,40 @@ The path to a font to use for this text layer.
 
 Note that you can also set a default font to use for all text layers in a panel or all panels in a sequence.
 
+
+### fontFamily
+
+default: nil
+{: .prop-default}
+
+FOR TEXT LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+A table of font paths to use for this text layer. Font paths must be keyed to the constant for the appropriate style variant.
+
+Setting a font family allows text layers to use **bold** and _italic_ formatting with a custom font.
+
+Font variants:
+{: .text-delta}
+- `Panels.Font.NORMAL`
+- `Panels.Font.BOLD`
+- `Panels.Font.ITALIC`
+
+Example text layer with font family:
+{: .text-delta}
+
+```
+{ text = "Normal *Bold*, _Italic_", x = 16, y = 180,
+    fontFamily = {
+        [Panels.Font.NORMAL] = "fonts/SasserSlab/Sasser-Slab",
+        [Panels.Font.BOLD] = "fonts/SasserSlab/Sasser-Slab-Bold",
+        [Panels.Font.ITALIC] = "fonts/SasserSlab/Sasser-Slab-Italic"
+    },
+},
+```
+
+Note that you can also set a default font family to use for all text layers in a panel or all panels in a sequence.
+
 ### rect
 
 default: nil
