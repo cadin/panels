@@ -6,7 +6,6 @@ parent: Comic Data
 ---
 
 # Panels
-
 {: .no_toc}
 
 Each [sequence]({{site.baseurl}}/docs/comic-data/sequences) in your comic contains one or more panels. These are the rectangular frames that you scroll through as you read the comic. Each panel typically depicts a single scene.

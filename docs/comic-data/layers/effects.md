@@ -7,7 +7,6 @@ grand_parent: Comic Data
 ---
 
 # Layer Effects
-
 {: .no_toc}
 
 Apply simple animation effects to a single layer.

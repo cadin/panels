@@ -5,7 +5,6 @@ nav_order: 8
 ---
 
 # Examples
-
 {: .no_toc}
 
 <details open markdown="block">

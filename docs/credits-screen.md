@@ -4,7 +4,6 @@ nav_order: 5
 ---
 
 # Credits
-
 {: .no_toc}
 
 Panels adds a "Credits" item to the Playdate system menu. Selecting this item displays a panel with a scrolling list of credits for your game.
