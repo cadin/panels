@@ -539,10 +539,12 @@ local function nextSequence()
 	elseif isCutscene then
 		gameDidFinish = true
 		cutsceneFinishCallback()
+		Panels.Audio.killBGAudio()
 	else
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
 		menusAreFullScreen = true
+		Panels.Audio.killBGAudio()
 		Panels.mainMenu:show()
 	end
 end
