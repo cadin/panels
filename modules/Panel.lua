@@ -147,6 +147,18 @@ function Panels.Panel.new(data)
 				layer.animationLoop = anim
 			end
 
+			if layer.mask then
+				mask, error = Panels.Image.get(imageFolder .. layer.mask)
+				local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
+				printError(error, "Error loading mask image on layer")
+				if maskImg then
+					gfx.lockFocus(maskImg)
+					mask:draw(-panel.frame.margin, -panel.frame.margin)
+					gfx.unlockFocus()
+					layer.maskImg = maskImg
+				end
+			end
+
 			if layer.x == nil then layer.x = -panel.frame.margin end
 			if layer.y == nil then layer.y = -panel.frame.margin end
 			if layer.visible == nil then layer.visible = true end
@@ -390,7 +402,13 @@ function Panels.Panel.new(data)
 						if layer.alpha and layer.alpha < 1 then
 							img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 						else
+							if layer.maskImg then
+								gfx.setStencilImage(layer.maskImg)
+							end
 							img:draw(xPos, yPos)
+							if layer.maskImg then
+								gfx.clearStencil()
+							end
 						end
 					end
 
