@@ -510,7 +510,11 @@ function Panels.Panel.new(data)
 			if layer.effect.type == Panels.Effect.TYPE_ON then
 
 				if layer.textAnimator == nil then
-					if layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
+					if self.prevPct == 1 then
+						-- don't replay text animation (and sound) when backing into a frame
+						txt = layer.text
+						layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
+					elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
 						layer.isTyping = true
 						layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
 							playdate.easingFunctions.linear, layer.effect.delay or 0)
