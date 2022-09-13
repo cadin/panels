@@ -147,16 +147,10 @@ function Panels.Panel.new(data)
 				layer.animationLoop = anim
 			end
 
-			if layer.mask then
-				mask, error = Panels.Image.get(imageFolder .. layer.mask)
-				local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
-				printError(error, "Error loading mask image on layer")
-				if maskImg then
-					gfx.lockFocus(maskImg)
-					mask:draw(-panel.frame.margin, -panel.frame.margin)
-					gfx.unlockFocus()
-					layer.maskImg = maskImg
-				end
+			if layer.stencil then
+				mask, error = Panels.Image.get(imageFolder .. layer.stencil)
+				layer.maskImg = mask
+				printError(error, "Error loading stencil image on layer")
 			end
 
 			if layer.x == nil then layer.x = -panel.frame.margin end
@@ -403,11 +397,21 @@ function Panels.Panel.new(data)
 							img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 						else
 							if layer.maskImg then
-								gfx.setStencilImage(layer.maskImg)
-							end
-							img:draw(xPos, yPos)
-							if layer.maskImg then
+								local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin
+								local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin
+
+								local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
+								gfx.lockFocus(maskImg)
+								layer.maskImg:draw(maskX, maskY)
+								gfx.unlockFocus()
+
+								gfx.setStencilImage(maskImg)
+								img:draw(xPos, yPos)
 								gfx.clearStencil()
+							else
+								img:draw(xPos, yPos)
+
+
 							end
 						end
 					end
