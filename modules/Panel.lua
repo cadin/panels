@@ -95,6 +95,8 @@ function Panels.Panel.new(data)
 	panel.buttonsPressed = {}
 	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
 
+	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
+
 	if not panel.parallaxDistance then
 		if panel.axis == Panels.ScrollAxis.HORIZONTAL then
 			panel.parallaxDistance = panel.frame.width * 1.2
@@ -641,7 +643,7 @@ function Panels.Panel.new(data)
 	function panel:render(offset, borderColor, bgColor)
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
-		gfx.clear()
+		gfx.clear(self.backgroundColor)
 
 		if self.renderFunction then
 			self:renderFunction(offset)
