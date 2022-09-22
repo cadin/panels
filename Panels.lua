@@ -594,7 +594,7 @@ end
 
 function Panels.cranked(change, accChange)
 	if sequence.scrollType == Panels.ScrollType.MANUAL then
-		if sequence.axis == Panels.ScrollAxis.VERTICAL then
+		if sequence.axis == Panels.ScrollAxis.VERTICAL and sequence.scrollingIsReversed then
 			scrollPos = scrollPos + change
 		else
 			scrollPos = scrollPos - change
