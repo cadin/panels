@@ -539,6 +539,7 @@ local function nextSequence()
 	elseif isCutscene then
 		gameDidFinish = true
 		cutsceneFinishCallback()
+		playdate.cranked = crankFunction
 		Panels.Audio.killBGAudio()
 	else
 		gameDidFinish = true
@@ -591,7 +592,7 @@ local function shouldGoBack(panel)
 	return should
 end
 
-function playdate.cranked(change, accChange)
+function Panels.cranked(change, accChange)
 	if sequence.scrollType == Panels.ScrollType.MANUAL then
 		if sequence.axis == Panels.ScrollAxis.VERTICAL then
 			scrollPos = scrollPos + change
@@ -937,6 +938,8 @@ function Panels.startCutscene(comicData, callback)
 	currentSeqIndex = 1
 
 	loadSequence(currentSeqIndex)
+	crankFunction = playdate.cranked
+	playdate.cranked = Panels.cranked
 end
 
 function Panels.start(comicData)
@@ -967,6 +970,7 @@ function Panels.start(comicData)
 	end
 
 	playdate.update = Panels.update
+	playdate.cranked = Panels.cranked
 end
 
 -- -------------------------------------------------
