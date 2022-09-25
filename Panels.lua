@@ -984,6 +984,7 @@ end
 
 function playdate.keyPressed(key)
 	if key == "0" then
+		print("Levels unlocked. Restart game.")
 		if Panels.Settings.debugControlsEnabled then unlockAll() end
 	end
 end
