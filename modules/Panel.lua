@@ -426,7 +426,11 @@ function Panels.Panel.new(data)
 					end
 				elseif layer.animationLoop then
 					if layer.visible then
-						if cntrlPct >= layer.scrollTrigger then
+						if layer.trigger then
+							if playdate.buttonJustPressed(layer.trigger) then
+								layer.animationLoop.paused = false
+							end
+						elseif cntrlPct >= layer.scrollTrigger then
 							layer.animationLoop.paused = false
 						end
 						layer.animationLoop:draw(xPos, yPos)
