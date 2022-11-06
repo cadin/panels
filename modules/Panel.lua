@@ -430,6 +430,13 @@ function Panels.Panel.new(data)
 							if playdate.buttonJustPressed(layer.trigger) then
 								layer.animationLoop.paused = false
 							end
+						elseif layer.startDelay then
+							if layer.startDelayTriggered == nil then
+								playdate.timer.performAfterDelay(layer.startDelay, function()
+									layer.animationLoop.paused = false
+								end)
+								layer.startDelayTriggered = true
+							end
 						elseif cntrlPct >= layer.scrollTrigger then
 							layer.animationLoop.paused = false
 						end
