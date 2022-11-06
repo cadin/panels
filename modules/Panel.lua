@@ -143,7 +143,11 @@ function Panels.Panel.new(data)
 				local imgTable, error = gfx.imagetable.new(Panels.Settings.imageFolder .. layer.imageTable)
 				printError(error, "Error loading imagetable on layer")
 
-				local anim = gfx.animation.loop.new(layer.delay or 200, imgTable, layer.loop or false)
+				local delay = layer.delay or 200
+				if layer.reduceFlashingDelay and playdate.getReduceFlashing() then
+					delay = layer.reduceFlashingDelay
+				end
+				local anim = gfx.animation.loop.new(delay, imgTable, layer.loop or false)
 				anim.paused = true
 				if layer.scrollTrigger == nil then layer.scrollTrigger = 0 end
 				layer.animationLoop = anim
