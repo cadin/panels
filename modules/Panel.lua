@@ -151,6 +151,7 @@ function Panels.Panel.new(data)
 				anim.paused = true
 				if layer.scrollTrigger == nil then layer.scrollTrigger = 0 end
 				layer.animationLoop = anim
+				layer.imgTable = imgTable
 			end
 
 			if layer.stencil then
