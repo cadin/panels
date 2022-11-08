@@ -292,6 +292,19 @@ function Panels.Panel.new(data)
 		return result
 	end
 
+	function panel:exit()
+		print("exit()")
+		if self.layers then
+			for i, layer in ipairs(self.layers) do
+				if layer.exit then
+					layer.isExiting = true
+					layer.animator = nil
+				end
+			end
+		end
+
+	end
+
 	function panel:drawLayers(offset)
 		local layers = self.layers
 		local frame = self.frame
@@ -314,12 +327,23 @@ function Panels.Panel.new(data)
 		if layers then
 			for i, layer in ipairs(layers) do
 				local p = layer.parallax or 0
-				local xPos = math.floor(layer.x + (self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p)
-				local yPos = math.floor(layer.y + (self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p)
+				local startValues = layer
+				if layer.isExiting and layer.animate then
+					for k, v in pairs(layer.animate) do startValues[k] = v end
+				end
+
+				local xPos = math.floor(startValues.x + (self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p)
+				local yPos = math.floor(startValues.y + (self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p)
 				local rotation = 0
 
 				if layer.animate then
 					local anim = layer.animate
+
+					if layer.isExiting then
+						anim = layer.exit
+						anim.scrollTrigger = 0
+					end
+
 					if (anim.triggerSequence or anim.scrollTrigger ~= nil) and not layer.animator then
 
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
@@ -348,8 +372,8 @@ function Panels.Panel.new(data)
 							layerPct = layer.animator:currentValue()
 						end
 
-						if anim.x then xPos = math.floor(xPos + ((anim.x - layer.x) * layerPct)) end
-						if anim.y then yPos = math.floor(yPos + ((anim.y - layer.y) * layerPct)) end
+						if anim.x then xPos = math.floor(xPos + ((anim.x - startValues.x) * layerPct)) end
+						if anim.y then yPos = math.floor(yPos + ((anim.y - startValues.y) * layerPct)) end
 						if anim.rotation then rotation = anim.rotation * layerPct end
 						if anim.opacity then
 							local o = (anim.opacity - layer.opacity) * layerPct
@@ -362,6 +386,8 @@ function Panels.Panel.new(data)
 						end
 					end
 				end
+
+
 
 				if self:layerShouldShake(layer) then
 					if self.effect and self.effect.type == Panels.Effect.SHAKE_INDIVIDUAL then
