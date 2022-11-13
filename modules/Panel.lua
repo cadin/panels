@@ -327,7 +327,7 @@ function Panels.Panel.new(data)
 		if layers then
 			for i, layer in ipairs(layers) do
 				local p = layer.parallax or 0
-				local startValues = layer
+				local startValues = table.shallow_copy(layer)
 				if layer.isExiting and layer.animate then
 					for k, v in pairs(layer.animate) do startValues[k] = v end
 				end
@@ -336,7 +336,7 @@ function Panels.Panel.new(data)
 				local yPos = math.floor(startValues.y + (self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p)
 				local rotation = 0
 
-				if layer.animate then
+				if layer.animate or layer.isExiting then
 					local anim = layer.animate
 
 					if layer.isExiting then
@@ -481,6 +481,9 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
+		print("resetting panel")
+		if panel.name then print(panel.name) end
+
 		if self.resetFunction then
 			self:resetFunction()
 		end
@@ -496,6 +499,8 @@ function Panels.Panel.new(data)
 					-- local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
 					layer.animationLoop.paused = true
 				end
+				layer.isExiting = false
+
 				if layer.animator then
 					layer.animator = nil
 				end
@@ -721,4 +726,12 @@ function Panels.Panel.new(data)
 	end
 
 	return panel
+end
+
+function table.shallow_copy(t)
+	local t2 = {}
+	for k, v in pairs(t) do
+		t2[k] = v
+	end
+	return t2
 end
