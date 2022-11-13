@@ -293,7 +293,6 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:exit()
-		print("exit()")
 		if self.layers then
 			for i, layer in ipairs(self.layers) do
 				if layer.exit then
@@ -481,7 +480,6 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
-		print("resetting panel")
 		if panel.name then print(panel.name) end
 
 		if self.resetFunction then

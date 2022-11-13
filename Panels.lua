@@ -607,7 +607,12 @@ local function checkInputs()
 	if lastPanelIsShowing() then
 		if p.advanceFunction == nil and playdate.buttonJustPressed(sequence.advanceControl) then
 			buttonIndicator:press()
-			finishSequence()
+			if p.advanceDelay then
+				p:exit()
+				playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
+			else
+				finishSequence()
+			end
 		end
 	end
 
