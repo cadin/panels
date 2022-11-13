@@ -492,10 +492,10 @@ function Panels.Panel.new(data)
 		end
 		if self.layers then
 			for i, layer in ipairs(self.layers) do
+
+				layer.startDelayTriggered = nil
 				if layer.animationLoop then
-					layer.animationLoop.frame = 1
-					-- local f = layer.animationLoop.frame -- force frame update (bug in 1.3.1)
-					layer.animationLoop.paused = true
+					layer.animationLoop = nil
 				end
 				layer.isExiting = false
 
