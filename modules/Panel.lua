@@ -4,7 +4,12 @@ local gfx <const> = playdate.graphics
 local ScreenHeight <const> = playdate.display.getHeight()
 local ScreenWidth <const> = playdate.display.getWidth()
 
+local reduceFlashing = playdate.getReduceFlashing()
+local pdButtonJustPressed = playdate.buttonJustPressed
+
 local AxisHorizontal = Panels.ScrollAxis.HORIZONTAL
+
+
 
 
 local function createFrameFromPartialFrame(frame)
@@ -144,7 +149,7 @@ function Panels.Panel.new(data)
 				printError(error, "Error loading imagetable on layer")
 
 				local delay = layer.delay or 200
-				if layer.reduceFlashingDelay and playdate.getReduceFlashing() then
+				if layer.reduceFlashingDelay and reduceFlashing then
 					delay = layer.reduceFlashingDelay
 				end
 				local anim = gfx.animation.loop.new(delay, imgTable, layer.loop or false)
@@ -170,7 +175,7 @@ function Panels.Panel.new(data)
 					layer.sfxPlayer = playdate.sound.sampleplayer.new(Panels.Settings.audioFolder .. layer.effect.audio.file)
 				end
 
-				if playdate.getReduceFlashing()
+				if reduceFlashing
 					and layer.effect.type == Panels.Effect.BLINK
 					and layer.effect.reduceFlashingDurations ~= nil
 				then
@@ -260,7 +265,7 @@ function Panels.Panel.new(data)
 			if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
 			local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
 
-			if playdate.buttonJustPressed(triggerButton) then
+			if pdButtonJustPressed(triggerButton) then
 				self.audioTriggersPressed[#self.audioTriggersPressed + 1] = triggerButton
 				if #self.audioTriggersPressed == #self.audio.triggerSequence then
 					playdate.timer.performAfterDelay(self.audio.delay or 0, function()
@@ -351,7 +356,7 @@ function Panels.Panel.new(data)
 							triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
 						end
 
-						if anim.scrollTrigger ~= nil or playdate.buttonJustPressed(triggerButton) then
+						if anim.scrollTrigger ~= nil or pdButtonJustPressed(triggerButton) then
 							layer.buttonsPressed[#layer.buttonsPressed + 1] = triggerButton
 							if (anim.scrollTrigger ~= nil and cntrlPct >= anim.scrollTrigger) or
 								(anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then
@@ -409,7 +414,7 @@ function Panels.Panel.new(data)
 					img = layer.img
 				elseif layer.imgs then
 					if layer.advanceControl then
-						if playdate.buttonJustPressed(layer.advanceControl) then
+						if pdButtonJustPressed(layer.advanceControl) then
 							if layer.currentImage < #layer.imgs then
 								layer.currentImage = layer.currentImage + 1
 							end
@@ -425,25 +430,29 @@ function Panels.Panel.new(data)
 
 				if img then
 					if layer.visible then
-						if layer.alpha and layer.alpha < 1 then
-							img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
-						else
-							if layer.maskImg then
-								local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin
-								local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin
+						local globalX = xPos + offset.x + self.frame.x
+						local globalY = yPos + offset.y + self.frame.y
 
-								local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
-								gfx.lockFocus(maskImg)
-								layer.maskImg:draw(maskX, maskY)
-								gfx.unlockFocus()
+						if globalX + img.width > 0 and globalX < ScreenWidth and globalY + img.height > 0 and globalY < ScreenHeight then
 
-								gfx.setStencilImage(maskImg)
-								img:draw(xPos, yPos)
-								gfx.clearStencil()
+							if layer.alpha and layer.alpha < 1 then
+								img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 							else
-								img:draw(xPos, yPos)
+								if layer.maskImg then
+									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin
+									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin
 
+									local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
+									gfx.lockFocus(maskImg)
+									layer.maskImg:draw(maskX, maskY)
+									gfx.unlockFocus()
 
+									gfx.setStencilImage(maskImg)
+									img:draw(xPos, yPos)
+									gfx.clearStencil()
+								else
+									img:draw(xPos, yPos)
+								end
 							end
 						end
 					end
@@ -457,7 +466,7 @@ function Panels.Panel.new(data)
 				elseif layer.animationLoop then
 					if layer.visible then
 						if layer.trigger then
-							if playdate.buttonJustPressed(layer.trigger) then
+							if pdButtonJustPressed(layer.trigger) then
 								layer.animationLoop.paused = false
 							end
 						elseif layer.startDelay then
@@ -477,6 +486,7 @@ function Panels.Panel.new(data)
 			end
 		end
 		self.prevPct = cntrlPct
+
 	end
 
 	function panel:reset()
@@ -495,7 +505,8 @@ function Panels.Panel.new(data)
 
 				layer.startDelayTriggered = nil
 				if layer.animationLoop then
-					layer.animationLoop = nil
+					layer.animationLoop.frame = 1
+					layer.animationLoop.paused = true
 				end
 				layer.isExiting = false
 
@@ -531,7 +542,7 @@ function Panels.Panel.new(data)
 		end
 	end
 
-	function startLayerTypingSound(layer)
+	local function startLayerTypingSound(layer)
 		if layer.isTyping then
 			Panels.Audio.startTypingSound()
 		end
@@ -678,7 +689,7 @@ function Panels.Panel.new(data)
 			end
 
 		else
-			if playdate.buttonJustPressed(self.advanceControl) then
+			if pdButtonJustPressed(self.advanceControl) then
 				self.advanceButton:press()
 			end
 			self.advanceButton:draw()
@@ -697,11 +708,10 @@ function Panels.Panel.new(data)
 		end
 
 		if not self.borderless then
-			if self.borderImage then
-				self.borderImage:draw(0, 0)
-			else
+			if self.borderImage == nil then
 				self.borderImage = self:drawBorder(borderColor, bgColor)
 			end
+			self.borderImage:draw(0, 0)
 		end
 
 		if self.advanceButton then

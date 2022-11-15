@@ -29,6 +29,11 @@ import "./modules/TextAlignment"
 import "./modules/Utils"
 import "./modules/Credits"
 
+-- PD function shortcuts
+local pdUpdateTimers = playdate.timer.updateTimers
+local pdEaseInOutQuad = playdate.easingFunctions.inOutQuad
+local pdButtonJustPressed = playdate.buttonJustPressed
+
 local sequenceDidStart = false
 
 local currentSeqIndex = 1
@@ -308,7 +313,7 @@ local function scrollToNextPanel()
 		if sequence.direction == Panels.ScrollDirection.NONE then
 			scrollPos = target
 		else
-			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
+			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
 		end
 	end
 end
@@ -329,7 +334,7 @@ local function scrollToPreviousPanel()
 			end
 			target = getPanelScrollLocation(panels[panelNum], true)
 		end
-		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
+		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
 	end
 end
 
@@ -605,7 +610,7 @@ end
 local function checkInputs()
 	local p = panels[panelNum]
 	if lastPanelIsShowing() then
-		if p.advanceFunction == nil and playdate.buttonJustPressed(sequence.advanceControl) then
+		if p.advanceFunction == nil and pdButtonJustPressed(sequence.advanceControl) then
 			buttonIndicator:press()
 			if p.advanceDelay then
 				p:exit()
@@ -620,7 +625,7 @@ local function checkInputs()
 		if p.advanceFunction == nil then
 			if p.advanceControlSequence then
 				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
-				if playdate.buttonJustPressed(trigger) then
+				if pdButtonJustPressed(trigger) then
 					p.buttonsPressed[#p.buttonsPressed + 1] = trigger
 					if #p.buttonsPressed == #p.advanceControlSequence then
 						if p.advanceDelay then
@@ -632,12 +637,12 @@ local function checkInputs()
 					end
 				end
 			else
-				if playdate.buttonJustPressed(p.advanceControl) then
+				if pdButtonJustPressed(p.advanceControl) then
 					scrollToNextPanel()
 				end
 			end
 		end
-		if playdate.buttonJustPressed(p.backControl) then
+		if pdButtonJustPressed(p.backControl) then
 			if shouldGoBack(p) then
 				scrollToPreviousPanel()
 			end
@@ -724,6 +729,7 @@ local function drawComic(offset)
 		if (panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
+
 		elseif panel.wasOnScreen then
 			panel:reset()
 			panel.wasOnScreen = false
@@ -750,7 +756,7 @@ function Panels.update()
 		alert:udpate()
 	end
 
-	playdate.timer.updateTimers()
+	pdUpdateTimers()
 end
 
 -- -------------------------------------------------
