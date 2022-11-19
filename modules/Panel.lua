@@ -472,7 +472,7 @@ function Panels.Panel.new(data)
 						elseif layer.startDelay then
 							if layer.startDelayTriggered == nil then
 								playdate.timer.performAfterDelay(layer.startDelay, function()
-									layer.animationLoop.paused = false
+									if layer.animationLoop then layer.animationLoop.paused = false end
 								end)
 								layer.startDelayTriggered = true
 							end
