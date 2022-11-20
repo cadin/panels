@@ -271,6 +271,15 @@ function Panels.Panel.new(data)
 					playdate.timer.performAfterDelay(self.audio.delay or 0, function()
 						self.sfxPlayer:play(count)
 					end)
+
+					if self.audio.repeats ~= nil then
+						if self.audioRepeats == nil then self.audioRepeats = 1 end
+						print(self.audio.repeats, self.audioRepeats)
+						if self.audio.repeats > self.audioRepeats then
+							self.audioTriggersPressed = {}
+							self.audioRepeats = self.audioRepeats + 1
+						end
+					end
 				end
 			end
 
@@ -490,7 +499,7 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
-		if panel.name then print(panel.name) end
+		if self.name then print(self.name) end
 
 		if self.resetFunction then
 			self:resetFunction()
@@ -533,6 +542,7 @@ function Panels.Panel.new(data)
 		end
 		self.buttonsPressed = {}
 		self.audioTriggersPressed = {}
+		self.audioRepeats = 1
 		self.advanceControlTimerDidEnd = false
 		self.advanceControlTimer = nil
 		if self.prevPct > 0.5 then
