@@ -274,7 +274,6 @@ function Panels.Panel.new(data)
 
 					if self.audio.repeats ~= nil then
 						if self.audioRepeats == nil then self.audioRepeats = 1 end
-						print(self.audio.repeats, self.audioRepeats)
 						if self.audio.repeats > self.audioRepeats then
 							self.audioTriggersPressed = {}
 							self.audioRepeats = self.audioRepeats + 1
@@ -285,7 +284,9 @@ function Panels.Panel.new(data)
 
 		elseif (pct < 1 and pct >= self.sfxTrigger) and (self.prevPct <= self.sfxTrigger or self.audio.loop) then
 			if not self.sfxPlayer:isPlaying() and not self.soundIsPaused then
-				self.sfxPlayer:play(count)
+				playdate.timer.performAfterDelay(self.audio.delay or 0, function()
+					self.sfxPlayer:play(count)
+				end)
 			end
 		end
 
