@@ -175,6 +175,13 @@ default: false
 
 By default, panels are drawn with a visible border. Set this to true to omit the border.
 
+### backgroundColor
+
+default: `Panels.Color.WHITE`
+{: .prop-default}
+
+Define the background fill for a panel.
+
 ### parallaxDistance
 
 default: (panel size \* 1.2)
