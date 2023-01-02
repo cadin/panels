@@ -54,6 +54,22 @@ A layer with multiple images will switch between them as the panel scrolls acros
 Only specify one of the following per layer: `image`, `images`, `imageTable`, `text`.  
 You cannot combine them.
 
+### stencil 
+
+default: nil
+{: .prop-default}
+
+An image to use as the [stencil](https://sdk.play.date/Inside%20Playdate.html#_stencil) for this layer. 
+
+Animations and other layer effects apply to the image layer, but not the stencil. This allows you to have an image layer animate within a mask shape represented by the stencil.
+
+```
+{ image = "s01/shadow.png", stencil = "s01/shadowMask.png",
+    animate = { y = -116, x = 100 }
+},
+```
+In the example above, the 'shadow' image animates within the area masked by the 'shadowMask' image. 
+
 ### advanceControl
 
 default: nil
