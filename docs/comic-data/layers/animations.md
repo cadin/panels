@@ -7,7 +7,6 @@ grand_parent: Comic Data
 ---
 
 # Layer Animations
-
 {: .no_toc}
 
 You can animate a layer's position (x and y) and opacity over a specific amount of time, or based on the panel's scroll position on screen. Use modifiers to control the animation speed, easing, and delay, set scroll or button triggers, and add syncronized sound effeccts.

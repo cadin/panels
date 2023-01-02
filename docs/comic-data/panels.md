@@ -6,7 +6,6 @@ parent: Comic Data
 ---
 
 # Panels
-
 {: .no_toc}
 
 Each [sequence]({{site.baseurl}}/docs/comic-data/sequences) in your comic contains one or more panels. These are the rectangular frames that you scroll through as you read the comic. Each panel typically depicts a single scene.
@@ -72,7 +71,6 @@ Examples:
 {: .text-delta}
 
 ##### Set a looping background sound:
-
 {: .no_toc}
 
 ```
@@ -82,7 +80,6 @@ audio = { file = "sequence1/panel1BG.wav", loop = true },
 The sound will loop continuously while this panel is on screen. Panels sounds fade slightly in and out as the panel enters and leaves the screen.
 
 ##### Play a sound at a specific scroll point:
-
 {: .no_toc}
 
 ```
@@ -94,7 +91,6 @@ This sound is triggered at 50% scroll. Scroll values go from `0` (just before th
 Triggering a sound at a specific scroll point can be useful for syncing sound effects with layer animations or transitions.
 
 ##### Pan a sound effect:
-
 {: .no_toc}
 
 ```
@@ -111,6 +107,33 @@ default: playdate.graphics.getSystemFont()
 {: .prop-default}
 
 Set a default font for all text layers in this panel.
+
+### fontFamily 
+
+default: nil
+{: .prop-default}
+
+Set a default font family for all text layers in this panel.
+
+Setting a font family allows text layers to use **bold** and _italic_ formatting with a custom font.
+
+Font variants:
+{: .text-delta}
+- `Panels.Font.NORMAL`
+- `Panels.Font.BOLD`
+- `Panels.Font.ITALIC`
+
+Example:
+{: .text-delta}
+
+```
+fontFamily = {
+    [Panels.Font.NORMAL] = "fonts/SasserSlab/Sasser-Slab",
+    [Panels.Font.BOLD] = "fonts/SasserSlab/Sasser-Slab-Bold",
+    [Panels.Font.ITALIC] = "fonts/SasserSlab/Sasser-Slab-Italic"
+},
+```
+
 
 ### frame
 
@@ -256,6 +279,16 @@ FOR AUTO-SCROLLING SEQUENCES ONLY
 The time (in milliseconds) to wait before transitioning after the panel's[`advanceControl`](#advancecontrol) or [`advanceControlSequence`](#advancecontrolsequence) has been triggered.
 
 This is useful if you want to wait for a triggered animation to complete before moving to the next panel.
+
+### preventBacktracking
+
+default: false
+{: .prop-default}
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Prevent the user from navigating back to the previous panel with the D pad. Helpful if you have a custom render function that uses the D pad to do other things.
 
 ### renderFunction
 

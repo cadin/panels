@@ -6,7 +6,6 @@ parent: Comic Data
 ---
 
 # Custom Panel Functions
-
 {: .no_toc}
 
 Any panel can assign a custom function to render the panel, determine when an auto-advance conditions is met, or reset custom properties when the panel leaves the screen.

@@ -7,7 +7,6 @@ grand_parent: Comic Data
 ---
 
 # Layer Effects
-
 {: .no_toc}
 
 Apply simple animation effects to a single layer.
@@ -83,6 +82,13 @@ Example:
 ```
 
 This layer remains visible for 500 milliseconds, then turns off for 200 milliseconds before repeating.
+
+### reduceFlashingDurations
+
+default: nil
+{: .prop-default}
+
+Define an alternate set of blink durations to be used when the user has Playdate's "Reduce Flashing" accessibility setting enabled.
 
 ## Type On
 

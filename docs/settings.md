@@ -4,7 +4,6 @@ nav_order: 7
 ---
 
 # Settings
-
 {: .no_toc}
 
 These settings apply to your entire comic.  

@@ -24,5 +24,13 @@
     border: 1px solid #000;
     image-rendering: pixelated;
     float: left;
-    margin: 16px 16px 24px 0;
+    margin: 8px 16px 0 0;
+}
+
+
+blockquote {
+    color: $grey-dk-300;
+    border-left: 2px solid $grey-lt-200;
+    padding-left: 16px;
+    margin-left: 0;
 }

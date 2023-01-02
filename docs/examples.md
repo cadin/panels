@@ -5,7 +5,6 @@ nav_order: 8
 ---
 
 # Examples
-
 {: .no_toc}
 
 <details open markdown="block">
@@ -34,8 +33,24 @@ You can find several examples in the [Panels Project Template](https://github.co
 
 ## Projects Made with Panels
 
-[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.gif){: .screenshot}](https://cadinb.itch.io/the-botanist)
+<div style="clear: both;height: 1px;">&nbsp;</div>
+
+[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.png){: .screenshot}](https://cadinb.itch.io/the-botanist)
 
 ### [The Botanist](https://cadinb.itch.io/the-botanist)
 
-An adventure comic by Cadin Batrack
+An sci-fi adventure comic  
+by Cadin Batrack
+
+<div style="clear: both;height: 1px;">&nbsp;</div>
+
+[![Illumination screenshot]({{site.baseurl}}/assets/images/illumination-screen.png){: .screenshot}](https://cadinb.itch.io/illumination)
+
+### [Illumination](https://cadinb.itch.io/illumination)
+
+A free mini-comic  
+by Cadin Batrack
+
+<div style="clear: both;">&nbsp;</div>
+<br />
+<br />

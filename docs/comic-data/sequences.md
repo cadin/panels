@@ -6,7 +6,6 @@ parent: Comic Data
 ---
 
 # Sequences
-
 {: .no_toc}
 
 A comic contains one or more sequences. In most cases, a sequence acts like a separate chapter of your comic.
