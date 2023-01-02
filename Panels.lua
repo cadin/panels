@@ -29,6 +29,11 @@ import "./modules/TextAlignment"
 import "./modules/Utils"
 import "./modules/Credits"
 
+-- PD function shortcuts
+local pdUpdateTimers = playdate.timer.updateTimers
+local pdEaseInOutQuad = playdate.easingFunctions.inOutQuad
+local pdButtonJustPressed = playdate.buttonJustPressed
+
 local sequenceDidStart = false
 
 local currentSeqIndex = 1
@@ -308,7 +313,7 @@ local function scrollToNextPanel()
 		if sequence.direction == Panels.ScrollDirection.NONE then
 			scrollPos = target
 		else
-			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
+			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
 		end
 	end
 end
@@ -329,7 +334,7 @@ local function scrollToPreviousPanel()
 			end
 			target = getPanelScrollLocation(panels[panelNum], true)
 		end
-		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, playdate.easingFunctions.inOutQuad)
+		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
 	end
 end
 
@@ -539,6 +544,7 @@ local function nextSequence()
 	elseif isCutscene then
 		gameDidFinish = true
 		cutsceneFinishCallback()
+		playdate.cranked = crankFunction
 		Panels.Audio.killBGAudio()
 	else
 		gameDidFinish = true
@@ -591,9 +597,9 @@ local function shouldGoBack(panel)
 	return should
 end
 
-function playdate.cranked(change, accChange)
+function Panels.cranked(change, accChange)
 	if sequence.scrollType == Panels.ScrollType.MANUAL then
-		if sequence.axis == Panels.ScrollAxis.VERTICAL then
+		if sequence.axis == Panels.ScrollAxis.VERTICAL and sequence.scrollingIsReversed then
 			scrollPos = scrollPos + change
 		else
 			scrollPos = scrollPos - change
@@ -604,9 +610,14 @@ end
 local function checkInputs()
 	local p = panels[panelNum]
 	if lastPanelIsShowing() then
-		if p.advanceFunction == nil and playdate.buttonJustPressed(sequence.advanceControl) then
+		if p.advanceFunction == nil and pdButtonJustPressed(sequence.advanceControl) then
 			buttonIndicator:press()
-			finishSequence()
+			if p.advanceDelay then
+				p:exit()
+				playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
+			else
+				finishSequence()
+			end
 		end
 	end
 
@@ -614,10 +625,11 @@ local function checkInputs()
 		if p.advanceFunction == nil then
 			if p.advanceControlSequence then
 				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
-				if playdate.buttonJustPressed(trigger) then
+				if pdButtonJustPressed(trigger) then
 					p.buttonsPressed[#p.buttonsPressed + 1] = trigger
 					if #p.buttonsPressed == #p.advanceControlSequence then
 						if p.advanceDelay then
+							p:exit()
 							playdate.timer.performAfterDelay(p.advanceDelay, scrollToNextPanel)
 						else
 							scrollToNextPanel()
@@ -625,12 +637,12 @@ local function checkInputs()
 					end
 				end
 			else
-				if playdate.buttonJustPressed(p.advanceControl) then
+				if pdButtonJustPressed(p.advanceControl) then
 					scrollToNextPanel()
 				end
 			end
 		end
-		if playdate.buttonJustPressed(p.backControl) then
+		if pdButtonJustPressed(p.backControl) then
 			if shouldGoBack(p) then
 				scrollToPreviousPanel()
 			end
@@ -717,6 +729,7 @@ local function drawComic(offset)
 		if (panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
+
 		elseif panel.wasOnScreen then
 			panel:reset()
 			panel.wasOnScreen = false
@@ -743,7 +756,7 @@ function Panels.update()
 		alert:udpate()
 	end
 
-	playdate.timer.updateTimers()
+	pdUpdateTimers()
 end
 
 -- -------------------------------------------------
@@ -937,6 +950,8 @@ function Panels.startCutscene(comicData, callback)
 	currentSeqIndex = 1
 
 	loadSequence(currentSeqIndex)
+	crankFunction = playdate.cranked
+	playdate.cranked = Panels.cranked
 end
 
 function Panels.start(comicData)
@@ -967,6 +982,7 @@ function Panels.start(comicData)
 	end
 
 	playdate.update = Panels.update
+	playdate.cranked = Panels.cranked
 end
 
 -- -------------------------------------------------
@@ -980,6 +996,7 @@ end
 
 function playdate.keyPressed(key)
 	if key == "0" then
+		print("Levels unlocked. Restart game.")
 		if Panels.Settings.debugControlsEnabled then unlockAll() end
 	end
 end

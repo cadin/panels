@@ -17,7 +17,7 @@ function Panels.Audio.createTypingSound()
 	local path = Panels.Settings.path .. "assets/audio/typingBeep"
 	if Panels.Settings.typingSound ~= Panels.Audio.TypingSound.NONE then
 		if Panels.Settings.typingSound ~= Panels.Audio.TypingSound.DEFAULT then
-			path = Panels.Settings.audioFolder .. Panels.Settings.typingSound	
+			path = Panels.Settings.audioFolder .. Panels.Settings.typingSound
 		end
 		typingSamplePlayer = playdate.sound.sampleplayer.new(path)
 	end
@@ -36,31 +36,30 @@ function Panels.Audio.startBGAudio(path, loop, volume)
 		Panels.Audio.fadeOut(bgAudioPlayer)
 	end
 	bgAudioPlayer, error = playdate.sound.fileplayer.new(path, 2)
-	bgAudioPlayer:setFinishCallback(onBGFinished, bgAudioPlayer)
-	if bgAudioPlayer then 
-
+	if bgAudioPlayer then
+		bgAudioPlayer:setFinishCallback(onBGFinished, bgAudioPlayer)
 		if loop then repeatCount = 0 else repeatCount = 1 end
 		success, e = bgAudioPlayer:play(repeatCount)
-		if e then	
-			printError(e, "Error playing bg audio:") 
+		if e then
+			printError(e, "Error playing bg audio:")
 		else
 			bgAudioPlayer:setVolume(volume or 1)
 		end
-		
-	else 
+
+	else
 		printError(error, "Error loading background audio:")
 	end
-	
+
 end
 
-function Panels.Audio.stopBGAudio() 
+function Panels.Audio.stopBGAudio()
 	if bgAudioPlayer then
 		bgAudioPlayer:stop()
 		shouldResume = false
 	end
 end
 
-function Panels.Audio.killBGAudio() 
+function Panels.Audio.killBGAudio()
 	if bgAudioPlayer then
 		bgAudioPlayer:stop()
 		shouldResume = false
@@ -68,7 +67,7 @@ function Panels.Audio.killBGAudio()
 	end
 end
 
-function Panels.Audio.pauseBGAudio() 
+function Panels.Audio.pauseBGAudio()
 	if bgAudioPlayer and (bgAudioPlayer:isPlaying() or shouldResume) then
 		shouldResume = true
 		bgAudioPlayer:pause()
@@ -96,8 +95,8 @@ end
 
 function Panels.Audio.stopTypingSound()
 	typingRetainCount = typingRetainCount - 1
-	
-	if typingSamplePlayer and typingRetainCount <=0 then
+
+	if typingSamplePlayer and typingRetainCount <= 0 then
 		typingRetainCount = 0
 		typingSamplePlayer:stop()
 	end
@@ -120,6 +119,6 @@ function Panels.Audio.fadeOut(player)
 		player:stop()
 	end
 
-	player:setVolume(0,0, 1, onFadeComplete, player)
+	player:setVolume(0, 0, 1, onFadeComplete, player)
 
 end
