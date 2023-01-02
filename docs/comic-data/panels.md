@@ -64,6 +64,8 @@ Properties:
 -   `scrollTrigger` (float [0-1])
 -   `pan` (float [0-1])
 -   `volume` (float [0-1])
+-   `triggerSequence` (list of one or more inputs)
+-   `repeats` (integer)
 
 **Note:** the `file` path should be relative to your comic's [`audioFolder` setting]({{site.baseurl}}/docs/settings#audiofolder).
 
@@ -100,6 +102,16 @@ audio = { file = "sequence1/panel1SFX.wav", pan = 0.8 },
 Pan a sound from the far left (`pan = 0`) to the far right (`pan = 1`), or anywhere in between.
 
 **Note:** [Playdate only has a single (mono) speaker](https://play.date/#specs). Pan effects will only be evident when wearing headphones.
+
+##### Trigger a sound effect with button press:
+{: .no_toc}
+
+```
+audio = { file = "sequence1/beep", triggerSequence = { Panels.Input.A }, repeats = 3 },
+```
+
+Trigger a sound when the A button is pressed. Using the `repeats` property allows the sound to be triggered 3 times.
+
 
 ### font
 
@@ -244,13 +256,15 @@ default: nil
 FOR AUTO-SCROLLING SEQUENCES ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
-Where to draw the advance control indicator when enabled (relative to the top left of the panel).
+Where to draw the advance control indicator when enabled (relative to the top left of the panel).  
+Optionally define a delay (in milliseconds) before the indicator appears on screen.
 
 Properties:
 {: .text-delta}
 
 -   `x` (integer)
 -   `y` (integer)
+-   `delay` (integer)
 
 ### advanceControlSequence
 

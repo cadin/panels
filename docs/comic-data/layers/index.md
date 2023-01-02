@@ -59,7 +59,7 @@ You cannot combine them.
 default: nil
 {: .prop-default}
 
-FOR IMAGES LAYERS ONLY
+FOR MULTI-IMAGE LAYERS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 Specify a button to press to advance through a layer with multiple images. Setting this will override the default behavior of automatically swapping the images as the layer scrolls.
@@ -98,6 +98,18 @@ The scroll point at which an imageTable layer should start to animate.
 
 Scroll values go from `0` (just before the panel enters the screen) to `1` (just after the panel leaves the screen). A scroll trigger of `0.5` will trigger at the halfway point, which for a full-screen panel will be when the panel is fully centered on screen.
 
+### trigger
+
+default: nil
+{: .prop-default}
+
+FOR IMAGETABLE LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set a button press as the trigger to start an imageTable animation.
+
+If a trigger is set, the imageTable will hold on the first frame until the trigger button is pressed.
+
 ### delay
 
 default: 200
@@ -107,6 +119,26 @@ FOR IMAGETABLE LAYERS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 The amount of time (in milliseconds) each frame of the imageTable is displayed.
+
+### reduceFlashingDelay
+
+default: 200
+{: .prop-default}
+
+FOR IMAGETABLE LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+An alternate `delay` setting to be used when the user has Playdate's "Reduce Flashing" accessibility setting enabled.
+
+### startDelay
+
+default: 0
+{: .prop-default}
+
+FOR IMAGETABLE LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+The amount of time (in milliseconds) to wait before starting an imageTable animation (delay starts when the panel first appears on screen).
 
 ### loop
 

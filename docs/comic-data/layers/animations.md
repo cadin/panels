@@ -141,7 +141,6 @@ default: nil
 Set a series of button presses as the trigger for a time-based animation. This can be used to coordinate a series of sequential animations in a single panel.
 
 ##### Example:
-
 {: .no_toc}
 
 ```
@@ -190,3 +189,42 @@ Properties:
 -   `loop` (boolean)
 
 **Note:** the `file` path should be relative to your comic's [`audioFolder` setting]({{site.baseurl}}/docs/settings#audiofolder).
+
+
+## Exit Animations
+
+Layers in an [auto-scrolling]({{site.baseurl}}/docs/comic-data/sequences#scrolltype) sequence can define a separate `exit` animation that is triggered when the panel's advance button is pressed. This allows you to have elements animate in when the panel appears, and animate out before the panel transitions off screen.
+
+`exit` animations accept all the same properties as a normal `animate` effect.
+
+### Example
+{: .no_toc}
+
+This panel appears in an auto-scrolling sequence:
+
+```lua
+{
+    advanceControl = Panels.Input.A,
+    advanceDelay = 500, -- delay allows exit animation to complete before advancing
+    layers = {
+        { image = 'sequence1/hero', y = 240,
+            animate = { 
+                y = 0, 
+                duration = 400, 
+                scrollTrigger = 0,
+                ease = playdate.easingFunctions.inOutQuint
+            },
+            exit = { 
+                y = 240, 
+                duration = 500, 
+                ease = playdate.easingFunctions.inQuad 
+            }
+        }
+    }
+},
+```
+
+The hero layer will animate in from the bottom when the panel first appears on screen. 
+
+The panel auto-advances when the user presses the A button (via the [`advanceControl`]({{site.baseurl}}/docs/comic-data/panels#advancecontrol) property). This also causes the `exit` animation to trigger, animating the hero back off the bottom of the screen. An [`advanceDelay`]({{site.baseurl}}/docs/comic-data/panels#advancedelay) setting keeps the panel on screen until the exit animation has had time to finish (500 ms).
+
