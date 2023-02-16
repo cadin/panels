@@ -438,13 +438,14 @@ function Panels.Panel.new(data)
 					end
 				end
 
+				local globalX = xPos + offset.x + self.frame.x
+				local globalY = yPos + offset.y + self.frame.y
+
 				if img then
 					if layer.visible then
-						local globalX = xPos + offset.x + self.frame.x
-						local globalY = yPos + offset.y + self.frame.y
-
+						
 						if globalX + img.width > 0 and globalX < ScreenWidth and globalY + img.height > 0 and globalY < ScreenHeight then
-
+							
 							if layer.alpha and layer.alpha < 1 then
 								img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 							else
@@ -469,8 +470,10 @@ function Panels.Panel.new(data)
 
 				elseif layer.text then
 					if layer.visible then
-						if layer.alpha == nil or layer.alpha > 0.5 then
-							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
+						if globalX + ScreenWidth > 0 and globalX < ScreenWidth and globalY + ScreenHeight > 0 and globalY < ScreenHeight then
+							if layer.alpha == nil or layer.alpha > 0.5 then
+								self:drawTextLayer(layer, xPos, yPos, cntrlPct)
+							end
 						end
 					end
 				elseif layer.animationLoop then
@@ -559,74 +562,90 @@ function Panels.Panel.new(data)
 		end
 	end
 
+
+	local textMarginLeft<const> = 4
+	local textMarginTop<const> = 1
 	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
-		gfx.pushContext()
-
-		if layer.fontFamily then
-			gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
-		elseif self.fontFamily then
-			gfx.setFontFamily(Panels.Font.getFamily(self.fontFamily))
+		if(layer.cachedTextImg == nil) then
+			layer.cachedTextImg = gfx.image.new(ScreenWidth, ScreenHeight)
+			layer.needsRedraw = true
 		end
 
-		if layer.font then
-			gfx.setFont(Panels.Font.get(layer.font))
-		elseif self.font then
-			gfx.setFont(Panels.Font.get(self.font))
-		end
 
-		local txt = layer.text
-		if layer.effect then
-			if layer.effect.type == Panels.Effect.TYPE_ON then
+		if(layer.isTyping or layer.needsRedraw) then 
+			gfx.lockFocus(layer.cachedTextImg)
+			gfx.pushContext()
 
-				if layer.textAnimator == nil then
-					if self.prevPct == 1 then
-						-- don't replay text animation (and sound) when backing into a frame
-						txt = layer.text
-						layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
-					elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
-						layer.isTyping = true
-						layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
-							playdate.easingFunctions.linear, layer.effect.delay or 0)
-						playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
-					else
-						txt = ""
+			if layer.fontFamily then
+				gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
+			elseif self.fontFamily then
+				gfx.setFontFamily(Panels.Font.getFamily(self.fontFamily))
+			end
+
+			if layer.font then
+				gfx.setFont(Panels.Font.get(layer.font))
+			elseif self.font then
+				gfx.setFont(Panels.Font.get(self.font))
+			end
+
+			local txt = layer.text
+			if layer.effect then
+				if layer.effect.type == Panels.Effect.TYPE_ON then
+
+					if layer.textAnimator == nil then
+						if self.prevPct == 1 then
+							-- don't replay text animation (and sound) when backing into a frame
+							txt = layer.text
+							layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
+						elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
+							layer.isTyping = true
+							layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
+								playdate.easingFunctions.linear, layer.effect.delay or 0)
+							playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+						else
+							txt = ""
+						end
 					end
-				end
 
-				if layer.isTyping then
-					local j = math.ceil(layer.textAnimator:currentValue())
-					txt = string.sub(layer.text, 1, j)
+					if layer.isTyping then
+						local j = math.ceil(layer.textAnimator:currentValue())
+						txt = string.sub(layer.text, 1, j)
 
-					if txt == layer.text then
-						layer.isTyping = false
-						Panels.Audio.stopTypingSound()
+						if txt == layer.text then
+							layer.isTyping = false
+							Panels.Audio.stopTypingSound()
+						end
 					end
 				end
 			end
-		end
 
-		if layer.background then
-			local w, h = gfx.getTextSize(txt)
-			gfx.setColor(layer.background)
-			if layer.background == Panels.Color.BLACK then
+			if layer.background then
+				local w, h = gfx.getTextSize(txt)
+				gfx.setColor(layer.background)
+				if layer.background == Panels.Color.BLACK then
+					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+				end
+				if w > 0 and h > 0 then
+					gfx.fillRect(0, 0, w + 8, h + 2)
+				end
+			end
+			if layer.color == Panels.Color.WHITE then
 				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			end
-			if w > 0 and h > 0 then
-				gfx.fillRect(xPos - 4, yPos - 1, w + 8, h + 2)
+
+			if layer.rect then
+				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...",
+					layer.alignment or Panels.TextAlignment.LEFT)
+			else
+				gfx.drawText(txt, textMarginLeft, textMarginTop)
 			end
-		end
-		if layer.color == Panels.Color.WHITE then
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		end
 
-		if layer.rect then
-			gfx.drawTextInRect(txt, xPos, yPos, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...",
-				layer.alignment or Panels.TextAlignment.LEFT)
-		else
-			gfx.drawText(txt, xPos, yPos)
-		end
+			if(layer.isTyping == false) then layer.needsRedraw = false end
 
-		gfx.popContext()
+			gfx.popContext() 
+			gfx.unlockFocus()
+		end
+		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
 	end
 
 	function panel:drawBorder(color, bgColor)
