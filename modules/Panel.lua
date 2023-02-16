@@ -99,6 +99,7 @@ function Panels.Panel.new(data)
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
 	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
+	-- panel.canvas = gfx.image.new(ScreenWidth, ScreenHeight, gfx.kColorBlack)
 
 	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
 
@@ -575,6 +576,7 @@ function Panels.Panel.new(data)
 		if(layer.isTyping or layer.needsRedraw) then 
 			gfx.lockFocus(layer.cachedTextImg)
 			gfx.pushContext()
+			gfx.clear(gfx.kColorClear)
 
 			if layer.fontFamily then
 				gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
