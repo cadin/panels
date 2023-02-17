@@ -504,8 +504,6 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
-		if self.name then print(self.name) end
-
 		if self.resetFunction then
 			self:resetFunction()
 		end
