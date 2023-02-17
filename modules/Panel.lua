@@ -538,6 +538,11 @@ function Panels.Panel.new(data)
 				if layer.textAnimator then
 					layer.textAnimator = nil
 				end
+				if layer.cachedTextImg then
+					if(self.prevPct < 0.5) then
+						layer.cachedTextImg = nil
+					end
+				end
 				if layer.images then
 					layer.currentImage = 1
 				end
@@ -574,8 +579,7 @@ function Panels.Panel.new(data)
 
 
 		if(layer.isTyping or layer.needsRedraw) then 
-			gfx.lockFocus(layer.cachedTextImg)
-			gfx.pushContext()
+			gfx.pushContext(layer.cachedTextImg)
 			gfx.clear(gfx.kColorClear)
 
 			if layer.fontFamily then
@@ -598,6 +602,7 @@ function Panels.Panel.new(data)
 						if self.prevPct == 1 then
 							-- don't replay text animation (and sound) when backing into a frame
 							txt = layer.text
+							layer.needsRedraw = false
 							layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
 						elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
 							layer.isTyping = true
@@ -615,6 +620,7 @@ function Panels.Panel.new(data)
 
 						if txt == layer.text then
 							layer.isTyping = false
+							layer.needsRedraw = false
 							Panels.Audio.stopTypingSound()
 						end
 					end
@@ -642,10 +648,7 @@ function Panels.Panel.new(data)
 				gfx.drawText(txt, textMarginLeft, textMarginTop)
 			end
 
-			if(layer.isTyping == false) then layer.needsRedraw = false end
-
 			gfx.popContext() 
-			gfx.unlockFocus()
 		end
 		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
 	end
