@@ -35,9 +35,9 @@ You can find several examples in the [Panels Project Template](https://github.co
 
 <div style="clear: both;height: 1px;">&nbsp;</div>
 
-[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.png){: .screenshot}](https://cadinb.itch.io/the-botanist)
+[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.png){: .screenshot}](https://play.date/dev/catalog/the-botanist)
 
-### [The Botanist](https://cadinb.itch.io/the-botanist)
+### [The Botanist](https://play.date/dev/catalog/the-botanist)
 
 An sci-fi adventure comic  
 by Cadin Batrack
