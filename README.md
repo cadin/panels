@@ -21,6 +21,7 @@ Comics built with Panels can support these features:
 ## Documentation
 Check out the full set of documentation here:
 ### [📄 Panels Documentation](//cadin.github.io/panels)
+### [📺 NEW!! Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)
 
 ## Requirements
 
