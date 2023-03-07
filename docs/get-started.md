@@ -5,6 +5,11 @@ nav_order: 2
 
 # Get Started
 
+Need help getting started?  
+📺 Check out [these video tutorials on YouTube](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv).
+
+---
+
 ## Requirements
 
 -   [Playdate SDK](https://play.date/dev/)

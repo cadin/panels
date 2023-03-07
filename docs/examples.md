@@ -31,6 +31,13 @@ You can find several examples in the [Panels Project Template](https://github.co
 5. [**Audio**](https://github.com/cadin/panels-project-template/blob/main/source/examples/5-audio.lua)  
    Play background audio for an entire sequence or a single panel. Trigger a sound effect synced with an animation.
 
+## Tutorials
+This 6-video YouTube series walks you through getting set up, preparing artwork, creating comic data files, animations, audio and more:
+
+**[📺 Making a Panels Comic for Playdate](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)**
+
+
+
 ## Projects Made with Panels
 
 <div style="clear: both;height: 1px;">&nbsp;</div>
