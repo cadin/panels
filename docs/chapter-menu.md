@@ -13,6 +13,6 @@ The default settings display all named sequences in the menu, but only the chapt
 
 ## Settings
 
-Chapter menu behavior can be customized by altering your comic's [Settings]({{site.baseurl}}/docs/settings/#chapter-menu-settings).
+Chapter menu behavior can be customized by altering your comic's [Settings]({{site.baseurl}}/docs/settings#chapter-menu-settings).
 
 With these settings you can add a logo image to the menu's header, change whether or not to display locked sequences, or choose to not use the chapter menu at all.
