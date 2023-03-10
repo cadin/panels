@@ -42,9 +42,9 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
 <div style="clear: both;height: 1px;">&nbsp;</div>
 
-[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.png){: .screenshot}](https://play.date/dev/catalog/the-botanist)
+[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.png){: .screenshot}](https://play.date/games/the-botanist/)
 
-### [The Botanist](https://play.date/dev/catalog/the-botanist)
+### [The Botanist](https://play.date/games/the-botanist/)
 
 An sci-fi adventure comic  
 by Cadin Batrack
