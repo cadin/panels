@@ -58,9 +58,9 @@ Usage:
 
 ```lua
  -- With the default setting, instead of this:
-{ image = "images/s01/image-1.png" }
+{ image = 'images/s01/image-1.png' }
 -- you'd omit the base folder name to make things slightly cleaner:
-{ image = "s01/image-1.png" }
+{ image = 's01/image-1.png' }
 ```
 
 If you wish to specify images using the full path, set this property to `""`.
