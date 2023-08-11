@@ -29,9 +29,9 @@ Panels.credits = {
     hideStandardHeader = true,
 
     lines = {
-        { image = "logo.png"},
-        { text = "Based on a true story" , spacing = 16 },
-        { text = "by *James Nasium*" },
+        { image = 'logo.png'},
+        { text = 'Based on a true story' , spacing = 16 },
+        { text = 'by *James Nasium*' },
     }
 }
 ```

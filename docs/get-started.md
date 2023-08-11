@@ -34,7 +34,7 @@ Need help getting started?
 ### Example `main.lua` File:
 
 ```lua
-import "libraries/panels/Panels"
+import 'libraries/panels/Panels'
 local comicData = {
     -- comic data goes here...
 }

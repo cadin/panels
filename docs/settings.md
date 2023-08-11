@@ -13,8 +13,8 @@ Example:
 {: .text-delta}
 
 ```lua
-import "libraries/panels/Panels"
-import "comicData.lua"
+import 'libraries/panels/Panels'
+import 'comicData.lua'
 
 -- change settings before calling start
 Panels.Settings.snapToPanels = false
