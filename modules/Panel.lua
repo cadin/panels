@@ -391,7 +391,7 @@ function Panels.Panel.new(data)
 						if anim.y then yPos = math.floor(yPos + ((anim.y - startValues.y) * layerPct)) end
 						if anim.rotation then rotation = anim.rotation * layerPct end
 						if anim.opacity then
-							local o = (anim.opacity - layer.opacity) * layerPct
+							local o = (anim.opacity - layer.opacity) * layerPct + layer.opacity
 							layer.alpha = o
 							if o <= 0 then
 								layer.visible = false
