@@ -46,7 +46,16 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
 ### [The Botanist](https://play.date/games/the-botanist/)
 
-An sci-fi adventure comic  
+A sci-fi adventure comic  
+by Cadin Batrack
+
+<div style="clear: both;height: 1px;">&nbsp;</div>
+
+[![To Dust screenshot]({{site.baseurl}}/assets/images/toDust-screen.png){: .screenshot}](https://play.date/games/to-dust/)
+
+### [To Dust](https://play.date/games/to-dust/)
+
+A sci-fi adventure comic  
 by Cadin Batrack
 
 <div style="clear: both;height: 1px;">&nbsp;</div>

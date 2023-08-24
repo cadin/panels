@@ -22,6 +22,12 @@ Need help getting started?
 1. Clone the [Panels Project Template](https://github.com/cadin/panels-project-template).
    This is a [Template Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template). Click "Use this template" to create your own fresh repo with all the contents of the project template.
 2. The template project includes the Panels framework as a git submodule. Be sure to properly [initialize the submodule](https://www.w3docs.com/snippets/git/how-to-clone-including-submodules.html) when cloning the repo.
+
+    In most cases the easiest way to this will be to clone with the `recurse-submodules` option:  
+    `git clone --recurse-submodules https://github.com/cadin/panels-project-template.git`
+
+
+
 3. Start editing table in `myComicData.lua`.
 
 ### Manual Setup
