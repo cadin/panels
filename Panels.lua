@@ -73,6 +73,8 @@ local alert = nil
 local isCutscene = false
 local cutsceneFinishCallback = nil
 
+local targetSequence = nil
+
 local function setUpPanels(seq)
 	panels = {}
 	local pos = 0
@@ -177,20 +179,39 @@ end
 -- -------------------------------------------------
 -- BUTTON INDICATOR
 
-local function createButtonIndicator()
-	buttonIndicator = Panels.ButtonIndicator.new()
-end
-
-local function drawButtonIndicator()
-	if transitionOutAnimator == nil then
-		if lastPanelIsShowing() and sequenceDidStart then
-			buttonIndicator:show()
-		else
-			buttonIndicator:hide()
+local function createButtonIndicators()
+	buttonIndicators = {}
+	if sequence.advanceControls == nil then
+		buttonIndicators = { Panels.ButtonIndicator.new() }
+	else
+		for i, value in ipairs(sequence.advanceControls) do
+			buttonIndicators[i] = Panels.ButtonIndicator.new()
 		end
 	end
-	if sequence.showAdvanceControl and sequenceDidStart then
-		buttonIndicator:draw()
+end
+
+local function drawButtonIndicators(offset)
+	if transitionOutAnimator == nil then
+		if lastPanelIsShowing() and sequenceDidStart then
+			for key, button in pairs(buttonIndicators) do
+				button:show()
+			end
+		else
+			for key, button in pairs(buttonIndicators) do
+				button:hide()
+			end
+		end
+	end
+	if sequence.showAdvanceControls and sequenceDidStart then
+		for i, button in ipairs(buttonIndicators) do
+			if sequence.advanceControls[i].anchor then
+				print(button.x, offset.x)
+				local lastPanel = panels[#panels]
+				button:draw(button.x + lastPanel.frame.x + offset.x , button.y + lastPanel.frame.y + offset.y)
+			else
+				button:draw()
+			end
+		end
 	end
 end
 
@@ -452,6 +473,7 @@ end
 
 local function loadSequence(num)
 	sequence = sequences[num]
+	createButtonIndicators()
 	if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end
 
 	-- set default scroll direction for each axis if not specified
@@ -466,12 +488,39 @@ local function loadSequence(num)
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
 
-	if sequence.advanceControl == nil then
-		sequence.advanceControl = getAdvanceControlForScrollDirection(sequence.direction)
+	print("loading sequence " .. num .. ": " .. sequence.title)
+	if sequence.advanceControls == nil then 
+		print("no advance controls")
+		local control
+		if sequence.advanceControl == nil then
+			control = {input = getAdvanceControlForScrollDirection(sequence.direction)}
+		else 
+			control = {input = sequence.advanceControl}
+		end
+
+		print("setting control:")
+		print(control.input)
+
+		if sequence.advanceControlPosition == nil then
+			local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(sequence.direction)
+			control.x = x
+			control.y = y
+		else
+			control.x = sequence.advanceControlPosition.x
+			control.y = sequence.advanceControlPosition.y
+		end
+
+		sequence.advanceControls = { control }
+	else 
+		print("advance controls found")
+		print(sequence.advanceControls)
+		print(#sequence.advanceControls)
+		print(sequence.advanceControls[1].input)
+
 	end
 
-	if sequence.showAdvanceControl == nil then
-		sequence.showAdvanceControl = true
+	if sequence.showAdvanceControls == nil then
+		sequence.showAdvanceControls = sequence.showAdvanceControl or true
 	end
 
 	if sequence.backControl == nil then
@@ -498,11 +547,11 @@ local function loadSequence(num)
 
 	setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
-	buttonIndicator:setButton(sequence.advanceControl)
-	if sequence.advanceControlPosition then
-		buttonIndicator:setPosition(sequence.advanceControlPosition.x, sequence.advanceControlPosition.y)
-	else
-		buttonIndicator:setPositionForScrollDirection(sequence.direction)
+	print(sequence.advanceControls[1].input)
+	print(sequence.advanceControls[1].x)
+	for i, control in ipairs(sequence.advanceControls) do
+		buttonIndicators[i]:setButton(control.input)
+		buttonIndicators[i]:setPosition(control.x, control.y)
 	end
 
 	startTransitionIn(sequence.direction, sequence.delay or 0)
@@ -536,8 +585,11 @@ end
 
 local function nextSequence()
 	unloadSequence()
-
-	if currentSeqIndex < #sequences then
+	if targetSequence then
+		loadSequence(targetSequence)
+		targetSequence = nil
+		updateMenuData(sequences, gameDidFinish)
+	elseif currentSeqIndex < #sequences then
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
@@ -607,17 +659,35 @@ function Panels.cranked(change, accChange)
 	end
 end
 
+local function hideOtherAdvanceControls(pressedIndex)
+	for i, button in ipairs(buttonIndicators) do
+		if i ~= pressedIndex then
+			button:hide()
+		end
+	end
+end
+
 local function checkInputs()
 	local p = panels[panelNum]
 	if lastPanelIsShowing() then
-		if p.advanceFunction == nil and pdButtonJustPressed(sequence.advanceControl) then
-			buttonIndicator:press()
-			if p.advanceDelay then
-				p:exit()
-				playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
-			else
-				finishSequence()
+		if p.advanceFunction == nil then 
+			for i, button in ipairs(buttonIndicators) do
+				if pdButtonJustPressed(sequence.advanceControls[i].input) then
+					if sequence.advanceControls[i].target then
+						targetSequence = sequence.advanceControls[i].target
+					end
+					button:press()
+					hideOtherAdvanceControls(i)
+					if p.advanceDelay then
+						p:exit()
+						playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
+					else
+						finishSequence()
+					end
+				end
 			end
+			
+
 		end
 	end
 
@@ -745,7 +815,7 @@ function Panels.update()
 		local offset = getScrollOffset()
 		updateComic(offset)
 		drawComic(offset)
-		drawButtonIndicator()
+		drawButtonIndicators(offset)
 	end
 
 	if numMenusOpen > 0 then
@@ -944,7 +1014,6 @@ function Panels.startCutscene(comicData, callback)
 
 	Panels.Audio.createTypingSound()
 	validateSettings()
-	createButtonIndicator()
 
 	sequences = Panels.comicData
 	currentSeqIndex = 1
@@ -967,7 +1036,6 @@ function Panels.start(comicData)
 
 	loadGameData()
 	validateSettings()
-	createButtonIndicator()
 	updateSystemMenu()
 
 	sequences = Panels.comicData
