@@ -205,7 +205,6 @@ local function drawButtonIndicators(offset)
 	if sequence.showAdvanceControls and sequenceDidStart then
 		for i, button in ipairs(buttonIndicators) do
 			if sequence.advanceControls[i].anchor then
-				print(button.x, offset.x)
 				local lastPanel = panels[#panels]
 				button:draw(button.x + lastPanel.frame.x + offset.x , button.y + lastPanel.frame.y + offset.y)
 			else
@@ -488,18 +487,13 @@ local function loadSequence(num)
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
 
-	print("loading sequence " .. num .. ": " .. sequence.title)
 	if sequence.advanceControls == nil then 
-		print("no advance controls")
 		local control
 		if sequence.advanceControl == nil then
 			control = {input = getAdvanceControlForScrollDirection(sequence.direction)}
 		else 
 			control = {input = sequence.advanceControl}
 		end
-
-		print("setting control:")
-		print(control.input)
 
 		if sequence.advanceControlPosition == nil then
 			local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(sequence.direction)
@@ -511,12 +505,6 @@ local function loadSequence(num)
 		end
 
 		sequence.advanceControls = { control }
-	else 
-		print("advance controls found")
-		print(sequence.advanceControls)
-		print(#sequence.advanceControls)
-		print(sequence.advanceControls[1].input)
-
 	end
 
 	if sequence.showAdvanceControls == nil then
@@ -547,8 +535,7 @@ local function loadSequence(num)
 
 	setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
-	print(sequence.advanceControls[1].input)
-	print(sequence.advanceControls[1].x)
+
 	for i, control in ipairs(sequence.advanceControls) do
 		buttonIndicators[i]:setButton(control.input)
 		buttonIndicators[i]:setPosition(control.x, control.y)
@@ -686,8 +673,6 @@ local function checkInputs()
 					end
 				end
 			end
-			
-
 		end
 	end
 
@@ -801,6 +786,10 @@ local function drawComic(offset)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
 
 		elseif panel.wasOnScreen then
+			if panel.targetSequenceFunction then
+				targetSequence = panel.targetSequenceFunction()
+			end
+			
 			panel:reset()
 			panel.wasOnScreen = false
 		end
