@@ -65,7 +65,6 @@ local previousBGColor = nil
 local transitionFader = nil
 local shouldFadeBG = false
 
--- Panels.maxUnlockedSequence = 1
 Panels.unlockedSequences = {}
 local gameDidFinish = false
 
@@ -484,8 +483,6 @@ end
 local function loadSequence(num)
 	sequence = sequences[num]
 	createButtonIndicators()
-	-- if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end
-	-- check if the unlockedSequences table contains this sequence num
 	unlockSequence(num)
 
 	-- set default scroll direction for each axis if not specified
@@ -837,7 +834,6 @@ end
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
-		-- Panels.maxUnlockedSequence = data.sequence
 		Panels.unlockedSequences = data.unlockedSequences or {}
 		gameDidFinish = data.gameDidFinish
 	end
@@ -1042,7 +1038,6 @@ function Panels.start(comicData)
 	updateSystemMenu()
 
 	sequences = Panels.comicData
-	-- currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1);
 
 	if shouldShowMainMenu() then
@@ -1063,7 +1058,6 @@ local function unlockAll()
 	for i = 1, #sequences, 1 do
 		table.insert(Panels.unlockedSequences, true)
 	end
-	-- Panels.maxUnlockedSequence = #sequences
 	gameDidFinish = true
 	saveGameData()
 end

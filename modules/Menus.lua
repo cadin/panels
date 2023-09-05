@@ -278,34 +278,26 @@ local function updateChapterMenu(data)
 end
 
 local function isLastUnlockedSequence(index)
-	print(Panels.unlockedSequences[1])
-	print(Panels.unlockedSequences[2])
 	for i = index + 1, #Panels.unlockedSequences, 1 do
-		print(i, Panels.unlockedSequences[i])
 		if Panels.unlockedSequences[i] == true then
-			print(i .. " is unlocked, after " .. index)
 			return false
 		end
 	end
-	print("is last unlocked")
 	return true
 end
 
 local function isFirstUnlockedSequence(index)
 	for i = index - 1, 1, -1 do
 		if Panels.unlockedSequences[i] == true then
-			print(i .. " is unlocked, before " .. index)
 			return false
 		end
 	end
-	print("is first unlocked")
 	return true
 end
 
 local function getNextUnlockedSequence(index)
 	for i = index + 1, #Panels.unlockedSequences, 1 do
 		if Panels.unlockedSequences[i] == true then
-			print("next unlocked: " .. i)
 			return i
 		end
 	end
