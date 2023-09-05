@@ -17,3 +17,12 @@ function reverseTable(t)
 		t[i], t[j] = t[j], t[i]
 	end
 end
+
+function hasValue(tbl, value)
+    for k, v in ipairs(tbl) do -- iterate table (for sequential tables only)
+        if v == value or (type(v) == "table" and hasValue(v, value)) then -- Compare value from the table directly with the value we are looking for, otherwise if the value is table, check its content for this value.
+            return true -- Found in this or nested table
+        end
+    end
+    return false -- Not found
+end

@@ -65,7 +65,8 @@ local previousBGColor = nil
 local transitionFader = nil
 local shouldFadeBG = false
 
-Panels.maxUnlockedSequence = 1
+-- Panels.maxUnlockedSequence = 1
+Panels.unlockedSequences = {}
 local gameDidFinish = false
 
 local alert = nil
@@ -470,10 +471,22 @@ local function setSequenceColors()
 	end
 end
 
+local function unlockSequence(num)
+	for i = 1, num, 1 do
+		if not Panels.unlockedSequences[i]  then
+			Panels.unlockedSequences[i] = false
+		end
+	end
+
+	Panels.unlockedSequences[num] = true
+end
+
 local function loadSequence(num)
 	sequence = sequences[num]
 	createButtonIndicators()
-	if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end
+	-- if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end
+	-- check if the unlockedSequences table contains this sequence num
+	unlockSequence(num)
 
 	-- set default scroll direction for each axis if not specified
 	setSequenceScrollDirection()
@@ -789,7 +802,7 @@ local function drawComic(offset)
 			if panel.targetSequenceFunction then
 				targetSequence = panel.targetSequenceFunction()
 			end
-			
+
 			panel:reset()
 			panel.wasOnScreen = false
 		end
@@ -824,13 +837,14 @@ end
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
-		Panels.maxUnlockedSequence = data.sequence
+		-- Panels.maxUnlockedSequence = data.sequence
+		Panels.unlockedSequences = data.unlockedSequences or {}
 		gameDidFinish = data.gameDidFinish
 	end
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = Panels.maxUnlockedSequence, gameDidFinish = gameDidFinish })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish })
 end
 
 function playdate.gameWillTerminate()
@@ -911,7 +925,7 @@ end
 
 function onAlertDidStartOver()
 	Panels.Audio.stopBGAudio()
-	Panels.maxUnlockedSequence = 1
+	Panels.unlockedSequences = {}
 	gameDidFinish = false
 	saveGameData()
 	unloadSequence()
@@ -1028,7 +1042,7 @@ function Panels.start(comicData)
 	updateSystemMenu()
 
 	sequences = Panels.comicData
-	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
+	-- currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1);
 
 	if shouldShowMainMenu() then
@@ -1046,7 +1060,10 @@ end
 -- DEBUG
 
 local function unlockAll()
-	Panels.maxUnlockedSequence = #sequences
+	for i = 1, #sequences, 1 do
+		table.insert(Panels.unlockedSequences, true)
+	end
+	-- Panels.maxUnlockedSequence = #sequences
 	gameDidFinish = true
 	saveGameData()
 end
