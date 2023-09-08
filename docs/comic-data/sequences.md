@@ -24,7 +24,6 @@ Each sequence can define different settings for scroll direction and background 
 ---
 
 ## Properties
-
 {: .no_toc}
 
 ### panels
@@ -124,7 +123,6 @@ Examples:
 {: .text-delta}
 
 ##### Set a looping background song:
-
 {: .no_toc}
 
 ```
@@ -134,7 +132,6 @@ audio = { file = "sequence1/bgSong", loop = true, volume = 0.6 },
 The `loop` property is false by default.
 
 ##### Continue audio from the previous sequence:
-
 {: .no_toc}
 
 ```
@@ -174,6 +171,47 @@ default: true
 Set this property to `false` to hide the advance control indicator on the last panel of the sequence.
 
 Note that this might be confusing for users unless an indication of the control is included somewhere in the content of the final panel itself.
+
+### advanceControls
+
+default: nil
+{: .prop-default}
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+A table that defines a list of input controls with corresponding sequence targets (and optional position coordinates). These input/target pairs can be used to create a [nonlinear branching storyline]({{site.baseurl}}/docs/nonlinear-comics.html).
+
+Properties:
+{: .text-delta}
+
+-   `input` (Panels.Input)
+-   `target` (number [sequence index])
+-   `x` (number)
+-   `y` (number)
+
+Example:
+{: .text-delta}
+
+```lua
+advanceControls = {
+    { input = Panels.Input.A, target = 2, x = 180, y = 20},
+    { input = Panels.Input.B, target = 4, x = 180, y = 180},
+},
+```
+
+### showAdvanceControls
+
+default: true
+{: .prop-default}
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set this property to `false` to hide the advance options in your [nonlinear comic]({{site.baseurl}}/docs/nonlinear-comics.html).
+
+Note that this might be confusing for users unless an indication of the controls is included somewhere in the content of the final panel.
+
 
 ### backgroundColor
 

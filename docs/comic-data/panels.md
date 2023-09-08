@@ -24,7 +24,6 @@ A panel's data defines the look and behavior of this individual scene. It lists 
 ---
 
 ## Properties
-
 {: .no_toc}
 
 ### layers
@@ -338,5 +337,17 @@ default: nil
 {: .prop-default}
 
 A function to reset a custom-rendered panel. This function is called when the panel scrolls off screen. Use this to reset values and prepare the panel to be displayed again in the event that the user navigates back to this panel.
+
+For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
+
+### targetSequenceFunction
+
+default: nil
+{: .prop-default}
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+In a comic with a [branching storyline](({{site.baseurl/docs/nonlinear-comics.html}})), this function defines the next sequence to present by returning the target sequence number. This function is called when the panel scrolls off screen (before resetting the panel).
 
 For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).

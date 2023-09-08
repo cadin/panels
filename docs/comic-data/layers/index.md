@@ -25,7 +25,6 @@ Having elements on separate layers allows Panels to simulate depth by scrolling 
 ---
 
 ## Properties
-
 {: .no_toc}
 
 ### image

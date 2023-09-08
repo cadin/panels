@@ -126,3 +126,26 @@ local function resetPanel06B()
     playdate.stopAccelerometer() -- clean up
 end
 ```
+
+## Target Sequence
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Assign a custom function to a panel's [`targetSequenceFunction`]({{site.baseurl}}/docs/comic-data/panels#targetsequencefunction) property.
+This function will be called once when your panel leaves the screen.
+
+In a comic with a [branching storyline]({{site.baseurl}}/docs/nonlinear-comics.html), you can define the next sequence to present by returning the sequence number from this function.
+
+Example:
+{: .text-delta}
+
+```lua
+local function targetSequenceForS02()
+    if didWinMinigame then
+        return 4
+    else 
+        return 5
+    end
+end
+```
