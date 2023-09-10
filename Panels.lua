@@ -65,13 +65,15 @@ local previousBGColor = nil
 local transitionFader = nil
 local shouldFadeBG = false
 
-Panels.maxUnlockedSequence = 1
+Panels.unlockedSequences = {}
 local gameDidFinish = false
 
 local alert = nil
 
 local isCutscene = false
 local cutsceneFinishCallback = nil
+
+local targetSequence = nil
 
 local function setUpPanels(seq)
 	panels = {}
@@ -177,20 +179,38 @@ end
 -- -------------------------------------------------
 -- BUTTON INDICATOR
 
-local function createButtonIndicator()
-	buttonIndicator = Panels.ButtonIndicator.new()
-end
-
-local function drawButtonIndicator()
-	if transitionOutAnimator == nil then
-		if lastPanelIsShowing() and sequenceDidStart then
-			buttonIndicator:show()
-		else
-			buttonIndicator:hide()
+local function createButtonIndicators()
+	buttonIndicators = {}
+	if sequence.advanceControls == nil then
+		buttonIndicators = { Panels.ButtonIndicator.new() }
+	else
+		for i, value in ipairs(sequence.advanceControls) do
+			buttonIndicators[i] = Panels.ButtonIndicator.new()
 		end
 	end
-	if sequence.showAdvanceControl and sequenceDidStart then
-		buttonIndicator:draw()
+end
+
+local function drawButtonIndicators(offset)
+	if transitionOutAnimator == nil then
+		if lastPanelIsShowing() and sequenceDidStart then
+			for key, button in pairs(buttonIndicators) do
+				button:show()
+			end
+		else
+			for key, button in pairs(buttonIndicators) do
+				button:hide()
+			end
+		end
+	end
+	if sequence.showAdvanceControls and sequenceDidStart then
+		for i, button in ipairs(buttonIndicators) do
+			if sequence.advanceControls[i].anchor then
+				local lastPanel = panels[#panels]
+				button:draw(button.x + lastPanel.frame.x + offset.x , button.y + lastPanel.frame.y + offset.y)
+			else
+				button:draw()
+			end
+		end
 	end
 end
 
@@ -450,9 +470,20 @@ local function setSequenceColors()
 	end
 end
 
+local function unlockSequence(num)
+	for i = 1, num, 1 do
+		if not Panels.unlockedSequences[i]  then
+			Panels.unlockedSequences[i] = false
+		end
+	end
+
+	Panels.unlockedSequences[num] = true
+end
+
 local function loadSequence(num)
 	sequence = sequences[num]
-	if num > Panels.maxUnlockedSequence then Panels.maxUnlockedSequence = num end
+	createButtonIndicators()
+	unlockSequence(num)
 
 	-- set default scroll direction for each axis if not specified
 	setSequenceScrollDirection()
@@ -466,12 +497,28 @@ local function loadSequence(num)
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
 
-	if sequence.advanceControl == nil then
-		sequence.advanceControl = getAdvanceControlForScrollDirection(sequence.direction)
+	if sequence.advanceControls == nil then 
+		local control
+		if sequence.advanceControl == nil then
+			control = {input = getAdvanceControlForScrollDirection(sequence.direction)}
+		else 
+			control = {input = sequence.advanceControl}
+		end
+
+		if sequence.advanceControlPosition == nil then
+			local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(sequence.direction)
+			control.x = x
+			control.y = y
+		else
+			control.x = sequence.advanceControlPosition.x
+			control.y = sequence.advanceControlPosition.y
+		end
+
+		sequence.advanceControls = { control }
 	end
 
-	if sequence.showAdvanceControl == nil then
-		sequence.showAdvanceControl = true
+	if sequence.showAdvanceControls == nil then
+		sequence.showAdvanceControls = sequence.showAdvanceControl or true
 	end
 
 	if sequence.backControl == nil then
@@ -498,11 +545,10 @@ local function loadSequence(num)
 
 	setUpPanels(sequence)
 	prepareScrolling(sequence.scrollingIsReversed)
-	buttonIndicator:setButton(sequence.advanceControl)
-	if sequence.advanceControlPosition then
-		buttonIndicator:setPosition(sequence.advanceControlPosition.x, sequence.advanceControlPosition.y)
-	else
-		buttonIndicator:setPositionForScrollDirection(sequence.direction)
+
+	for i, control in ipairs(sequence.advanceControls) do
+		buttonIndicators[i]:setButton(control.input)
+		buttonIndicators[i]:setPosition(control.x, control.y)
 	end
 
 	startTransitionIn(sequence.direction, sequence.delay or 0)
@@ -536,8 +582,11 @@ end
 
 local function nextSequence()
 	unloadSequence()
-
-	if currentSeqIndex < #sequences then
+	if targetSequence then
+		loadSequence(targetSequence)
+		targetSequence = nil
+		updateMenuData(sequences, gameDidFinish)
+	elseif currentSeqIndex < #sequences then
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
@@ -607,16 +656,32 @@ function Panels.cranked(change, accChange)
 	end
 end
 
+local function hideOtherAdvanceControls(pressedIndex)
+	for i, button in ipairs(buttonIndicators) do
+		if i ~= pressedIndex then
+			button:hide()
+		end
+	end
+end
+
 local function checkInputs()
 	local p = panels[panelNum]
 	if lastPanelIsShowing() then
-		if p.advanceFunction == nil and pdButtonJustPressed(sequence.advanceControl) then
-			buttonIndicator:press()
-			if p.advanceDelay then
-				p:exit()
-				playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
-			else
-				finishSequence()
+		if p.advanceFunction == nil then 
+			for i, button in ipairs(buttonIndicators) do
+				if pdButtonJustPressed(sequence.advanceControls[i].input) then
+					if sequence.advanceControls[i].target then
+						targetSequence = sequence.advanceControls[i].target
+					end
+					button:press()
+					hideOtherAdvanceControls(i)
+					if p.advanceDelay then
+						p:exit()
+						playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
+					else
+						finishSequence()
+					end
+				end
 			end
 		end
 	end
@@ -731,6 +796,10 @@ local function drawComic(offset)
 			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
 
 		elseif panel.wasOnScreen then
+			if panel.targetSequenceFunction then
+				targetSequence = panel.targetSequenceFunction()
+			end
+
 			panel:reset()
 			panel.wasOnScreen = false
 		end
@@ -745,7 +814,7 @@ function Panels.update()
 		local offset = getScrollOffset()
 		updateComic(offset)
 		drawComic(offset)
-		drawButtonIndicator()
+		drawButtonIndicators(offset)
 	end
 
 	if numMenusOpen > 0 then
@@ -765,13 +834,13 @@ end
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
-		Panels.maxUnlockedSequence = data.sequence
+		Panels.unlockedSequences = data.unlockedSequences or {}
 		gameDidFinish = data.gameDidFinish
 	end
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = Panels.maxUnlockedSequence, gameDidFinish = gameDidFinish })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish })
 end
 
 function playdate.gameWillTerminate()
@@ -852,7 +921,7 @@ end
 
 function onAlertDidStartOver()
 	Panels.Audio.stopBGAudio()
-	Panels.maxUnlockedSequence = 1
+	Panels.unlockedSequences = {}
 	gameDidFinish = false
 	saveGameData()
 	unloadSequence()
@@ -944,7 +1013,6 @@ function Panels.startCutscene(comicData, callback)
 
 	Panels.Audio.createTypingSound()
 	validateSettings()
-	createButtonIndicator()
 
 	sequences = Panels.comicData
 	currentSeqIndex = 1
@@ -967,11 +1035,9 @@ function Panels.start(comicData)
 
 	loadGameData()
 	validateSettings()
-	createButtonIndicator()
 	updateSystemMenu()
 
 	sequences = Panels.comicData
-	currentSeqIndex = math.min(Panels.maxUnlockedSequence, #sequences)
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1);
 
 	if shouldShowMainMenu() then
@@ -989,7 +1055,9 @@ end
 -- DEBUG
 
 local function unlockAll()
-	Panels.maxUnlockedSequence = #sequences
+	for i = 1, #sequences, 1 do
+		table.insert(Panels.unlockedSequences, true)
+	end
 	gameDidFinish = true
 	saveGameData()
 end
