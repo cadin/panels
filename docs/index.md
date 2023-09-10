@@ -26,3 +26,4 @@ Comics built with Panels can support these features:
 -   background audio
 -   sound effects triggered by scroll or synced to animations
 -   panels with fully custom render functions
+-   **NEW!** branching choose-your-own adventure storylines
