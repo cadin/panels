@@ -17,6 +17,7 @@ Comics built with Panels can support these features:
 -   animations and transitions within panels based on scroll position
 -   animated text layers
 -   panels with fully custom render functions
+-   **NEW!** branching choose-your-own adventure storylines
 
 ## Documentation
 Check out the full set of documentation here:
