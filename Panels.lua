@@ -591,9 +591,9 @@ local function nextSequence()
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
 	elseif isCutscene then
+		playdate.inputHandlers.pop()
 		gameDidFinish = true
 		cutsceneFinishCallback()
-		playdate.cranked = crankFunction
 		Panels.Audio.killBGAudio()
 	else
 		gameDidFinish = true
@@ -1008,6 +1008,7 @@ function Panels.startCutscene(comicData, callback)
 	isCutscene = true
 	cutsceneFinishCallback = callback
 	Panels.comicData = comicData
+	maxScrollVelocity = Panels.Settings.maxScrollSpeed
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", { "Cancel", "Start Over" })
 	alert.onHide = onAlertDidHide
 
@@ -1018,12 +1019,14 @@ function Panels.startCutscene(comicData, callback)
 	currentSeqIndex = 1
 
 	loadSequence(currentSeqIndex)
-	crankFunction = playdate.cranked
-	playdate.cranked = Panels.cranked
+	playdate.inputHandlers.push({
+		cranked = Panels.cranked
+	})
 end
 
 function Panels.start(comicData)
 	Panels.comicData = comicData
+	maxScrollVelocity = Panels.Settings.maxScrollSpeed
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", { "Cancel", "Start Over" })
 	alert.onHide = onAlertDidHide
 	Panels.Audio.createTypingSound()
