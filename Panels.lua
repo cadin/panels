@@ -1008,6 +1008,7 @@ function Panels.startCutscene(comicData, callback)
 	isCutscene = true
 	cutsceneFinishCallback = callback
 	Panels.comicData = comicData
+	maxScrollVelocity = Panels.Settings.maxScrollSpeed
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", { "Cancel", "Start Over" })
 	alert.onHide = onAlertDidHide
 
@@ -1024,6 +1025,7 @@ end
 
 function Panels.start(comicData)
 	Panels.comicData = comicData
+	maxScrollVelocity = Panels.Settings.maxScrollSpeed
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", { "Cancel", "Start Over" })
 	alert.onHide = onAlertDidHide
 	Panels.Audio.createTypingSound()
