@@ -591,9 +591,9 @@ local function nextSequence()
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
 	elseif isCutscene then
+		playdate.inputHandlers.pop()
 		gameDidFinish = true
 		cutsceneFinishCallback()
-		playdate.cranked = crankFunction
 		Panels.Audio.killBGAudio()
 	else
 		gameDidFinish = true
@@ -1019,8 +1019,9 @@ function Panels.startCutscene(comicData, callback)
 	currentSeqIndex = 1
 
 	loadSequence(currentSeqIndex)
-	crankFunction = playdate.cranked
-	playdate.cranked = Panels.cranked
+	playdate.inputHandlers.push({
+		cranked = Panels.cranked
+	})
 end
 
 function Panels.start(comicData)
