@@ -218,7 +218,7 @@ default: 0
 
 A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#images) will transition between those images as the panel scrolls. This means a layer with two images will swap them when the panel scroll reaches `0.5` (50%). If you have [`snapToPanels`]({{site.baseurl}}/docs/settings#snaptopanels) enabled, this can cause flickering as the scroll point rapidly fluctuates between values near or equal to 0.5.
 
-Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`, thus avoiding the flickering problem.
+Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`, thus avoiding the flickering problem.
 
 ### advanceControl
 
