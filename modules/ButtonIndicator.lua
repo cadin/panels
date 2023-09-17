@@ -76,7 +76,7 @@ function Panels.ButtonIndicator.new()
 	end
 	
 	function button:show()
-		if self.currentFrame == 1 then 
+		if self.currentFrame == 1 and self.state ~= "showing" then 
 			self.state = "showing"
 			self.step = 1
 			self.timer:start()
@@ -84,7 +84,7 @@ function Panels.ButtonIndicator.new()
 	end
 	
 	function button:hide()
-		if self.currentFrame <= self.holdFrame then
+		if self.currentFrame <= self.holdFrame and self.state ~= "hiding" then
 			self.state = "hiding"
 			self.step = -1
 			self.timer:start()
