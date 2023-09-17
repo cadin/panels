@@ -325,3 +325,13 @@ default: nil
 A table describing the layer effect. Choose from blink, shake, or text type-on effects.
 
 See [Layer Effects]({{site.baseurl}}/docs/comic-data/layers/effects) for more information.
+
+
+### transitionOffset
+
+default: 0
+{: .prop-default}
+
+A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#images) will transition between those images as the panel scrolls. This means a layer with two images will swap them when the panel scroll reaches `0.5` (50%).
+
+Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`.
