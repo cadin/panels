@@ -137,6 +137,13 @@ Options:
 -   `Panels.Audio.TypingSound.NONE`
 -   path to custom sound file
 
+### maxScrollSpeed
+
+default: 8
+{: .prop-default}
+
+Change the maximum scroll speed when the user scrolls with the d-pad. This does not affect crank scrolling.
+
 ## Menu Settings
 
 ### menuImage
