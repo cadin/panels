@@ -587,7 +587,12 @@ end
 
 local function nextSequence()
 	unloadSequence()
-	if targetSequence then
+	if isCutscene then
+		playdate.inputHandlers.pop()
+		gameDidFinish = true
+		cutsceneFinishCallback(targetSequence)
+		Panels.Audio.killBGAudio()
+	elseif targetSequence then
 		loadSequence(targetSequence)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish)
@@ -595,11 +600,7 @@ local function nextSequence()
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
-	elseif isCutscene then
-		playdate.inputHandlers.pop()
-		gameDidFinish = true
-		cutsceneFinishCallback()
-		Panels.Audio.killBGAudio()
+
 	else
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
