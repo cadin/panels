@@ -549,7 +549,7 @@ local function loadSequence(num)
 	for i, control in ipairs(sequence.advanceControls) do
 		buttonIndicators[i]:setButton(control.input)
 
-		if control.x == nil or control.y == nil then
+		if sequence.showAdvanceControls and (control.x == nil or control.y == nil) then
 			local err = sequence.title or "Untitled sequence (" .. num .. ")"
 			printError(err, "Invalid position for advance control")
 		end
