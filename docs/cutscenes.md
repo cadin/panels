@@ -43,6 +43,11 @@ While the cutscene is active, continue to call `Panels.update()` every frame fro
 
 When your callback function runs, you can stop calling `Panels.update()` and resume your normal game loop. It's up to your game code to keep track of when a cutscene is running, and to send the appropriate comic data table each time a cutscene starts.
 
+## Branching Cutscenes
+
+If your cutscene has a branching multiple choice ending, you can receive the user's choice in your callback function. Panels will send back the `target` parameter from the `advanceControls` option the user selected.
+
+An example of a branching cutscene ending is shown in the [example project](https://github.com/cadin/panels-cutscene-example).
 
 ## Credits
 
