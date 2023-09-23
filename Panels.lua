@@ -548,7 +548,12 @@ local function loadSequence(num)
 
 	for i, control in ipairs(sequence.advanceControls) do
 		buttonIndicators[i]:setButton(control.input)
-		buttonIndicators[i]:setPosition(control.x, control.y)
+
+		if control.x == nil or control.y == nil then
+			local err = sequence.title or "Untitled sequence (" .. num .. ")"
+			printError(err, "Invalid position for advance control")
+		end
+		buttonIndicators[i]:setPosition(control.x or (i-1) * 40, control.y or 0)
 	end
 
 	startTransitionIn(sequence.direction, sequence.delay or 0)
