@@ -548,7 +548,12 @@ local function loadSequence(num)
 
 	for i, control in ipairs(sequence.advanceControls) do
 		buttonIndicators[i]:setButton(control.input)
-		buttonIndicators[i]:setPosition(control.x, control.y)
+
+		if sequence.showAdvanceControls and (control.x == nil or control.y == nil) then
+			local err = sequence.title or "Untitled sequence (" .. num .. ")"
+			printError(err, "Invalid position for advance control")
+		end
+		buttonIndicators[i]:setPosition(control.x or (i-1) * 40, control.y or 0)
 	end
 
 	startTransitionIn(sequence.direction, sequence.delay or 0)
@@ -582,7 +587,12 @@ end
 
 local function nextSequence()
 	unloadSequence()
-	if targetSequence then
+	if isCutscene then
+		playdate.inputHandlers.pop()
+		gameDidFinish = true
+		cutsceneFinishCallback(targetSequence)
+		Panels.Audio.killBGAudio()
+	elseif targetSequence then
 		loadSequence(targetSequence)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish)
@@ -590,11 +600,7 @@ local function nextSequence()
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
-	elseif isCutscene then
-		playdate.inputHandlers.pop()
-		gameDidFinish = true
-		cutsceneFinishCallback()
-		Panels.Audio.killBGAudio()
+
 	else
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
