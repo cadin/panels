@@ -1,3 +1,6 @@
+-- Panels version 1.5.1
+-- https://cadin.github.io/panels/
+
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"

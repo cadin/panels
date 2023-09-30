@@ -279,7 +279,9 @@ end
 
 local function isLastUnlockedSequence(index)
 	for i = index + 1, #Panels.unlockedSequences, 1 do
-		if Panels.unlockedSequences[i] == true then
+	if i > #sections then return true end
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
 			return false
 		end
 	end
@@ -288,7 +290,8 @@ end
 
 local function isFirstUnlockedSequence(index)
 	for i = index - 1, 1, -1 do
-		if Panels.unlockedSequences[i] == true then
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
 			return false
 		end
 	end
@@ -297,7 +300,8 @@ end
 
 local function getNextUnlockedSequence(index)
 	for i = index + 1, #Panels.unlockedSequences, 1 do
-		if Panels.unlockedSequences[i] == true then
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
 			return i
 		end
 	end
@@ -306,7 +310,8 @@ end
 
 local function getPreviousUnlockedSequence(index)
 	for i = index - 1, 1, -1 do
-		if Panels.unlockedSequences[i] == true then
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
 			return i
 		end
 	end
@@ -339,11 +344,9 @@ local function createChapterMenu(data)
 		downButtonUp = function()
 			chapterOffset = 4
 			local selectedRow = chapterList:getSelectedRow()
-			local item = sections[selectedRow]
-			if not isLastUnlockedSequence(item.index) then
-				local next = getNextUnlockedSequence(item.index)
-				local row = getRowForSequenceIndex(next)
-				chapterList:setSelectedRow(row)
+			if not isLastUnlockedSequence(selectedRow) then
+				local next = getNextUnlockedSequence(selectedRow)
+				chapterList:setSelectedRow(next)
 				if Panels.Settings.playMenuSounds then 
 					selectionSound:play()
 				end
@@ -356,14 +359,10 @@ local function createChapterMenu(data)
 		
 		upButtonUp = function()
 			chapterOffset = -4
-
 			local selectedRow = chapterList:getSelectedRow()
-			local item = sections[selectedRow]
-
-			if not isFirstUnlockedSequence(item.index) then
-				local prev = getPreviousUnlockedSequence(item.index)
-				local row = getRowForSequenceIndex(prev)
-				chapterList:setSelectedRow(row)
+			if not isFirstUnlockedSequence(selectedRow) then
+				local prev = getPreviousUnlockedSequence(selectedRow)
+				chapterList:setSelectedRow(prev)
 				if Panels.Settings.playMenuSounds then 
 					selectionRevSound:play()
 				end
@@ -399,7 +398,6 @@ function chapterList:drawCell(section, row, column, selected, x, y, width, heigh
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
 			gfx.fillRoundRect(x, y + chapterOffset, width, height, 4)
-			-- gfx.drawRoundRect(x + 1, y, width - 2, height, 4)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			chapterOffset = 0
 		else
