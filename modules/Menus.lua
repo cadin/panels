@@ -344,8 +344,7 @@ local function createChapterMenu(data)
 		downButtonUp = function()
 			chapterOffset = 4
 			local selectedRow = chapterList:getSelectedRow()
-			local item = sections[selectedRow]
-			if not isLastUnlockedSequence(item.index) then
+			if not isLastUnlockedSequence(selectedRow) then
 				local next = getNextUnlockedSequence(selectedRow)
 				chapterList:setSelectedRow(next)
 				if Panels.Settings.playMenuSounds then 
@@ -360,11 +359,8 @@ local function createChapterMenu(data)
 		
 		upButtonUp = function()
 			chapterOffset = -4
-
 			local selectedRow = chapterList:getSelectedRow()
-			local item = sections[selectedRow]
-
-			if not isFirstUnlockedSequence(item.index) then
+			if not isFirstUnlockedSequence(selectedRow) then
 				local prev = getPreviousUnlockedSequence(selectedRow)
 				chapterList:setSelectedRow(prev)
 				if Panels.Settings.playMenuSounds then 
