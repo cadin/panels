@@ -1,4 +1,4 @@
--- Panels version 1.5.1
+-- Panels version 1.5.2
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
