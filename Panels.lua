@@ -484,6 +484,7 @@ local function unlockSequence(num)
 end
 
 local function loadSequence(num)
+	currentSeqIndex = num
 	sequence = sequences[num]
 	createButtonIndicators()
 	unlockSequence(num)
