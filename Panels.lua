@@ -1,4 +1,4 @@
--- Panels version 1.5.1
+-- Panels version 1.5.3
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -484,6 +484,7 @@ local function unlockSequence(num)
 end
 
 local function loadSequence(num)
+	currentSeqIndex = num
 	sequence = sequences[num]
 	createButtonIndicators()
 	unlockSequence(num)

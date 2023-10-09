@@ -347,6 +347,7 @@ local function createChapterMenu(data)
 			if not isLastUnlockedSequence(selectedRow) then
 				local next = getNextUnlockedSequence(selectedRow)
 				chapterList:setSelectedRow(next)
+				chapterList:scrollToRow(next)
 				if Panels.Settings.playMenuSounds then 
 					selectionSound:play()
 				end
@@ -363,6 +364,7 @@ local function createChapterMenu(data)
 			if not isFirstUnlockedSequence(selectedRow) then
 				local prev = getPreviousUnlockedSequence(selectedRow)
 				chapterList:setSelectedRow(prev)
+				chapterList:scrollToRow(prev)
 				if Panels.Settings.playMenuSounds then 
 					selectionRevSound:play()
 				end
