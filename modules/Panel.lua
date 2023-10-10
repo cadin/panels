@@ -733,6 +733,10 @@ function Panels.Panel.new(data)
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
 		gfx.clear(self.backgroundColor)
+		
+		if self.updateFunction then 
+			self:updateFunction(offset)
+		end
 
 		if self.renderFunction then
 			self:renderFunction(offset)
