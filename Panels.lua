@@ -14,6 +14,7 @@ local ScreenWidth <const> = playdate.display.getWidth()
 Panels = {}
 Panels.comicData = {}
 Panels.credits = {}
+Panels.vars = {}
 
 import "./modules/Font"
 import "./modules/Audio"
@@ -847,11 +848,12 @@ local function loadGameData()
 	if data then
 		Panels.unlockedSequences = data.unlockedSequences or {}
 		gameDidFinish = data.gameDidFinish
+		Panels.vars = data.vars or {}
 	end
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
 end
 
 function playdate.gameWillTerminate()
