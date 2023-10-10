@@ -590,6 +590,7 @@ local function unloadSequence()
 end
 
 local function nextSequence()
+	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
 	if isCutscene then
 		playdate.inputHandlers.pop()
@@ -600,7 +601,7 @@ local function nextSequence()
 		loadSequence(targetSequence)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish)
-	elseif currentSeqIndex < #sequences then
+	elseif currentSeqIndex < #sequences and not isDeadEnd then
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
