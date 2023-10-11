@@ -28,6 +28,7 @@ import "./modules/Image"
 import "./modules/Menus"
 import "./modules/Alert"
 import "./modules/Panel"
+import "./modules/Layer"
 
 import "./modules/TextAlignment"
 import "./modules/Utils"
@@ -611,6 +612,10 @@ local function nextSequence()
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
 		menusAreFullScreen = true
+		
+		if Panels.Settings.resetVarsOnGameOver then
+			Panels.vars = {}
+		end
 		Panels.Audio.killBGAudio()
 		Panels.mainMenu:show()
 	end
@@ -940,6 +945,7 @@ function onAlertDidStartOver()
 	unloadSequence()
 	currentSeqIndex = 1
 
+	Panels.vars = {}
 	Panels.mainMenu:hide()
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
 end
