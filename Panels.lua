@@ -1,4 +1,4 @@
--- Panels version 1.5.3
+-- Panels version 1.6.0
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -14,6 +14,7 @@ local ScreenWidth <const> = playdate.display.getWidth()
 Panels = {}
 Panels.comicData = {}
 Panels.credits = {}
+Panels.vars = {}
 
 import "./modules/Font"
 import "./modules/Audio"
@@ -27,6 +28,7 @@ import "./modules/Image"
 import "./modules/Menus"
 import "./modules/Alert"
 import "./modules/Panel"
+import "./modules/Layer"
 
 import "./modules/TextAlignment"
 import "./modules/Utils"
@@ -590,6 +592,7 @@ local function unloadSequence()
 end
 
 local function nextSequence()
+	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
 	if isCutscene then
 		playdate.inputHandlers.pop()
@@ -600,7 +603,7 @@ local function nextSequence()
 		loadSequence(targetSequence)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish)
-	elseif currentSeqIndex < #sequences then
+	elseif currentSeqIndex < #sequences and not isDeadEnd then
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
@@ -609,6 +612,10 @@ local function nextSequence()
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
 		menusAreFullScreen = true
+		
+		if Panels.Settings.resetVarsOnGameOver then
+			Panels.vars = {}
+		end
 		Panels.Audio.killBGAudio()
 		Panels.mainMenu:show()
 	end
@@ -846,11 +853,12 @@ local function loadGameData()
 	if data then
 		Panels.unlockedSequences = data.unlockedSequences or {}
 		gameDidFinish = data.gameDidFinish
+		Panels.vars = data.vars or {}
 	end
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
 end
 
 function playdate.gameWillTerminate()
@@ -937,6 +945,7 @@ function onAlertDidStartOver()
 	unloadSequence()
 	currentSeqIndex = 1
 
+	Panels.vars = {}
 	Panels.mainMenu:hide()
 	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
 end

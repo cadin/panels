@@ -14,6 +14,8 @@ Panels.Settings = {
 	typingSound = Panels.Audio.TypingSound.DEFAULT,
 	maxScrollSpeed = 8,
 	
+	resetVarsOnGameOver = true,
+	
 	-- menu settings
 	menuImage = "menuImage.png",
 	listLockedSequences = true,

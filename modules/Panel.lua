@@ -38,7 +38,7 @@ local function createFrameFromPartialFrame(frame)
 	return frame
 end
 
-local function getScrollPercentages(frame, offset, axis)
+function getScrollPercentages(frame, offset, axis)
 	local xPct = 1 - (frame.x - frame.margin + frame.width + offset.x) / (ScreenWidth + frame.width)
 	local yPct = 1 - (frame.y - frame.margin + frame.height + offset.y) / (ScreenHeight + frame.height)
 
@@ -733,6 +733,10 @@ function Panels.Panel.new(data)
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
 		gfx.clear(self.backgroundColor)
+		
+		if self.updateFunction then 
+			self:updateFunction(offset)
+		end
 
 		if self.renderFunction then
 			self:renderFunction(offset)
