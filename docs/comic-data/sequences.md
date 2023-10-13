@@ -226,3 +226,14 @@ OPTIONS:
 
 -   `Panels.Color.WHITE`
 -   `Panels.Color.BLACK`
+
+
+### endSequence
+
+default: false
+{: .prop-default}
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Specify that a sequence is a dead end branch in your nonlinear comic. When a user advances past this sequence they will return to the main menu even if there are subsequent sequences listed in the comic data.

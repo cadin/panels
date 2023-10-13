@@ -75,6 +75,24 @@ With this set, you can omit the folder name when specifying audio in your comic 
 
 If you wish to specify files using the full path, set this property to `""`.
 
+## Behavior Settings
+
+### resetVarsOnGameOver
+
+default: true
+{: .prop-default }
+
+If you're using [global variables]({{site.baseurl}}/docs/comic-data/variables) to track state in your comic, they will automatically reset when the user completes the game by finishing all sequences, or by hitting a sequence marked with the `endSequence` flag.
+
+Set this to `false` to have Panels retain global vars between playthroughs. Variables will still be reset when the user chooses "Start Over" from the main menu.
+
+### maxScrollSpeed
+
+default: 8
+{: .prop-default }
+
+Change the maximum speed when scrolling with the d-pad. This does not affect crank scroll speed.
+
 ## Panel Settings
 
 ### defaultFrame

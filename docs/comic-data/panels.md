@@ -351,3 +351,12 @@ FOR NONLINEAR COMICS ONLY
 In a comic with a [branching storyline](({{site.baseurl/docs/nonlinear-comics.html}})), this function defines the next sequence to present by returning the target sequence number. This function is called when the panel scrolls off screen (before resetting the panel).
 
 For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
+
+### updateFunction
+
+default: nil
+{: .prop-default}
+
+A custom update function for this panel. This function gets called for every frame update. It runs independently from rendering, so you can perform custom logic here while still letting Panels handle panel rendering
+
+For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).

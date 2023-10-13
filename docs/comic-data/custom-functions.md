@@ -35,9 +35,32 @@ local function renderPanel6B(panel, offset)
 end
 ```
 
-### Drawing Layers
+### Render Individual Layers
 
 Setting a render function for a panel ejects it from the framework's normal rendering flow. This means your function becomes responsible for _all_ the logic and drawing in your panel.
+
+Normally this would mean you need to calculate parallax and layer positions manually before drawing images to the screen (see below).
+
+You can bypass those requirements by using the `Panels.renderLayerInPanel()` function. This allows you to intercept panel rendering with a custom function, alter layer data or toggle layers based on [global variables]({{site.baseurl}}/docs/comic-data/variables), then hand them over to Panels to render for you.
+
+The function accepts the layer data, the panel data, and the scroll offset.
+
+Example:
+{: .text-delta}
+
+```lua
+local function renderPanel6B(panel, offset)
+    for i, layer in ipairs(panel.layers) do
+        if layer.name ~= 'hiddenLayer' then
+            Panels.renderLayerInPanel(layer, panel, offset)
+        end
+    end
+end
+```
+
+### Drawing Layers Manually
+
+If you choose not to use `Panels.renderLayerInPanel()`, then you'll need to draw everything in your panel manually.
 
 You can access your panel's layers with the `panel.layers` property. Loop through them to draw the contents of your panel. An image layer will have the `playdate.graphics.image` stored in its `img` property.
 
@@ -54,7 +77,7 @@ end
 
 ### Calculating Parallax
 
-Since your panel has been taken out of the render flow, you'll need to calculate layer position yourself if you want parallax scrolling.
+Since your panel has been taken out of the render flow, if you're not using `Panels.renderLayerInPanel()` you'll need to calculate layer position yourself if you want parallax scrolling.
 
 The example below shows how you might calculate x position for layers in a horizontally-scrolling sequence. A vertical sequence would be the same, substituting `y` for `x` and `height` for `width`.
 
@@ -147,5 +170,21 @@ local function targetSequenceForS02()
     else 
         return 5
     end
+end
+```
+
+## Update 
+
+Assign a custom function to a panel's [`updateFunction`]({{site.baseurl}}/docs/comic-data/panels#updatefunction) property.
+This function will be called every frame while your panel is on screen.
+
+Update functions allow you to intercept user input or perform other custom logic without having to take over rendering the panel as you would with a custom render function.
+
+Example:
+{: .text-delta}
+
+```lua
+local function updatePanel6B(panel, offset)
+ -- handle input or perform other custom logic
 end
 ```
