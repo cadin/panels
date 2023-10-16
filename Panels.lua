@@ -1,4 +1,4 @@
--- Panels version 1.6.0
+-- Panels version 1.6.1
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -524,7 +524,11 @@ local function loadSequence(num)
 	end
 
 	if sequence.showAdvanceControls == nil then
-		sequence.showAdvanceControls = sequence.showAdvanceControl or true
+		if sequence.showAdvanceControl == nil then
+			sequence.showAdvanceControls = true
+		else 
+			sequence.showAdvanceControls = sequence.showAdvanceControl
+		end
 	end
 
 	if sequence.backControl == nil then
