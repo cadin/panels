@@ -348,7 +348,7 @@ default: nil
 FOR NONLINEAR COMICS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
-In a comic with a [branching storyline](({{site.baseurl/docs/nonlinear-comics.html}})), this function defines the next sequence to present by returning the target sequence number. This function is called when the panel scrolls off screen (before resetting the panel).
+In a comic with a [branching storyline](({{site.baseurl}}/docs/nonlinear-comics)), this function defines the next sequence to present by returning the target sequence number. This function is called when the panel scrolls off screen (before resetting the panel).
 
 For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
 

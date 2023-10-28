@@ -40,33 +40,49 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
 ## Projects Made with Panels
 
-<div style="clear: both;height: 1px;">&nbsp;</div>
+<div class="projectGrid">
 
-[![The Botanist screenshot]({{site.baseurl}}/assets/images/botanist-screen.png){: .screenshot}](https://play.date/games/the-botanist/)
+   <div class="exampleProject">
+      <a href="https://play.date/games/the-botanist/"><img src="{{site.baseurl}}/assets/images/botanist-screen.png" /></a>
+      <h3><a href="https://play.date/games/the-botanist/">The Botanist</a></h3>
 
-### [The Botanist](https://play.date/games/the-botanist/)
+      <p>A sci-fi adventure comic<br />
+      by Cadin Batrack</p>
+   </div>
 
-A sci-fi adventure comic  
-by Cadin Batrack
+   <div class="exampleProject">
+      <a href="https://play.date/games/to-dust/"><img src="{{site.baseurl}}/assets/images/toDust-screen.png" /></a>
+      <h3><a href="https://play.date/games/to-dust/">To Dust</a></h3>
 
-<div style="clear: both;height: 1px;">&nbsp;</div>
+      <p>A sci-fi adventure comic<br />
+      by Cadin Batrack</p>
+   </div>
 
-[![To Dust screenshot]({{site.baseurl}}/assets/images/toDust-screen.png){: .screenshot}](https://play.date/games/to-dust/)
+   <div class="exampleProject">
+      <a href="https://cadinb.itch.io/illumination"><img src="{{site.baseurl}}/assets/images/illumination-screen.png" /></a>
+      <h3><a href="https://cadinb.itch.io/illumination">Illumination</a></h3>
 
-### [To Dust](https://play.date/games/to-dust/)
+      <p>A free mini-comic<br />
+      by Cadin Batrack</p>
+   </div>
 
-A sci-fi adventure comic  
-by Cadin Batrack
+   <div class="exampleProject">
+      <a href="https://ledbetter-games.itch.io/ghost"><img src="{{site.baseurl}}/assets/images/ghostInTheGallery-screen.png" /></a>
+      <h3><a href="https://ledbetter-games.itch.io/ghost">A Ghost in the Gallery</a></h3>
 
-<div style="clear: both;height: 1px;">&nbsp;</div>
+      <p>An ART-O-Ween Tale<br />
+      by Ledbetter</p>
+   </div>
 
-[![Illumination screenshot]({{site.baseurl}}/assets/images/illumination-screen.png){: .screenshot}](https://cadinb.itch.io/illumination)
+   <div class="exampleProject">
+      <a href="https://lumicreative.itch.io/what-the-crow"><img src="{{site.baseurl}}/assets/images/whatTheCrow-screen.png" /></a>
+      <h3><a href="https://lumicreative.itch.io/what-the-crow">What the Crow?!</a></h3>
 
-### [Illumination](https://cadinb.itch.io/illumination)
+      <p>What the Crow?!<br />
+      by Lumi</p>
+   </div>
 
-A free mini-comic  
-by Cadin Batrack
+</div>
 
-<div style="clear: both;">&nbsp;</div>
 <br />
 <br />
