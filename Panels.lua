@@ -321,6 +321,7 @@ end
 
 local function scrollToNextPanel()
 	if not isLastPanel(panelNum) then
+		if panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
 		local p = panels[panelNum]
 		p.buttonsPressed = {}
 		local target = 0
@@ -793,13 +794,14 @@ local function updateComic(offset)
 			else
 				finishSequence()
 			end
-		else
-			updateScroll()
-			if sequence.scrollType == Panels.ScrollType.MANUAL then
-				updateArrowControls()
-			end
-			checkInputs()
 		end
+		
+		updateScroll()
+		if sequence.scrollType == Panels.ScrollType.MANUAL then
+			updateArrowControls()
+		end
+		checkInputs()
+		
 	end
 end
 
