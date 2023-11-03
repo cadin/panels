@@ -322,6 +322,7 @@ end
 local function scrollToNextPanel()
 	if not isLastPanel(panelNum) then
 		local p = panels[panelNum]
+		p.buttonsPressed = {}
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos > p.frame.y * -1 then
 			target = getPanelScrollLocation(p, true)
