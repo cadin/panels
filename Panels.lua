@@ -1,4 +1,4 @@
--- Panels version 1.6.1
+-- Panels version 1.6.2
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -321,7 +321,9 @@ end
 
 local function scrollToNextPanel()
 	if not isLastPanel(panelNum) then
+		if panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
 		local p = panels[panelNum]
+		p.buttonsPressed = {}
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos > p.frame.y * -1 then
 			target = getPanelScrollLocation(p, true)
@@ -506,7 +508,9 @@ local function loadSequence(num)
 	if sequence.advanceControls == nil then 
 		local control
 		if sequence.advanceControl == nil then
-			control = {input = getAdvanceControlForScrollDirection(sequence.direction)}
+			local _input = getAdvanceControlForScrollDirection(sequence.direction)
+			control = {input = _input}
+			sequence.advanceControl = _input
 		else 
 			control = {input = sequence.advanceControl}
 		end
@@ -521,6 +525,7 @@ local function loadSequence(num)
 		end
 
 		sequence.advanceControls = { control }
+	
 	end
 
 	if sequence.showAdvanceControls == nil then
@@ -789,13 +794,14 @@ local function updateComic(offset)
 			else
 				finishSequence()
 			end
-		else
-			updateScroll()
-			if sequence.scrollType == Panels.ScrollType.MANUAL then
-				updateArrowControls()
-			end
-			checkInputs()
 		end
+		
+		updateScroll()
+		if sequence.scrollType == Panels.ScrollType.MANUAL then
+			updateArrowControls()
+		end
+		checkInputs()
+		
 	end
 end
 
