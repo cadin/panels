@@ -506,7 +506,9 @@ local function loadSequence(num)
 	if sequence.advanceControls == nil then 
 		local control
 		if sequence.advanceControl == nil then
-			control = {input = getAdvanceControlForScrollDirection(sequence.direction)}
+			local _input = getAdvanceControlForScrollDirection(sequence.direction)
+			control = {input = _input}
+			sequence.advanceControl = _input
 		else 
 			control = {input = sequence.advanceControl}
 		end
@@ -521,6 +523,7 @@ local function loadSequence(num)
 		end
 
 		sequence.advanceControls = { control }
+	
 	end
 
 	if sequence.showAdvanceControls == nil then
