@@ -820,8 +820,10 @@ local function drawComic(offset)
 	for i, panel in ipairs(panels) do
 		if (panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
-			-- panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
-			-- panel.canvas:draw(panel.frame.x, panel.frame.y)
+			-- I tried setting clipRect here instead of inside the Panel, but it's not any faster
+			-- leaving it inside Panel for simplicity
+			-- local rect = panel:getClipRect(offset)
+			-- gfx.setClipRect(rect.x, rect.y, rect.width, rect.height)
 			panel.canvas:draw(0, 0)
 
 		elseif panel.wasOnScreen then
@@ -833,6 +835,8 @@ local function drawComic(offset)
 			panel.wasOnScreen = false
 		end
 	end
+	
+	-- gfx.clearClipRect()
 	
 	playdate.drawFPS(0,0)
 

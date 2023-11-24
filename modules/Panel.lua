@@ -728,6 +728,28 @@ function Panels.Panel.new(data)
 		end
 	end
 	
+	
+	-- function panel:getClipRect(offset)
+	-- 	local frame = self.frame
+	-- 	local posX = frame.x + offset.x
+	-- 	local posY = frame.y + offset.y
+	-- 	
+	-- 	local x = math.max(posX, 0)
+	-- 	local y = math.max(posY, 0)
+	-- 	
+	-- 	local width = math.min(frame.width, frame.width + posX)
+	-- 	local height = math.min(frame.height, frame.height + posY)
+	-- 	
+	-- 	if width > ScreenWidth then
+	-- 		width = ScreenWidth - x
+	-- 	end
+	-- 	
+	-- 	if height > ScreenHeight then
+	-- 		height = ScreenHeight - y
+	-- 	end
+	-- 	
+	-- 	return {x = x, y = y, width = width, height = height}
+	-- end
 
 
 	function panel:render(offset, borderColor, bgColor)
