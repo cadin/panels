@@ -820,7 +820,9 @@ local function drawComic(offset)
 	for i, panel in ipairs(panels) do
 		if (panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
-			panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
+			-- panel.canvas:draw(panel.frame.x + offset.x, panel.frame.y + offset.y)
+			-- panel.canvas:draw(panel.frame.x, panel.frame.y)
+			panel.canvas:draw(0, 0)
 
 		elseif panel.wasOnScreen then
 			if panel.targetSequenceFunction then
@@ -831,6 +833,8 @@ local function drawComic(offset)
 			panel.wasOnScreen = false
 		end
 	end
+	
+	playdate.drawFPS(0,0)
 
 end
 

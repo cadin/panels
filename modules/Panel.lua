@@ -98,8 +98,7 @@ function Panels.Panel.new(data)
 	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
-	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
-	-- panel.canvas = gfx.image.new(ScreenWidth, ScreenHeight, gfx.kColorBlack)
+	panel.canvas = gfx.image.new( ScreenWidth, ScreenHeight, gfx.kColorClear)
 
 	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
 
@@ -728,12 +727,19 @@ function Panels.Panel.new(data)
 			self.advanceButton:draw()
 		end
 	end
+	
+
 
 	function panel:render(offset, borderColor, bgColor)
+		local frame = self.frame
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
-		gfx.clear(self.backgroundColor)
+		gfx.clear(gfx.kColorClear)
 		
+		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
+		gfx.setClipRect(0, 0, frame.width, frame.height)
+		gfx.clear(self.backgroundColor)
+
 		if self.updateFunction then 
 			self:updateFunction(offset)
 		end
@@ -750,7 +756,7 @@ function Panels.Panel.new(data)
 			end
 			self.borderImage:draw(0, 0)
 		end
-
+		
 		if self.advanceButton then
 			self:updateAdvanceButton()
 		end
