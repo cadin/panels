@@ -451,8 +451,10 @@ function Panels.Panel.new(data)
 								img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 							else
 								if layer.maskImg then
-									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin
-									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin
+									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.x + panel.frame.x
+									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.y + panel.frame.y
+
+									print(maskX)
 
 									local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
 									gfx.lockFocus(maskImg)
