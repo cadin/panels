@@ -5,6 +5,22 @@ local ScreenHeight <const> = playdate.display.getHeight()
 
 local gfx <const> = playdate.graphics
 
+function Panels.ButtonIndicator.getPosititonForScrollDirection(direction)
+	local x = ScreenWidth - 42
+		local y = ScreenHeight / 2 -20
+		if direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
+			x = 2
+		elseif direction == Panels.ScrollDirection.TOP_DOWN then
+			x = ScreenWidth / 2 - 20
+			y = ScreenHeight - 42
+		elseif direction == Panels.ScrollDirection.BOTTOM_UP then
+			x = ScreenWidth / 2 - 20
+			y = 2
+		end
+
+	return x, y
+end
+
 function Panels.ButtonIndicator.new()
 	local button = {imageTable = nil, holdFrame = 4}
 	button.currentFrame = 1
@@ -55,22 +71,12 @@ function Panels.ButtonIndicator.new()
 	end
 	
 	function button:setPositionForScrollDirection(direction)
-		local x = ScreenWidth - 42
-		local y = ScreenHeight / 2 -20
-		if direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
-			x = 2
-		elseif direction == Panels.ScrollDirection.TOP_DOWN then
-			x = ScreenWidth / 2 - 20
-			y = ScreenHeight - 42
-		elseif direction == Panels.ScrollDirection.BOTTOM_UP then
-			x = ScreenWidth / 2 - 20
-			y = 2
-		end
+		local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(direction)
 		self:setPosition(x, y)
 	end
 	
 	function button:show()
-		if self.currentFrame == 1 then 
+		if self.currentFrame == 1 and self.state ~= "showing" then 
 			self.state = "showing"
 			self.step = 1
 			self.timer:start()
@@ -78,7 +84,7 @@ function Panels.ButtonIndicator.new()
 	end
 	
 	function button:hide()
-		if self.currentFrame <= self.holdFrame then
+		if self.currentFrame <= self.holdFrame and self.state ~= "hiding" then
 			self.state = "hiding"
 			self.step = -1
 			self.timer:start()

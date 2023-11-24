@@ -252,14 +252,13 @@ local function createSectionsFromData(data)
 	maxUnlockedChapter = 0
 	for i, seq in ipairs(data) do
 		if (seq.title or Panels.Settings.listUnnamedSequences) 
-		and (i <= Panels.maxUnlockedSequence or Panels.Settings.listLockedSequences) then
+		and (Panels.unlockedSequences[i] == true or Panels.Settings.listLockedSequences) then
 			local title = seq.title or "--"
-			if i <= Panels.maxUnlockedSequence then 
+			if Panels.unlockedSequences[i] == true then 
 				title = "*" .. title .. "*" 
 				maxUnlockedChapter = maxUnlockedChapter + 1
 			end
 			sections[#sections + 1] = {title = title, index = i}
-			
 		end
 	end
 end
@@ -278,6 +277,56 @@ local function updateChapterMenu(data)
 	chapterList:setNumberOfRows(#sections)
 end
 
+local function isLastUnlockedSequence(index)
+	for i = index + 1, #Panels.unlockedSequences, 1 do
+	if i > #sections then return true end
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
+			return false
+		end
+	end
+	return true
+end
+
+local function isFirstUnlockedSequence(index)
+	for i = index - 1, 1, -1 do
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
+			return false
+		end
+	end
+	return true
+end
+
+local function getNextUnlockedSequence(index)
+	for i = index + 1, #Panels.unlockedSequences, 1 do
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
+			return i
+		end
+	end
+	return nil
+end
+
+local function getPreviousUnlockedSequence(index)
+	for i = index - 1, 1, -1 do
+		local sectionIndex = sections[i].index
+		if Panels.unlockedSequences[sectionIndex] == true then
+			return i
+		end
+	end
+	return nil
+end
+
+local function getRowForSequenceIndex(index)
+	for i, sec in ipairs(sections) do
+		if sec.index == index then
+			return i
+		end
+	end
+	return nil
+end
+
 local chapterOffset = 0
 local function createChapterMenu(data)
 	updateChapterMenu(data)
@@ -294,8 +343,11 @@ local function createChapterMenu(data)
 	local inputHandlers = {
 		downButtonUp = function()
 			chapterOffset = 4
-			if chapterList:getSelectedRow() < maxUnlockedChapter then 
-				chapterList:selectNextRow(false)
+			local selectedRow = chapterList:getSelectedRow()
+			if not isLastUnlockedSequence(selectedRow) then
+				local next = getNextUnlockedSequence(selectedRow)
+				chapterList:setSelectedRow(next)
+				chapterList:scrollToRow(next)
 				if Panels.Settings.playMenuSounds then 
 					selectionSound:play()
 				end
@@ -308,14 +360,20 @@ local function createChapterMenu(data)
 		
 		upButtonUp = function()
 			chapterOffset = -4
-			if Panels.Settings.playMenuSounds then 
-				if chapterList:getSelectedRow() > 1 then 
+			local selectedRow = chapterList:getSelectedRow()
+			if not isFirstUnlockedSequence(selectedRow) then
+				local prev = getPreviousUnlockedSequence(selectedRow)
+				chapterList:setSelectedRow(prev)
+				chapterList:scrollToRow(prev)
+				if Panels.Settings.playMenuSounds then 
 					selectionRevSound:play()
-				else
+				end
+			else
+				if Panels.Settings.playMenuSounds then 
 					denialSound:play()
 				end
 			end
-			chapterList:selectPreviousRow(false)
+			
 		end,
 		
 		AButtonDown = function()
@@ -342,7 +400,6 @@ function chapterList:drawCell(section, row, column, selected, x, y, width, heigh
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
 			gfx.fillRoundRect(x, y + chapterOffset, width, height, 4)
-			-- gfx.drawRoundRect(x + 1, y, width - 2, height, 4)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			chapterOffset = 0
 		else

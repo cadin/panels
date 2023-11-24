@@ -12,6 +12,9 @@ Panels.Settings = {
 	borderWidth = 2,
 	borderRadius = 2,
 	typingSound = Panels.Audio.TypingSound.DEFAULT,
+	maxScrollSpeed = 8,
+	
+	resetVarsOnGameOver = true,
 	
 	-- menu settings
 	menuImage = "menuImage.png",

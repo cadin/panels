@@ -38,7 +38,7 @@ local function createFrameFromPartialFrame(frame)
 	return frame
 end
 
-local function getScrollPercentages(frame, offset, axis)
+function getScrollPercentages(frame, offset, axis)
 	local xPct = 1 - (frame.x - frame.margin + frame.width + offset.x) / (ScreenWidth + frame.width)
 	local yPct = 1 - (frame.y - frame.margin + frame.height + offset.y) / (ScreenHeight + frame.height)
 
@@ -98,7 +98,7 @@ function Panels.Panel.new(data)
 	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
-	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
+	panel.canvas = gfx.image.new( ScreenWidth, ScreenHeight, gfx.kColorClear)
 
 	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
 
@@ -390,7 +390,7 @@ function Panels.Panel.new(data)
 						if anim.y then yPos = math.floor(yPos + ((anim.y - startValues.y) * layerPct)) end
 						if anim.rotation then rotation = anim.rotation * layerPct end
 						if anim.opacity then
-							local o = (anim.opacity - layer.opacity) * layerPct
+							local o = (anim.opacity - layer.opacity) * layerPct + layer.opacity
 							layer.alpha = o
 							if o <= 0 then
 								layer.visible = false
@@ -414,6 +414,11 @@ function Panels.Panel.new(data)
 					yPos = yPos + shake.y * (1 - p * p)
 				end
 
+				if layer.pixelLock then 
+					xPos = math.floor((xPos + offset.x) / layer.pixelLock) * layer.pixelLock - offset.x + self.frame.margin
+					yPos = math.floor((yPos + offset.y) / layer.pixelLock) * layer.pixelLock - offset.y + self.frame.margin
+				end
+
 				if layer.effect then
 					doLayerEffect(layer, xPos, yPos)
 				end
@@ -433,24 +438,28 @@ function Panels.Panel.new(data)
 					else
 						local p = cntrlPct
 						p = p - (self.transitionOffset or 0)
+						p = p - (layer.transitionOffset or 0)
 						local j = math.max(math.min(math.ceil(p * #layer.imgs), #layer.imgs), 1)
 						img = layer.imgs[j]
 					end
 				end
 
+				local globalX = xPos + offset.x + self.frame.x
+				local globalY = yPos + offset.y + self.frame.y
+
 				if img then
 					if layer.visible then
-						local globalX = xPos + offset.x + self.frame.x
-						local globalY = yPos + offset.y + self.frame.y
-
+						
 						if globalX + img.width > 0 and globalX < ScreenWidth and globalY + img.height > 0 and globalY < ScreenHeight then
-
+							
 							if layer.alpha and layer.alpha < 1 then
 								img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 							else
 								if layer.maskImg then
-									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin
-									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin
+									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.x + panel.frame.x
+									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.y + panel.frame.y
+
+									print(maskX)
 
 									local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
 									gfx.lockFocus(maskImg)
@@ -469,8 +478,10 @@ function Panels.Panel.new(data)
 
 				elseif layer.text then
 					if layer.visible then
-						if layer.alpha == nil or layer.alpha > 0.5 then
-							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
+						if globalX + ScreenWidth > 0 and globalX < ScreenWidth and globalY + ScreenHeight > 0 and globalY < ScreenHeight then
+							if layer.alpha == nil or layer.alpha > 0.5 then
+								self:drawTextLayer(layer, xPos, yPos, cntrlPct)
+							end
 						end
 					end
 				elseif layer.animationLoop then
@@ -500,8 +511,6 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:reset()
-		if self.name then print(self.name) end
-
 		if self.resetFunction then
 			self:resetFunction()
 		end
@@ -534,6 +543,11 @@ function Panels.Panel.new(data)
 				if layer.textAnimator then
 					layer.textAnimator = nil
 				end
+				if layer.cachedTextImg then
+					if(self.prevPct < 0.5) then
+						layer.cachedTextImg = nil
+					end
+				end
 				if layer.images then
 					layer.currentImage = 1
 				end
@@ -559,74 +573,89 @@ function Panels.Panel.new(data)
 		end
 	end
 
+
+	local textMarginLeft<const> = 4
+	local textMarginTop<const> = 1
 	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
-		gfx.pushContext()
-
-		if layer.fontFamily then
-			gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
-		elseif self.fontFamily then
-			gfx.setFontFamily(Panels.Font.getFamily(self.fontFamily))
+		if(layer.cachedTextImg == nil) then
+			layer.cachedTextImg = gfx.image.new(ScreenWidth, ScreenHeight)
+			layer.needsRedraw = true
 		end
 
-		if layer.font then
-			gfx.setFont(Panels.Font.get(layer.font))
-		elseif self.font then
-			gfx.setFont(Panels.Font.get(self.font))
-		end
 
-		local txt = layer.text
-		if layer.effect then
-			if layer.effect.type == Panels.Effect.TYPE_ON then
+		if(layer.isTyping or layer.needsRedraw) then 
+			gfx.pushContext(layer.cachedTextImg)
+			gfx.clear(gfx.kColorClear)
 
-				if layer.textAnimator == nil then
-					if self.prevPct == 1 then
-						-- don't replay text animation (and sound) when backing into a frame
-						txt = layer.text
-						layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
-					elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
-						layer.isTyping = true
-						layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
-							playdate.easingFunctions.linear, layer.effect.delay or 0)
-						playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
-					else
-						txt = ""
+			if layer.fontFamily then
+				gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
+			elseif self.fontFamily then
+				gfx.setFontFamily(Panels.Font.getFamily(self.fontFamily))
+			end
+
+			if layer.font then
+				gfx.setFont(Panels.Font.get(layer.font))
+			elseif self.font then
+				gfx.setFont(Panels.Font.get(self.font))
+			end
+
+			local txt = layer.text
+			if layer.effect then
+				if layer.effect.type == Panels.Effect.TYPE_ON then
+
+					if layer.textAnimator == nil then
+						if self.prevPct == 1 then
+							-- don't replay text animation (and sound) when backing into a frame
+							txt = layer.text
+							layer.needsRedraw = false
+							layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
+						elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
+							layer.isTyping = true
+							layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
+								playdate.easingFunctions.linear, layer.effect.delay or 0)
+							playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+						else
+							txt = ""
+						end
 					end
-				end
 
-				if layer.isTyping then
-					local j = math.ceil(layer.textAnimator:currentValue())
-					txt = string.sub(layer.text, 1, j)
+					if layer.isTyping then
+						local j = math.ceil(layer.textAnimator:currentValue())
+						txt = string.sub(layer.text, 1, j)
 
-					if txt == layer.text then
-						layer.isTyping = false
-						Panels.Audio.stopTypingSound()
+						if txt == layer.text then
+							layer.isTyping = false
+							layer.needsRedraw = false
+							Panels.Audio.stopTypingSound()
+						end
 					end
 				end
 			end
-		end
 
-		if layer.background then
-			local w, h = gfx.getTextSize(txt)
-			gfx.setColor(layer.background)
-			if layer.background == Panels.Color.BLACK then
+			if layer.background then
+				local w, h = gfx.getTextSize(txt)
+				gfx.setColor(layer.background)
+				if layer.background == Panels.Color.BLACK then
+					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+				end
+				if w > 0 and h > 0 then
+					gfx.fillRect(0, 0, w + 8, h + 2)
+				end
+			end
+			if layer.color == Panels.Color.WHITE then
 				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			end
-			if w > 0 and h > 0 then
-				gfx.fillRect(xPos - 4, yPos - 1, w + 8, h + 2)
+
+			if layer.rect then
+				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...",
+					layer.alignment or Panels.TextAlignment.LEFT)
+			else
+				gfx.drawText(txt, textMarginLeft, textMarginTop)
 			end
-		end
-		if layer.color == Panels.Color.WHITE then
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		end
 
-		if layer.rect then
-			gfx.drawTextInRect(txt, xPos, yPos, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...",
-				layer.alignment or Panels.TextAlignment.LEFT)
-		else
-			gfx.drawText(txt, xPos, yPos)
+			gfx.popContext() 
 		end
-
-		gfx.popContext()
+		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
 	end
 
 	function panel:drawBorder(color, bgColor)
@@ -688,7 +717,6 @@ function Panels.Panel.new(data)
 	function panel:updateAdvanceButton()
 		if self.advanceButton.state == "hidden" then
 
-
 			if self.advanceControlPosition and self.advanceControlPosition.delay and self.advanceControlTimer == nil then
 				self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
 			elseif self.advanceControlPosition == nil or self.advanceControlPosition.delay == nil or
@@ -706,11 +734,44 @@ function Panels.Panel.new(data)
 			self.advanceButton:draw()
 		end
 	end
+	
+	
+	-- function panel:getClipRect(offset)
+	-- 	local frame = self.frame
+	-- 	local posX = frame.x + offset.x
+	-- 	local posY = frame.y + offset.y
+	-- 	
+	-- 	local x = math.max(posX, 0)
+	-- 	local y = math.max(posY, 0)
+	-- 	
+	-- 	local width = math.min(frame.width, frame.width + posX)
+	-- 	local height = math.min(frame.height, frame.height + posY)
+	-- 	
+	-- 	if width > ScreenWidth then
+	-- 		width = ScreenWidth - x
+	-- 	end
+	-- 	
+	-- 	if height > ScreenHeight then
+	-- 		height = ScreenHeight - y
+	-- 	end
+	-- 	
+	-- 	return {x = x, y = y, width = width, height = height}
+	-- end
+
 
 	function panel:render(offset, borderColor, bgColor)
+		local frame = self.frame
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
+		gfx.clear(gfx.kColorClear)
+		
+		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
+		gfx.setClipRect(0, 0, frame.width, frame.height)
 		gfx.clear(self.backgroundColor)
+
+		if self.updateFunction then 
+			self:updateFunction(offset)
+		end
 
 		if self.renderFunction then
 			self:renderFunction(offset)
@@ -724,7 +785,7 @@ function Panels.Panel.new(data)
 			end
 			self.borderImage:draw(0, 0)
 		end
-
+		
 		if self.advanceButton then
 			self:updateAdvanceButton()
 		end
