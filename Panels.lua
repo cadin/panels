@@ -1,4 +1,4 @@
--- Panels version 1.6.2
+-- Panels version 1.7beta
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -808,7 +808,6 @@ end
 local function drawComic(offset)
 	gfx.clear(sequence.backgroundColor)
 
-
 	if shouldFadeBG then
 		local pct = 1 -
 			(transitionInAnimator:currentValue() - transitionInAnimator.startValue) /
@@ -820,12 +819,7 @@ local function drawComic(offset)
 	for i, panel in ipairs(panels) do
 		if (panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
-			-- I tried setting clipRect here instead of inside the Panel, but it's not any faster
-			-- leaving it inside Panel for simplicity
-			-- local rect = panel:getClipRect(offset)
-			-- gfx.setClipRect(rect.x, rect.y, rect.width, rect.height)
 			panel.canvas:draw(0, 0)
-
 		elseif panel.wasOnScreen then
 			if panel.targetSequenceFunction then
 				targetSequence = panel.targetSequenceFunction()
@@ -835,11 +829,6 @@ local function drawComic(offset)
 			panel.wasOnScreen = false
 		end
 	end
-	
-	-- gfx.clearClipRect()
-	
-	playdate.drawFPS(0,0)
-
 end
 
 -- Playdate update loop

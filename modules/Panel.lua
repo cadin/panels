@@ -414,6 +414,11 @@ function Panels.Panel.new(data)
 					yPos = yPos + shake.y * (1 - p * p)
 				end
 
+				if layer.pixelLock then 
+					xPos = math.floor((xPos + offset.x) / layer.pixelLock) * layer.pixelLock - offset.x + self.frame.margin
+					yPos = math.floor((yPos + offset.y) / layer.pixelLock) * layer.pixelLock - offset.y + self.frame.margin
+				end
+
 				if layer.effect then
 					doLayerEffect(layer, xPos, yPos)
 				end
