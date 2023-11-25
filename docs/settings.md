@@ -123,7 +123,27 @@ The duration (in milliseconds) of the transition (in and out) between sequences.
 default: playdate.graphics.getSystemFont()
 {: .prop-default }
 
-Set the default font for your entire comic. This font will be used for any text layers that do not specify a font.
+Set the default font for every panel in your comic. This font will be used for any text layers that do not specify a font.
+
+### defaultFontFamily
+
+default: nil
+{: .prop-default }
+
+Set the default [font family](https://sdk.play.date/Inside%20Playdate.html#f-graphics.setFontFamily) for your *entire comic*. This font family will be used for any text layers that do not specify a font. This font family will also be used for all menus in your comic. If you want to use a different font for menus set [`menuFontFamily`]({{site.baseurl}}/docs/settings#menufontfamily).
+
+Example:
+{: .text-delta }
+
+```lua
+local fontFamily = {
+	[Panels.Font.NORMAL] = 'fonts/Sasser Slab/Sasser-Slab',
+	[Panels.Font.BOLD]   = 'fonts/Sasser Slab/Sasser-Slab-Bold',
+	[Panels.Font.ITALIC] = 'fonts/Sasser Slab/Sasser-Slab-Italic',
+}
+
+Panels.Settings.defaultFontFamily = fontFamily
+```
 
 ### borderWidth
 
@@ -196,6 +216,27 @@ default: true
 {: .prop-default }
 
 Disable the menu navigation and select sounds.
+
+### menuFontFamily
+
+default: nil
+{: .prop-default }
+
+Set the [font family](https://sdk.play.date/Inside%20Playdate.html#f-graphics.setFontFamily) to be used for menus in your comic (main menu, chapter menu & credits).
+
+Example: 
+{: .text-delta}
+
+```lua
+local fontFamily = {
+	[Panels.Font.NORMAL] = 'fonts/Sasser Slab/Sasser-Slab',
+	[Panels.Font.BOLD]   = 'fonts/Sasser Slab/Sasser-Slab-Bold',
+	[Panels.Font.ITALIC] = 'fonts/Sasser Slab/Sasser-Slab-Italic',
+}
+
+Panels.Settings.menuFontFamily = fontFamily
+```
+
 
 ## Chapter Menu Settings
 
