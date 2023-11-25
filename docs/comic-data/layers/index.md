@@ -335,3 +335,14 @@ default: 0
 A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#images) will transition between those images as the panel scrolls. This means a layer with two images will swap them when the panel scroll reaches `0.5` (50%).
 
 Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`.
+
+
+### pixelLock
+
+default: 1
+{: .prop-default}
+
+Certain dither patterns will appear to flicker as they scroll on the Playdate screen. You can often reduce this flickering effect by scrolling the pattern two pixels at a time.
+
+Setting `pixelLock = 2` on a layer with dithering will force it to only render on every other pixel. (A setting of `3` will render the layer on every third pixel and so on.) This may cause some jumpiness in the layer movement, but will significantly reduce flickering.
+
