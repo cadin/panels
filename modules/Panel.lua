@@ -98,8 +98,7 @@ function Panels.Panel.new(data)
 	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
-	panel.canvas = gfx.image.new(panel.frame.width, panel.frame.height, gfx.kColorBlack)
-	-- panel.canvas = gfx.image.new(ScreenWidth, ScreenHeight, gfx.kColorBlack)
+	panel.canvas = gfx.image.new( ScreenWidth, ScreenHeight, gfx.kColorClear)
 
 	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
 
@@ -415,6 +414,11 @@ function Panels.Panel.new(data)
 					yPos = yPos + shake.y * (1 - p * p)
 				end
 
+				if layer.pixelLock then 
+					xPos = math.floor((xPos + offset.x) / layer.pixelLock) * layer.pixelLock - offset.x + self.frame.margin
+					yPos = math.floor((yPos + offset.y) / layer.pixelLock) * layer.pixelLock - offset.y + self.frame.margin
+				end
+
 				if layer.effect then
 					doLayerEffect(layer, xPos, yPos)
 				end
@@ -452,8 +456,8 @@ function Panels.Panel.new(data)
 								img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 							else
 								if layer.maskImg then
-									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin
-									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin
+									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.x + panel.frame.x
+									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.y + panel.frame.y
 
 									local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
 									gfx.lockFocus(maskImg)
@@ -585,9 +589,7 @@ function Panels.Panel.new(data)
 				gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
 			elseif self.fontFamily then
 				gfx.setFontFamily(Panels.Font.getFamily(self.fontFamily))
-			end
-
-			if layer.font then
+			elseif layer.font then
 				gfx.setFont(Panels.Font.get(layer.font))
 			elseif self.font then
 				gfx.setFont(Panels.Font.get(self.font))
@@ -650,6 +652,7 @@ function Panels.Panel.new(data)
 			gfx.popContext() 
 		end
 		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
+		layer.needsRedraw = false
 	end
 
 	function panel:drawBorder(color, bgColor)
@@ -728,15 +731,45 @@ function Panels.Panel.new(data)
 			self.advanceButton:draw()
 		end
 	end
+	
+	
+	-- function panel:getClipRect(offset)
+	-- 	local frame = self.frame
+	-- 	local posX = frame.x + offset.x
+	-- 	local posY = frame.y + offset.y
+	-- 	
+	-- 	local x = math.max(posX, 0)
+	-- 	local y = math.max(posY, 0)
+	-- 	
+	-- 	local width = math.min(frame.width, frame.width + posX)
+	-- 	local height = math.min(frame.height, frame.height + posY)
+	-- 	
+	-- 	if width > ScreenWidth then
+	-- 		width = ScreenWidth - x
+	-- 	end
+	-- 	
+	-- 	if height > ScreenHeight then
+	-- 		height = ScreenHeight - y
+	-- 	end
+	-- 	
+	-- 	return {x = x, y = y, width = width, height = height}
+	-- end
+
 
 	function panel:render(offset, borderColor, bgColor)
+		local frame = self.frame
 		self.wasOnScreen = true
 		gfx.pushContext(self.canvas)
-		gfx.clear(self.backgroundColor)
+		gfx.clear(gfx.kColorClear)
+		
 		
 		if self.updateFunction then 
 			self:updateFunction(offset)
 		end
+		
+		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
+		gfx.setClipRect(0, 0, frame.width, frame.height)
+		gfx.clear(self.backgroundColor)
 
 		if self.renderFunction then
 			self:renderFunction(offset)
@@ -750,7 +783,7 @@ function Panels.Panel.new(data)
 			end
 			self.borderImage:draw(0, 0)
 		end
-
+		
 		if self.advanceButton then
 			self:updateAdvanceButton()
 		end

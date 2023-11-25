@@ -14,8 +14,6 @@ local hideSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "asset
 local showSound = playdate.sound.sampleplayer.new(Panels.Settings.path .. "assets/audio/swish-in.wav")
 
 local headerFont = gfx.getSystemFont("bold")
--- local listFont = Panels.Font.get(Panels.Settings.path .. "assets/fonts/Asheville-Narrow-14-Bold")--gfx.getSystemFont()
-
 local listFont = gfx.getSystemFont()
 
 Panels.Menu = {}
@@ -41,6 +39,17 @@ function Panels.Menu.new(height, redrawContent, inputHandlers)
 	menu.onWillShow = nil
 	menu.onDidShow = nil
 	menu.onDidHide = nil
+	
+	if Panels.Settings.menuFontFamily then 
+		local family = Panels.Font.getFamily(Panels.Settings.menuFontFamily)
+		headerFont = family
+		listFont = family
+		
+	elseif Panels.Settings.defaultFontFamily then 
+		local family = Panels.Font.getFamily(Panels.Settings.defaultFontFamily)
+		headerFont = family
+		listFont = family
+	end
 	
 	local function drawBG(yPos)
 		gfx.setColor(Panels.Color.WHITE)
@@ -168,6 +177,7 @@ local function updateMainMenu(gameDidFinish, gameDidStart)
 	mainMenuList:setSelection(1, 1, #menuOptions)
 
 	function mainMenuList:drawCell(section, row, column, selected, x, y, width, height)
+		gfx.pushContext()
 		local text = menuOptions[column]
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
@@ -181,6 +191,7 @@ local function updateMainMenu(gameDidFinish, gameDidStart)
 		
 		gfx.setFont(listFont)
 		gfx.drawTextInRect(text, x, y+8, width, height+2, nil, "...", kTextAlignment.center)
+		gfx.popContext()
 	end
 end
 
@@ -397,6 +408,7 @@ local function createChapterMenu(data)
 end
 
 function chapterList:drawCell(section, row, column, selected, x, y, width, height)
+	gfx.pushContext()
 		if selected then
 			gfx.setColor(gfx.kColorBlack)
 			gfx.fillRoundRect(x, y + chapterOffset, width, height, 4)
@@ -408,9 +420,11 @@ function chapterList:drawCell(section, row, column, selected, x, y, width, heigh
 		
 		gfx.setFont(listFont)
 		gfx.drawTextInRect("" .. sections[row].title.. "", x + 16, y+8, width -32, height+2, nil, "...", kTextAlignment.left)
+	gfx.popContext()
 end
 
 function chapterList:drawSectionHeader(section, x, y, width, height)
+	gfx.pushContext()
 	if Panels.Settings.chapterMenuHeaderImage then
 		headerImage:drawAnchored(x + width / 2, y + 7, 0.5, 0)
 	else
@@ -421,6 +435,7 @@ function chapterList:drawSectionHeader(section, x, y, width, height)
 		gfx.drawLine(x, y + 20, x + 120, y + 20)
 		gfx.drawLine(x + width - 120, y + 20, x + width, y + 20)
 	end
+	gfx.popContext()
 end
 
 
