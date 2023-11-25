@@ -17,12 +17,12 @@ Comics built with Panels can support these features:
 -   animations and transitions within panels based on scroll position
 -   animated text layers
 -   panels with fully custom render functions
--   **NEW!** branching choose-your-own adventure storylines
+-   branching "choose-your-own-adventure" storylines
 
 ## Documentation
 Check out the full set of documentation here:
 ### [📄 Panels Documentation](//cadin.github.io/panels)
-### [📺 NEW!! Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)
+### [📺 Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)
 
 ## Requirements
 
@@ -56,6 +56,12 @@ Panels.start(comicData)
 ```
 
 ## Support
+### Get Help
+- 📺 Watch these **[Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)** to get up to speed quickly.  
+- 🤖 Chat with the **[Panels Partner custom GPT](https://chat.openai.com/g/g-QU76MOCLl-panels-partner)** to get answers to questions about your specific project.
+- 💬 Post your question in the **[Playdate Squad Discord](https://discord.com/channels/675983554655551509/1163630567393341461)**.
+
+
 
 ### Feature Requests
 
