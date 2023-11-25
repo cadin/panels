@@ -459,8 +459,6 @@ function Panels.Panel.new(data)
 									local maskX = math.floor((self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.x + panel.frame.x
 									local maskY = math.floor((self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p) - panel.frame.margin + offset.y + panel.frame.y
 
-									print(maskX)
-
 									local maskImg = gfx.image.new(ScreenWidth, ScreenHeight)
 									gfx.lockFocus(maskImg)
 									layer.maskImg:draw(maskX, maskY)
@@ -596,8 +594,6 @@ function Panels.Panel.new(data)
 			elseif self.font then
 				gfx.setFont(Panels.Font.get(self.font))
 			end
-			-- elseif Panels.Settings.defaultFontFamily then
-			-- 	gfx.setFontFamily(Panels.Font.getFamily())
 
 			local txt = layer.text
 			if layer.effect then
@@ -656,6 +652,7 @@ function Panels.Panel.new(data)
 			gfx.popContext() 
 		end
 		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
+		layer.needsRedraw = false
 	end
 
 	function panel:drawBorder(color, bgColor)
@@ -765,13 +762,14 @@ function Panels.Panel.new(data)
 		gfx.pushContext(self.canvas)
 		gfx.clear(gfx.kColorClear)
 		
-		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
-		gfx.setClipRect(0, 0, frame.width, frame.height)
-		gfx.clear(self.backgroundColor)
-
+		
 		if self.updateFunction then 
 			self:updateFunction(offset)
 		end
+		
+		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
+		gfx.setClipRect(0, 0, frame.width, frame.height)
+		gfx.clear(self.backgroundColor)
 
 		if self.renderFunction then
 			self:renderFunction(offset)
