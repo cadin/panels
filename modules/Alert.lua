@@ -26,6 +26,19 @@ function Panels.Alert.new(title, text, options, callback, selection)
     local x = (ScreenWidth - width) / 2
     local y = (ScreenHeight - height) / 2 - 8
     local offset = 0
+    
+    if Panels.Settings.menuFontFamily then 
+        local family = Panels.Font.getFamily(Panels.Settings.menuFontFamily)
+        titleFont = family
+        textFont = family
+        listFont = family
+        
+    elseif Panels.Settings.defaultFontFamily then 
+        local family = Panels.Font.getFamily(Panels.Settings.defaultFontFamily)
+        titleFont = family
+        textFont = family
+        listFont = family
+    end
 
     gridView = playdate.ui.gridview.new((width - 32) / 2 - 8, 32)
     gridView:setNumberOfRows(1)
@@ -84,7 +97,7 @@ function Panels.Alert.new(title, text, options, callback, selection)
 
     function alert:drawText()
         gfx.setFont(titleFont)
-        gfx.drawTextInRect(self.title, x + 16, y + 16, width - 32, 32, nil, "...", kTextAlignment.center)
+        gfx.drawTextInRect("*".. self.title .. "*", x + 16, y + 16, width - 32, 32, nil, "...", kTextAlignment.center)
         gfx.setFont(textFont)
         gfx.drawTextInRect(self.text, x + 16, y + 48, width - 32, height - 128, nil, "...", kTextAlignment.center)
     end

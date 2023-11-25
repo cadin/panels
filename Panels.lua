@@ -1,4 +1,4 @@
--- Panels version 1.7beta
+-- Panels version 1.7
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -807,6 +807,8 @@ end
 
 local function drawComic(offset)
 	gfx.clear(sequence.backgroundColor)
+	-- 
+	-- setDefaultFont()
 
 	if shouldFadeBG then
 		local pct = 1 -
@@ -1030,7 +1032,16 @@ local function createCreditsSequence()
 	table.insert(Panels.comicData, seq)
 end
 
+function setDefaultFont() 
+	if Panels.Settings.defaultFontFamily then
+		gfx.setFontFamily(Panels.Font.getFamily(Panels.Settings.defaultFontFamily))
+	elseif Panels.Settings.defaultFont then 
+		gfx.setFont(Panels.Font.get(Panels.Settings.defaultFont))
+	end
+end
+
 function Panels.startCutscene(comicData, callback)
+	setDefaultFont()
 	isCutscene = true
 	cutsceneFinishCallback = callback
 	Panels.comicData = comicData
@@ -1051,6 +1062,7 @@ function Panels.startCutscene(comicData, callback)
 end
 
 function Panels.start(comicData)
+	setDefaultFont()
 	Panels.comicData = comicData
 	maxScrollVelocity = Panels.Settings.maxScrollSpeed
 	alert = Panels.Alert.new("Start Over?", "All progress will be lost.", { "Cancel", "Start Over" })

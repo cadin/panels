@@ -591,13 +591,13 @@ function Panels.Panel.new(data)
 				gfx.setFontFamily(Panels.Font.getFamily(layer.fontFamily))
 			elseif self.fontFamily then
 				gfx.setFontFamily(Panels.Font.getFamily(self.fontFamily))
-			end
-
-			if layer.font then
+			elseif layer.font then
 				gfx.setFont(Panels.Font.get(layer.font))
 			elseif self.font then
 				gfx.setFont(Panels.Font.get(self.font))
 			end
+			-- elseif Panels.Settings.defaultFontFamily then
+			-- 	gfx.setFontFamily(Panels.Font.getFamily())
 
 			local txt = layer.text
 			if layer.effect then

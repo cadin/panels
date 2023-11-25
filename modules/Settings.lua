@@ -4,17 +4,22 @@ Panels.Settings = {
 	imageFolder = "images/",
 	audioFolder = "audio/",
 	
+	-- project settings
+	defaultFont = nil,
+	defaultFontFamily = nil,
+	menuFontFamily = nil,
+	resetVarsOnGameOver = true,
+	
 	-- panel settings
 	defaultFrame = {gap = 50, margin = 8},
 	snapToPanels = true,
 	sequenceTransitionDuration = 750,
-	defaultFont = nil,
 	borderWidth = 2,
 	borderRadius = 2,
 	typingSound = Panels.Audio.TypingSound.DEFAULT,
 	maxScrollSpeed = 8,
 	
-	resetVarsOnGameOver = true,
+	
 	
 	-- menu settings
 	menuImage = "menuImage.png",

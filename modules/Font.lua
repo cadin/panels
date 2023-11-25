@@ -40,7 +40,7 @@ function Panels.Font.getFamily(paths)
 
 	if families[key] == nil then
 		clipExtensions(paths)
-		cache[key] = playdate.graphics.font.newFamily(paths)
+		families[key] = playdate.graphics.font.newFamily(paths)
 	end
-	return cache[key]
+	return families[key]
 end
