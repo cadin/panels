@@ -98,9 +98,6 @@ function Panels.Panel.new(data)
 	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
-	panel.canvas = gfx.image.new( ScreenWidth, ScreenHeight, gfx.kColorClear)
-
-	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
 
 	if not panel.parallaxDistance then
 		if panel.axis == Panels.ScrollAxis.HORIZONTAL then
@@ -759,9 +756,6 @@ function Panels.Panel.new(data)
 	function panel:render(offset, borderColor, bgColor)
 		local frame = self.frame
 		self.wasOnScreen = true
-		gfx.pushContext(self.canvas)
-		gfx.clear(gfx.kColorClear)
-		
 		
 		if self.updateFunction then 
 			self:updateFunction(offset)
@@ -769,7 +763,8 @@ function Panels.Panel.new(data)
 		
 		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
 		gfx.setClipRect(0, 0, frame.width, frame.height)
-		gfx.clear(self.backgroundColor)
+		
+		if self.backgroundColor then gfx.clear(self.backgroundColor) end
 
 		if self.renderFunction then
 			self:renderFunction(offset)
@@ -795,12 +790,8 @@ function Panels.Panel.new(data)
 
 			for i, subPanel in ipairs(self.panels) do
 				subPanel:render(o, borderColor, bgColor)
-				subPanel.canvas:draw(subPanel.frame.x, subPanel.frame.y)
 			end
 		end
-
-		gfx.popContext()
-
 	end
 
 	return panel
