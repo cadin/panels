@@ -80,6 +80,8 @@ local cutsceneFinishCallback = nil
 
 local targetSequence = nil
 
+local mainCanvas = gfx.image.new(ScreenWidth, ScreenHeight, gfx.kColorBlack)
+
 local function setUpPanels(seq)
 	panels = {}
 	local pos = 0
@@ -806,9 +808,8 @@ local function updateComic(offset)
 end
 
 local function drawComic(offset)
+	gfx.pushContext(mainCanvas)
 	gfx.clear(sequence.backgroundColor)
-	-- 
-	-- setDefaultFont()
 
 	if shouldFadeBG then
 		local pct = 1 -
@@ -817,11 +818,9 @@ local function drawComic(offset)
 		transitionFader:drawFaded(0, 0, pct, gfx.image.kDitherTypeBayer8x8)
 	end
 
-
 	for i, panel in ipairs(panels) do
 		if (panel:isOnScreen(offset)) then
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
-			panel.canvas:draw(0, 0)
 		elseif panel.wasOnScreen then
 			if panel.targetSequenceFunction then
 				targetSequence = panel.targetSequenceFunction()
@@ -830,6 +829,13 @@ local function drawComic(offset)
 			panel:reset()
 			panel.wasOnScreen = false
 		end
+	end
+	
+	gfx.popContext()
+	mainCanvas:draw(0, 0)
+	
+	if Panels.Settings.showFPS then
+		playdate.drawFPS(0,0)
 	end
 end
 

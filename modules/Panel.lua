@@ -10,8 +10,6 @@ local pdButtonJustPressed = playdate.buttonJustPressed
 local AxisHorizontal = Panels.ScrollAxis.HORIZONTAL
 
 
-
-
 local function createFrameFromPartialFrame(frame)
 	if frame.margin == nil then frame.margin = Panels.Settings.defaultFrame.margin end
 
@@ -98,9 +96,6 @@ function Panels.Panel.new(data)
 	panel.prevPct = 0
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
-	panel.canvas = gfx.image.new( ScreenWidth, ScreenHeight, gfx.kColorClear)
-
-	if not panel.backgroundColor then panel.backgroundColor = Panels.Color.WHITE end
 
 	if not panel.parallaxDistance then
 		if panel.axis == Panels.ScrollAxis.HORIZONTAL then
@@ -732,36 +727,9 @@ function Panels.Panel.new(data)
 		end
 	end
 	
-	
-	-- function panel:getClipRect(offset)
-	-- 	local frame = self.frame
-	-- 	local posX = frame.x + offset.x
-	-- 	local posY = frame.y + offset.y
-	-- 	
-	-- 	local x = math.max(posX, 0)
-	-- 	local y = math.max(posY, 0)
-	-- 	
-	-- 	local width = math.min(frame.width, frame.width + posX)
-	-- 	local height = math.min(frame.height, frame.height + posY)
-	-- 	
-	-- 	if width > ScreenWidth then
-	-- 		width = ScreenWidth - x
-	-- 	end
-	-- 	
-	-- 	if height > ScreenHeight then
-	-- 		height = ScreenHeight - y
-	-- 	end
-	-- 	
-	-- 	return {x = x, y = y, width = width, height = height}
-	-- end
-
-
 	function panel:render(offset, borderColor, bgColor)
 		local frame = self.frame
 		self.wasOnScreen = true
-		gfx.pushContext(self.canvas)
-		gfx.clear(gfx.kColorClear)
-		
 		
 		if self.updateFunction then 
 			self:updateFunction(offset)
@@ -769,7 +737,8 @@ function Panels.Panel.new(data)
 		
 		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
 		gfx.setClipRect(0, 0, frame.width, frame.height)
-		gfx.clear(self.backgroundColor)
+		
+		if self.backgroundColor then gfx.clear(self.backgroundColor) end
 
 		if self.renderFunction then
 			self:renderFunction(offset)
@@ -795,12 +764,8 @@ function Panels.Panel.new(data)
 
 			for i, subPanel in ipairs(self.panels) do
 				subPanel:render(o, borderColor, bgColor)
-				subPanel.canvas:draw(subPanel.frame.x, subPanel.frame.y)
 			end
 		end
-
-		gfx.popContext()
-
 	end
 
 	return panel
