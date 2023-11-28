@@ -834,7 +834,9 @@ local function drawComic(offset)
 	gfx.popContext()
 	mainCanvas:draw(0, 0)
 	
-	playdate.drawFPS(0,0)
+	if Panels.Settings.showFPS then
+		playdate.drawFPS(0,0)
+	end
 end
 
 -- Playdate update loop

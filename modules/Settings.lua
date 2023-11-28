@@ -19,8 +19,6 @@ Panels.Settings = {
 	typingSound = Panels.Audio.TypingSound.DEFAULT,
 	maxScrollSpeed = 8,
 	
-	
-	
 	-- menu settings
 	menuImage = "menuImage.png",
 	listLockedSequences = true,
@@ -36,6 +34,7 @@ Panels.Settings = {
 	-- debug
 	debugControlsEnabled = false,
 	listUnnamedSequences = false,
+	showFPS = false,
 }
 
 local function addSlashToFolderName(f)
