@@ -410,8 +410,8 @@ function Panels.Panel.new(data)
 				end
 
 				if layer.pixelLock then 
-					xPos = math.floor((xPos + offset.x) / layer.pixelLock) * layer.pixelLock - offset.x + self.frame.margin
-					yPos = math.floor((yPos + offset.y) / layer.pixelLock) * layer.pixelLock - offset.y + self.frame.margin
+					xPos = math.floor((xPos + offset.x) / layer.pixelLock) * layer.pixelLock - offset.x
+					yPos = math.floor((yPos + offset.y) / layer.pixelLock) * layer.pixelLock - offset.y
 				end
 
 				if layer.effect then
