@@ -707,7 +707,7 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:updateAdvanceButton()
-		if self.advanceButton.state == "hidden" then
+		if self.advanceButton.state == "hidden" and not self.didFinish then
 
 			if self.advanceControlPosition and self.advanceControlPosition.delay and self.advanceControlTimer == nil then
 				self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
