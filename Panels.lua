@@ -1,4 +1,4 @@
--- Panels version 1.7
+-- Panels version 1.7.2
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -696,7 +696,8 @@ end
 
 local function checkInputs()
 	local p = panels[panelNum]
-	if lastPanelIsShowing() and not sequenceIsFinishing then
+	if sequenceIsFinishing then return end
+	if lastPanelIsShowing() then
 		if p.advanceFunction == nil then 
 			for i, button in ipairs(buttonIndicators) do
 				if pdButtonJustPressed(sequence.advanceControls[i].input) then
