@@ -866,6 +866,7 @@ end
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
+		currentSeqIndex = data.sequence
 		Panels.unlockedSequences = data.unlockedSequences or {}
 		gameDidFinish = data.gameDidFinish
 		Panels.vars = data.vars or {}
