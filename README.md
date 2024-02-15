@@ -17,12 +17,12 @@ Comics built with Panels can support these features:
 -   animations and transitions within panels based on scroll position
 -   animated text layers
 -   panels with fully custom render functions
--   **NEW!** branching choose-your-own adventure storylines
+-   branching "choose-your-own-adventure" storylines
 
 ## Documentation
 Check out the full set of documentation here:
 ### [📄 Panels Documentation](//cadin.github.io/panels)
-### [📺 NEW!! Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)
+### [📺 Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)
 
 ## Requirements
 
@@ -56,6 +56,12 @@ Panels.start(comicData)
 ```
 
 ## Support
+### Get Help
+- 📺 Watch these **[Tutorial Videos](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)** to get up to speed quickly.  
+- 🤖 Chat with the **[Panels Partner custom GPT](https://chat.openai.com/g/g-QU76MOCLl-panels-partner)** to get answers to questions about your specific project.
+- 💬 Post your question in the **[Playdate Squad Discord](https://discord.com/channels/675983554655551509/1163630567393341461)**.
+
+
 
 ### Feature Requests
 
@@ -77,7 +83,7 @@ If you would like to contribute a feature or bug fix please contact me first and
 
 Panels is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
 
-**TLDR:** You can use or this code (or modified versions) to create anything you want, public or private, free or commercial. For attribution, please retain the Panels credit (with URL and QR code) on the Credits page of your game so that others may find their way here.
+**TLDR:** You can use this code (or modified versions) to create anything you want, public or private, free or commercial. For attribution, please retain the Panels credit (with URL and QR code) on the Credits page of your game so that others may find their way here.
 
 ---
 
