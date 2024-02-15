@@ -410,8 +410,14 @@ function Panels.Panel.new(data)
 				end
 
 				if layer.pixelLock then 
-					xPos = math.floor((xPos + offset.x) / layer.pixelLock) * layer.pixelLock - offset.x
-					yPos = math.floor((yPos + offset.y) / layer.pixelLock) * layer.pixelLock - offset.y
+					-- offset gets added here to ensure the layer position + offset gets rounded properly
+					-- then subtract the offset because it's applied at the panel level
+					local offX = math.floor(offset.x)
+					local offY = math.floor(offset.y)
+					
+					xPos = math.floor((xPos + offX) / layer.pixelLock) * layer.pixelLock - offX
+					yPos = math.floor((yPos + offY) / layer.pixelLock) * layer.pixelLock - offY
+					
 				end
 
 				if layer.effect then
@@ -735,7 +741,7 @@ function Panels.Panel.new(data)
 			self:updateFunction(offset)
 		end
 		
-		gfx.setDrawOffset(offset.x + frame.x, offset.y + frame.y)
+		gfx.setDrawOffset(math.floor(offset.x + frame.x), math.floor(offset.y + frame.y))
 		gfx.setClipRect(0, 0, frame.width, frame.height)
 		
 		if self.backgroundColor then gfx.clear(self.backgroundColor) end
