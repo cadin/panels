@@ -1,4 +1,4 @@
--- Panels version 1.7.3
+-- Panels version 1.7.4
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -1049,6 +1049,14 @@ function setDefaultFont()
 	elseif Panels.Settings.defaultFont then 
 		gfx.setFont(Panels.Font.get(Panels.Settings.defaultFont))
 	end
+end
+
+-- call this if you need to interrupt a cutscene (from a menu option for example)
+-- this should clean up panel and sequence audio that normally happens when the cutscene completes
+function Panels.haltCutscene()
+	Panels.Audio.killBGAudio() 
+	unloadSequence()
+	playdate.inputHandlers.pop()
 end
 
 function Panels.startCutscene(comicData, callback)
