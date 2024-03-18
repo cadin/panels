@@ -62,7 +62,6 @@ When using Panels in your project, please include the following (or similar) tex
 ### Accidental Input
 [Button callbacks](https://sdk.play.date/1.12.3/Inside%20Playdate.html#buttonCallbacks) and [input handlers](https://sdk.play.date/1.12.3/Inside%20Playdate.html#_input_handlers) in your game may continue to get called while the cutscene is running. Make sure to clean up input handlers before starting the cutscene, and check if a cutscene is running in any button handler code.
 
-
 ### Never-ending Comics
 Remember to stop calling `Panels.update()` when the comic ends (after your callback function gets called). Continuing to call `Panels.update()` will cause the comic to appear stuck on the last panel.
 
@@ -74,6 +73,9 @@ Calling `Panels.update()` before `Panels.startCutscene()` will cause your game t
 
 Likewise, calling `Panels.startCutscene()` with an incomplete or invalid comic data table will also crash.
 
+### Interupting a Cutscene
+
+If your game interrupts a cutscene before it naturally completes (eg. from the system menu), Panels doesn't have a chance to clean up any background audio or input handlers before returning to your game. In that case, you should call `Panels.haltCutscene()` to trigger Panels to do the clean up manually.
 
 ## Examples
 
