@@ -32,29 +32,29 @@ Example:
 ```lua
 local function updatePanel2A()
     if playdate.buttonJustPressed(Panels.Input.A) then
-		Panels.vars.hasKey = true
-	end
+        Panels.vars.hasKey = true
+    end
 end
 ```
 
 ```lua
 local function renderPanel6B(panel, offset)
     for i, layer in ipairs(panel.layers) do
-		-- conditionally render the "key" layer
-		if layer.name == "key" or Panels.vars.hasKey == false then 
-			Panels.renderLayerInPanel(layer, panel, offset)
-		end
-	end
+        -- conditionally render the "key" layer
+        if layer.name == 'key' or Panels.vars.hasKey == false then 
+            Panels.renderLayerInPanel(layer, panel, offset)	
+        end
+    end
 end
 ```
 
 ```lua
 local function getTargetSequence(panel, offset)
     if Panels.vars.hasKey then
-		return 4
-	else 
-		return 2
-	end
+        return 4
+    else 
+        return 2
+    end
 end
 ```
 
