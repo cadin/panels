@@ -275,6 +275,9 @@ end
 local function updateScroll()
 	if panelTransitionAnimator then
 		scrollPos = panelTransitionAnimator:currentValue()
+		if panelTransitionAnimator:ended() then
+			panelTransitionAnimator = nil
+		end
 	else
 		if scrollPos > 0 then
 			scrollPos = math.floor(scrollPos / snapStrength)
@@ -680,11 +683,22 @@ local function shouldGoBack(panel)
 end
 
 function Panels.cranked(change, accChange)
-	if sequence.scrollType == Panels.ScrollType.MANUAL then
+	if sequence.scrollType == Panels.ScrollType.MANUAL or sequence.autoAdvanceWithCrank then
 		if sequence.axis == Panels.ScrollAxis.VERTICAL and sequence.scrollingIsReversed then
 			scrollPos = scrollPos + change
 		else
 			scrollPos = scrollPos - change
+		end
+	end
+	if sequence.scrollType == Panels.ScrollType.AUTO and sequence.autoAdvanceWithCrank then
+		local ticks = playdate.getCrankTicks(sequence.autoAdvanceTicks or 6)
+		if ticks > 0 then
+			scrollToNextPanel()
+		elseif ticks < 0 then
+			local p = panels[panelNum]
+			if shouldGoBack(p) then
+				scrollToPreviousPanel()
+			end
 		end
 	end
 end
