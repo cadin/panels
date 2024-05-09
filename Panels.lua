@@ -343,7 +343,9 @@ local function scrollToNextPanel()
 		if sequence.direction == Panels.ScrollDirection.NONE then
 			scrollPos = target
 		else
-			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
+			local duration = sequence.transitionDuration or 500
+			local ease = sequence.transitionEase or pdEaseInOutQuad
+			panelTransitionAnimator = gfx.animator.new(duration, scrollPos, target, ease)
 		end
 	end
 end
@@ -364,14 +366,16 @@ local function scrollToPreviousPanel()
 			end
 			target = getPanelScrollLocation(panels[panelNum], true)
 		end
-		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
+		local duration = sequence.transitionDuration or 500
+		local ease = sequence.transitionEase or pdEaseInOutQuad
+		panelTransitionAnimator = gfx.animator.new(duration, scrollPos, target, ease)
 	end
 end
 
 -- -------------------------------------------------
 -- SEQUENCE TRANSITIONS
 
-local function startTransitionIn(direction, delay)
+local function startTransitionIn(direction, delay, duration, ease)
 	local target = scrollPos
 	local start
 
@@ -401,17 +405,18 @@ local function startTransitionIn(direction, delay)
 	shouldFadeBG = previousBGColor ~= nil and previousBGColor ~= sequence.backgroundColor
 
 	local function delayedStart()
-		transitionInAnimator = playdate.graphics.animator.new(
-			Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+		duration = duration or Panels.Settings.sequenceTransitionDuration
+		ease = ease or playdate.easingFunctions.inOutQuart
+		transitionInAnimator = playdate.graphics.animator.new(duration, start, target, ease)
 	end
 
 	playdate.timer.performAfterDelay(delay, delayedStart)
 end
 
-local function startTransitionOut(direction)
+local function startTransitionOut(direction, duration, ease)
 	local target
 	local start = scrollPos
-	local duration = Panels.Settings.sequenceTransitionDuration
+	local duration = duration or Panels.Settings.sequenceTransitionDuration
 
 	if direction == Panels.ScrollDirection.TOP_DOWN then
 		target = -maxScroll - ScreenHeight
@@ -426,9 +431,8 @@ local function startTransitionOut(direction)
 		target = -maxScroll - ScreenWidth
 	end
 
-
-	transitionOutAnimator = playdate.graphics.animator.new(
-		duration, start, target, playdate.easingFunctions.inOutQuart)
+	ease = ease or playdate.easingFunctions.inOutQuart
+	transitionOutAnimator = playdate.graphics.animator.new(duration, start, target, ease)
 end
 
 local function getAxisForScrollDirection(dir)
@@ -574,7 +578,7 @@ local function loadSequence(num)
 		buttonIndicators[i]:setPosition(control.x or (i-1) * 40, control.y or 0)
 	end
 
-	startTransitionIn(sequence.direction, sequence.delay or 0)
+	startTransitionIn(sequence.direction, sequence.delay or 0, sequence.transitionDuration, sequence.transitionEase)
 
 end
 
@@ -655,7 +659,7 @@ end
 local function finishSequence()
 	if not sequence.didFinish then
 		sequence.didFinish = true
-		startTransitionOut(sequence.direction)
+		startTransitionOut(sequence.direction, sequence.transitionDuration, sequence.transitionEase)
 	end
 end
 
