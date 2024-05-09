@@ -639,8 +639,17 @@ function Panels.Panel.new(data)
 					gfx.fillRect(0, 0, w + 8, h + 2)
 				end
 			end
-			if layer.color == Panels.Color.WHITE then
+
+			local fillWhite = self.color == Panels.Color.WHITE
+			if layer.color then fillWhite = layer.color == Panels.Color.WHITE end
+			if fillWhite then
 				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			end
+
+			local invertTextColor = self.invertTextColor
+			if layer.invertTextColor ~= nil then invertTextColor = layer.invertTextColor end
+			if invertTextColor then
+				gfx.setImageDrawMode(gfx.kDrawModeInverted)
 			end
 
 			if layer.rect then
