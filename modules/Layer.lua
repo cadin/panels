@@ -3,7 +3,7 @@ local ScreenHeight <const> = playdate.display.getHeight()
 local ScreenWidth <const> = playdate.display.getWidth()
 
 function Panels.renderLayerInPanel(layer, panel, offset)
-	
+
 	local pct = getScrollPercentages(panel.frame, offset, panel.axis)
 	local p = layer.parallax or 0
 	local startValues = table.shallow_copy(layer)
@@ -109,9 +109,9 @@ function Panels.renderLayerInPanel(layer, panel, offset)
 
 	if img then
 		if layer.visible then
-			
+
 			if globalX + img.width > 0 and globalX < ScreenWidth and globalY + img.height > 0 and globalY < ScreenHeight then
-				
+
 				if layer.alpha and layer.alpha < 1 then
 					img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 				else

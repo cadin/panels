@@ -508,13 +508,13 @@ local function loadSequence(num)
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
 
-	if sequence.advanceControls == nil then 
+	if sequence.advanceControls == nil then
 		local control
 		if sequence.advanceControl == nil then
 			local _input = getAdvanceControlForScrollDirection(sequence.direction)
 			control = {input = _input}
 			sequence.advanceControl = _input
-		else 
+		else
 			control = {input = sequence.advanceControl}
 		end
 
@@ -528,13 +528,13 @@ local function loadSequence(num)
 		end
 
 		sequence.advanceControls = { control }
-	
+
 	end
 
 	if sequence.showAdvanceControls == nil then
 		if sequence.showAdvanceControl == nil then
 			sequence.showAdvanceControls = true
-		else 
+		else
 			sequence.showAdvanceControls = sequence.showAdvanceControl
 		end
 	end
@@ -624,7 +624,7 @@ local function nextSequence()
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
 		menusAreFullScreen = true
-		
+
 		if Panels.Settings.resetVarsOnGameOver then
 			Panels.vars = {}
 		end
@@ -698,7 +698,7 @@ local function checkInputs()
 	local p = panels[panelNum]
 	if sequenceIsFinishing then return end
 	if lastPanelIsShowing() then
-		if p.advanceFunction == nil then 
+		if p.advanceFunction == nil then
 			for i, button in ipairs(buttonIndicators) do
 				if pdButtonJustPressed(sequence.advanceControls[i].input) then
 					if sequence.advanceControls[i].target then
@@ -801,13 +801,13 @@ local function updateComic(offset)
 				finishSequence()
 			end
 		end
-		
+
 		updateScroll()
 		if sequence.scrollType == Panels.ScrollType.MANUAL then
 			updateArrowControls()
 		end
 		checkInputs()
-		
+
 	end
 end
 
@@ -834,10 +834,10 @@ local function drawComic(offset)
 			panel.wasOnScreen = false
 		end
 	end
-	
+
 	gfx.popContext()
 	mainCanvas:draw(0, 0)
-	
+
 	if Panels.Settings.showFPS then
 		playdate.drawFPS(0,0)
 	end
@@ -1043,10 +1043,10 @@ local function createCreditsSequence()
 	table.insert(Panels.comicData, seq)
 end
 
-function setDefaultFont() 
+function setDefaultFont()
 	if Panels.Settings.defaultFontFamily then
 		gfx.setFontFamily(Panels.Font.getFamily(Panels.Settings.defaultFontFamily))
-	elseif Panels.Settings.defaultFont then 
+	elseif Panels.Settings.defaultFont then
 		gfx.setFont(Panels.Font.get(Panels.Settings.defaultFont))
 	end
 end
@@ -1054,7 +1054,7 @@ end
 -- call this if you need to interrupt a cutscene (from a menu option for example)
 -- this should clean up panel and sequence audio that normally happens when the cutscene completes
 function Panels.haltCutscene()
-	Panels.Audio.killBGAudio() 
+	Panels.Audio.killBGAudio()
 	unloadSequence()
 	playdate.inputHandlers.pop()
 end
