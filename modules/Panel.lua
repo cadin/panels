@@ -644,7 +644,8 @@ function Panels.Panel.new(data)
 			end
 
 			if layer.rect then
-				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...",
+				local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
+				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, lineHeight, "...",
 					layer.alignment or Panels.TextAlignment.LEFT)
 			else
 				gfx.drawText(txt, textMarginLeft, textMarginTop)
