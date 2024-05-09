@@ -324,7 +324,7 @@ end
 
 local function scrollToNextPanel()
 	if not isLastPanel(panelNum) then
-		if panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
+		if not sequence.rapidAdvance and panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
 		local p = panels[panelNum]
 		p.buttonsPressed = {}
 		local target = 0
