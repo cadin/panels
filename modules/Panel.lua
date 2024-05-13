@@ -478,9 +478,7 @@ function Panels.Panel.new(data)
 				elseif layer.text then
 					if layer.visible then
 						if globalX + ScreenWidth > 0 and globalX < ScreenWidth and globalY + ScreenHeight > 0 and globalY < ScreenHeight then
-							if layer.alpha == nil or layer.alpha > 0.5 then
-								self:drawTextLayer(layer, xPos, yPos, cntrlPct)
-							end
+							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
 						end
 					end
 				elseif layer.animationLoop then
@@ -662,7 +660,11 @@ function Panels.Panel.new(data)
 
 			gfx.popContext()
 		end
-		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
+		if layer.alpha and layer.alpha < 1 then
+			layer.cachedTextImg:drawFaded(xPos - textMarginLeft, yPos - textMarginTop, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
+		else
+			layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
+		end
 		layer.needsRedraw = false
 	end
 
