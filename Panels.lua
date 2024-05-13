@@ -626,6 +626,7 @@ local function nextSequence()
 		gameDidFinish = true
 		cutsceneFinishCallback(targetSequence)
 		Panels.Audio.killBGAudio()
+		previousBGColor = nil -- prevent future cross-fade attempt
 	else
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
@@ -1073,6 +1074,7 @@ end
 function Panels.haltCutscene()
 	Panels.Audio.killBGAudio()
 	unloadSequence()
+	previousBGColor = nil -- prevent future cross-fade attempt
 	playdate.inputHandlers.pop()
 end
 
