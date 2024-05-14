@@ -579,6 +579,7 @@ function Panels.Panel.new(data)
 			layer.needsRedraw = true
 		end
 
+		local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
 
 		if(layer.isTyping or layer.needsRedraw) then
 			gfx.pushContext(layer.cachedTextImg)
@@ -628,7 +629,12 @@ function Panels.Panel.new(data)
 			end
 
 			if layer.background then
-				local w, h = gfx.getTextSize(txt)
+				local w, h = 0, 0
+				if layer.rect then
+					w, h = gfx.getTextSizeForMaxWidth(txt, layer.rect.width, lineHeight)
+				else
+					w, h = gfx.getTextSize(txt)
+				end
 				gfx.setColor(layer.background)
 				if layer.background == Panels.Color.BLACK then
 					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
@@ -651,7 +657,6 @@ function Panels.Panel.new(data)
 			end
 
 			if layer.rect then
-				local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
 				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, lineHeight, "...",
 					layer.alignment or Panels.TextAlignment.LEFT)
 			else
