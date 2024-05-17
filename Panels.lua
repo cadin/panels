@@ -6,6 +6,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/animation"
+import "CoreLibs/crank"
 
 local gfx <const> = playdate.graphics
 local ScreenHeight <const> = playdate.display.getHeight()
