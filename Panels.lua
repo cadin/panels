@@ -275,6 +275,9 @@ end
 local function updateScroll()
 	if panelTransitionAnimator then
 		scrollPos = panelTransitionAnimator:currentValue()
+		if panelTransitionAnimator:ended() then
+			panelTransitionAnimator = nil
+		end
 	else
 		if scrollPos > 0 then
 			scrollPos = math.floor(scrollPos / snapStrength)
@@ -324,7 +327,7 @@ end
 
 local function scrollToNextPanel()
 	if not isLastPanel(panelNum) then
-		if panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
+		if not sequence.rapidAdvance and panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
 		local p = panels[panelNum]
 		p.buttonsPressed = {}
 		local target = 0
@@ -343,7 +346,9 @@ local function scrollToNextPanel()
 		if sequence.direction == Panels.ScrollDirection.NONE then
 			scrollPos = target
 		else
-			panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
+			local duration = sequence.transitionDuration or 500
+			local ease = sequence.transitionEase or pdEaseInOutQuad
+			panelTransitionAnimator = gfx.animator.new(duration, scrollPos, target, ease)
 		end
 	end
 end
@@ -364,14 +369,16 @@ local function scrollToPreviousPanel()
 			end
 			target = getPanelScrollLocation(panels[panelNum], true)
 		end
-		panelTransitionAnimator = gfx.animator.new(500, scrollPos, target, pdEaseInOutQuad)
+		local duration = sequence.transitionDuration or 500
+		local ease = sequence.transitionEase or pdEaseInOutQuad
+		panelTransitionAnimator = gfx.animator.new(duration, scrollPos, target, ease)
 	end
 end
 
 -- -------------------------------------------------
 -- SEQUENCE TRANSITIONS
 
-local function startTransitionIn(direction, delay)
+local function startTransitionIn(direction, delay, duration, ease)
 	local target = scrollPos
 	local start
 
@@ -401,17 +408,18 @@ local function startTransitionIn(direction, delay)
 	shouldFadeBG = previousBGColor ~= nil and previousBGColor ~= sequence.backgroundColor
 
 	local function delayedStart()
-		transitionInAnimator = playdate.graphics.animator.new(
-			Panels.Settings.sequenceTransitionDuration, start, target, playdate.easingFunctions.inOutQuart)
+		duration = duration or Panels.Settings.sequenceTransitionDuration
+		ease = ease or playdate.easingFunctions.inOutQuart
+		transitionInAnimator = playdate.graphics.animator.new(duration, start, target, ease)
 	end
 
 	playdate.timer.performAfterDelay(delay, delayedStart)
 end
 
-local function startTransitionOut(direction)
+local function startTransitionOut(direction, duration, ease)
 	local target
 	local start = scrollPos
-	local duration = Panels.Settings.sequenceTransitionDuration
+	local duration = duration or Panels.Settings.sequenceTransitionDuration
 
 	if direction == Panels.ScrollDirection.TOP_DOWN then
 		target = -maxScroll - ScreenHeight
@@ -426,9 +434,8 @@ local function startTransitionOut(direction)
 		target = -maxScroll - ScreenWidth
 	end
 
-
-	transitionOutAnimator = playdate.graphics.animator.new(
-		duration, start, target, playdate.easingFunctions.inOutQuart)
+	ease = ease or playdate.easingFunctions.inOutQuart
+	transitionOutAnimator = playdate.graphics.animator.new(duration, start, target, ease)
 end
 
 local function getAxisForScrollDirection(dir)
@@ -508,13 +515,13 @@ local function loadSequence(num)
 		sequence.defaultFrame = Panels.Settings.defaultFrame
 	end
 
-	if sequence.advanceControls == nil then 
+	if sequence.advanceControls == nil then
 		local control
 		if sequence.advanceControl == nil then
 			local _input = getAdvanceControlForScrollDirection(sequence.direction)
 			control = {input = _input}
 			sequence.advanceControl = _input
-		else 
+		else
 			control = {input = sequence.advanceControl}
 		end
 
@@ -528,13 +535,13 @@ local function loadSequence(num)
 		end
 
 		sequence.advanceControls = { control }
-	
+
 	end
 
 	if sequence.showAdvanceControls == nil then
 		if sequence.showAdvanceControl == nil then
 			sequence.showAdvanceControls = true
-		else 
+		else
 			sequence.showAdvanceControls = sequence.showAdvanceControl
 		end
 	end
@@ -574,7 +581,7 @@ local function loadSequence(num)
 		buttonIndicators[i]:setPosition(control.x or (i-1) * 40, control.y or 0)
 	end
 
-	startTransitionIn(sequence.direction, sequence.delay or 0)
+	startTransitionIn(sequence.direction, sequence.delay or 0, sequence.transitionDuration, sequence.transitionEase)
 
 end
 
@@ -606,12 +613,7 @@ end
 local function nextSequence()
 	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
-	if isCutscene then
-		playdate.inputHandlers.pop()
-		gameDidFinish = true
-		cutsceneFinishCallback(targetSequence)
-		Panels.Audio.killBGAudio()
-	elseif targetSequence then
+	if targetSequence then
 		loadSequence(targetSequence)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish)
@@ -619,12 +621,17 @@ local function nextSequence()
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
 		updateMenuData(sequences, gameDidFinish)
-
+	elseif isCutscene then
+		playdate.inputHandlers.pop()
+		gameDidFinish = true
+		cutsceneFinishCallback(targetSequence)
+		Panels.Audio.killBGAudio()
+		previousBGColor = nil -- prevent future cross-fade attempt
 	else
 		gameDidFinish = true
 		updateMenuData(sequences, gameDidFinish)
 		menusAreFullScreen = true
-		
+
 		if Panels.Settings.resetVarsOnGameOver then
 			Panels.vars = {}
 		end
@@ -656,7 +663,7 @@ end
 local function finishSequence()
 	if not sequence.didFinish then
 		sequence.didFinish = true
-		startTransitionOut(sequence.direction)
+		startTransitionOut(sequence.direction, sequence.transitionDuration, sequence.transitionEase)
 	end
 end
 
@@ -677,11 +684,22 @@ local function shouldGoBack(panel)
 end
 
 function Panels.cranked(change, accChange)
-	if sequence.scrollType == Panels.ScrollType.MANUAL then
+	if sequence.scrollType == Panels.ScrollType.MANUAL or sequence.autoAdvanceWithCrank then
 		if sequence.axis == Panels.ScrollAxis.VERTICAL and sequence.scrollingIsReversed then
 			scrollPos = scrollPos + change
 		else
 			scrollPos = scrollPos - change
+		end
+	end
+	if sequence.scrollType == Panels.ScrollType.AUTO and sequence.autoAdvanceWithCrank then
+		local ticks = playdate.getCrankTicks(sequence.autoAdvanceTicks or 6)
+		if ticks > 0 then
+			scrollToNextPanel()
+		elseif ticks < 0 then
+			local p = panels[panelNum]
+			if shouldGoBack(p) then
+				scrollToPreviousPanel()
+			end
 		end
 	end
 end
@@ -698,7 +716,7 @@ local function checkInputs()
 	local p = panels[panelNum]
 	if sequenceIsFinishing then return end
 	if lastPanelIsShowing() then
-		if p.advanceFunction == nil then 
+		if p.advanceFunction == nil then
 			for i, button in ipairs(buttonIndicators) do
 				if pdButtonJustPressed(sequence.advanceControls[i].input) then
 					if sequence.advanceControls[i].target then
@@ -801,13 +819,13 @@ local function updateComic(offset)
 				finishSequence()
 			end
 		end
-		
+
 		updateScroll()
 		if sequence.scrollType == Panels.ScrollType.MANUAL then
 			updateArrowControls()
 		end
 		checkInputs()
-		
+
 	end
 end
 
@@ -834,10 +852,10 @@ local function drawComic(offset)
 			panel.wasOnScreen = false
 		end
 	end
-	
+
 	gfx.popContext()
 	mainCanvas:draw(0, 0)
-	
+
 	if Panels.Settings.showFPS then
 		playdate.drawFPS(0,0)
 	end
@@ -1043,10 +1061,10 @@ local function createCreditsSequence()
 	table.insert(Panels.comicData, seq)
 end
 
-function setDefaultFont() 
+function setDefaultFont()
 	if Panels.Settings.defaultFontFamily then
 		gfx.setFontFamily(Panels.Font.getFamily(Panels.Settings.defaultFontFamily))
-	elseif Panels.Settings.defaultFont then 
+	elseif Panels.Settings.defaultFont then
 		gfx.setFont(Panels.Font.get(Panels.Settings.defaultFont))
 	end
 end
@@ -1054,8 +1072,9 @@ end
 -- call this if you need to interrupt a cutscene (from a menu option for example)
 -- this should clean up panel and sequence audio that normally happens when the cutscene completes
 function Panels.haltCutscene()
-	Panels.Audio.killBGAudio() 
+	Panels.Audio.killBGAudio()
 	unloadSequence()
+	previousBGColor = nil -- prevent future cross-fade attempt
 	playdate.inputHandlers.pop()
 end
 

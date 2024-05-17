@@ -409,15 +409,15 @@ function Panels.Panel.new(data)
 					yPos = yPos + shake.y * (1 - p * p)
 				end
 
-				if layer.pixelLock then 
+				if layer.pixelLock then
 					-- offset gets added here to ensure the layer position + offset gets rounded properly
 					-- then subtract the offset because it's applied at the panel level
 					local offX = math.floor(offset.x)
 					local offY = math.floor(offset.y)
-					
+
 					xPos = math.floor((xPos + offX) / layer.pixelLock) * layer.pixelLock - offX
 					yPos = math.floor((yPos + offY) / layer.pixelLock) * layer.pixelLock - offY
-					
+
 				end
 
 				if layer.effect then
@@ -450,9 +450,9 @@ function Panels.Panel.new(data)
 
 				if img then
 					if layer.visible then
-						
+
 						if globalX + img.width > 0 and globalX < ScreenWidth and globalY + img.height > 0 and globalY < ScreenHeight then
-							
+
 							if layer.alpha and layer.alpha < 1 then
 								img:drawFaded(xPos, yPos, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
 							else
@@ -478,9 +478,7 @@ function Panels.Panel.new(data)
 				elseif layer.text then
 					if layer.visible then
 						if globalX + ScreenWidth > 0 and globalX < ScreenWidth and globalY + ScreenHeight > 0 and globalY < ScreenHeight then
-							if layer.alpha == nil or layer.alpha > 0.5 then
-								self:drawTextLayer(layer, xPos, yPos, cntrlPct)
-							end
+							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
 						end
 					end
 				elseif layer.animationLoop then
@@ -581,8 +579,9 @@ function Panels.Panel.new(data)
 			layer.needsRedraw = true
 		end
 
+		local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
 
-		if(layer.isTyping or layer.needsRedraw) then 
+		if(layer.isTyping or layer.needsRedraw) then
 			gfx.pushContext(layer.cachedTextImg)
 			gfx.clear(gfx.kColorClear)
 
@@ -630,7 +629,12 @@ function Panels.Panel.new(data)
 			end
 
 			if layer.background then
-				local w, h = gfx.getTextSize(txt)
+				local w, h = 0, 0
+				if layer.rect then
+					w, h = gfx.getTextSizeForMaxWidth(txt, layer.rect.width, lineHeight)
+				else
+					w, h = gfx.getTextSize(txt)
+				end
 				gfx.setColor(layer.background)
 				if layer.background == Panels.Color.BLACK then
 					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
@@ -639,20 +643,33 @@ function Panels.Panel.new(data)
 					gfx.fillRect(0, 0, w + 8, h + 2)
 				end
 			end
-			if layer.color == Panels.Color.WHITE then
+
+			local fillWhite = self.color == Panels.Color.WHITE
+			if layer.color then fillWhite = layer.color == Panels.Color.WHITE end
+			if fillWhite then
 				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			end
 
+			local invertTextColor = self.invertTextColor
+			if layer.invertTextColor ~= nil then invertTextColor = layer.invertTextColor end
+			if invertTextColor then
+				gfx.setImageDrawMode(gfx.kDrawModeInverted)
+			end
+
 			if layer.rect then
-				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, layer.lineHeightAdjustment or 0, "...",
+				gfx.drawTextInRect(txt, textMarginLeft, textMarginTop, layer.rect.width, layer.rect.height, lineHeight, "...",
 					layer.alignment or Panels.TextAlignment.LEFT)
 			else
 				gfx.drawText(txt, textMarginLeft, textMarginTop)
 			end
 
-			gfx.popContext() 
+			gfx.popContext()
 		end
-		layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
+		if layer.alpha and layer.alpha < 1 then
+			layer.cachedTextImg:drawFaded(xPos - textMarginLeft, yPos - textMarginTop, layer.alpha, playdate.graphics.image.kDitherTypeBayer8x8)
+		else
+			layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
+		end
 		layer.needsRedraw = false
 	end
 
@@ -732,18 +749,18 @@ function Panels.Panel.new(data)
 			self.advanceButton:draw()
 		end
 	end
-	
+
 	function panel:render(offset, borderColor, bgColor)
 		local frame = self.frame
 		self.wasOnScreen = true
-		
-		if self.updateFunction then 
+
+		if self.updateFunction then
 			self:updateFunction(offset)
 		end
-		
+
 		gfx.setDrawOffset(math.floor(offset.x + frame.x), math.floor(offset.y + frame.y))
 		gfx.setClipRect(0, 0, frame.width, frame.height)
-		
+
 		if self.backgroundColor then gfx.clear(self.backgroundColor) end
 
 		if self.renderFunction then
@@ -758,7 +775,7 @@ function Panels.Panel.new(data)
 			end
 			self.borderImage:draw(0, 0)
 		end
-		
+
 		if self.advanceButton then
 			self:updateAdvanceButton()
 		end
