@@ -96,11 +96,30 @@ A _manually_ scrolling sequence moves incrementally as the user turns the crank 
 
 An _auto_-scrolling sequence moves panel-by-panel as the user presses the panel's [`advanceControl`]({{site.baseurl}}/docs/comic-data/panels#advancecontrol) button or triggers the panel's [`advanceControlSequence`]({{site.baseurl}}/docs/comic-data/panels#advancecontrolsequence).
 
+Auto-scrolling sequences can also be advanced with the crank by setting the [`autoAdvanceWithCrank`](#autoadvancewithcrank) property.
+
 OPTIONS:
 {: .text-delta}
 
 -   `Panels.ScrollType.MANUAL`
 -   `Panels.ScrollType.AUTO`
+
+### autoAdvanceWithCrank
+default: false
+{: .prop-default}
+
+When set to `true`, the crank can be used to auto-advance panels (in addition to the buttons).
+
+`scrollType` must be set to `Panels.ScrollType.AUTO` for this property to take effect.
+
+Note that when crank auto-advance is enabled, the panel will scroll slightly before crossing the auto-scroll detent threshold (see [autoAdvanceTicks]({#autoadvanceticks})). This can be used with or without `snapToPanel` depending on the desired effect.
+
+
+### autoAdvanceTicks
+default: 6
+{: .prop-default}
+
+When `autoAdvanceWithCrank` is enabled, this property sets the number of auto-advance detents per crank revolution, as used in [`playdate.getCrankTicks`](https://sdk.play.date/inside-playdate/#f-getCrankTicks). The larger the number, the less one must crank to trigger auto-scroll.
 
 ### audio
 
@@ -237,3 +256,38 @@ FOR NONLINEAR COMICS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 Specify that a sequence is a dead end branch in your nonlinear comic. When a user advances past this sequence they will return to the main menu even if there are subsequent sequences listed in the comic data.
+
+
+### rapidAdvance
+
+default: false
+{: .prop-default}
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Normally, Panels will prevent the user from advancing to the next panel until the current panel has finished scrolling. This is helpful in preventing the user from accidentally skipping panels.
+
+When this property is set to `true`, the user can rapidly advance through the panels in this sequence without waiting for the scroll animation to complete.
+This is useful when the panels aren't serving a narrative purpose, such as for an in-game manual or credits sequence.
+
+
+### transitionDuration
+
+default: 500
+{: .prop-default}
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+The duration of the panel transition animation in milliseconds. 
+
+### transitionEase 
+
+default: playdate.easingFunctions.inOutQuad
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+The easing function used for the panel transition animation.
+You can set this to any of the [Playdate easing functions](https://sdk.play.date/inside-playdate/#f-easingFunctions), or define your own.

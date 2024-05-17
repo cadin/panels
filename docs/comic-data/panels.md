@@ -145,6 +145,39 @@ fontFamily = {
 },
 ```
 
+### lineHeightAdjustment
+
+default: 0
+{: .prop-default}
+
+Adjust the spacing between lines of text for all text layers in this panel.
+
+
+### color
+
+default: Panels.Color.BLACK
+{: .prop-default}
+
+Set the color of the text for all text layers in this panel.  
+
+Options:
+{: .text-delta}
+
+-   `Panels.Color.WHITE`
+-   `Panels.Color.BLACK`
+
+
+### invertTextColor
+
+default: false
+{: .prop-default}
+
+
+Set this to `true` to draw the text layers in this panel using inverted colors.
+
+Setting the `color` of a text layer to white will draw the text characters completely in white ([kDrawModeFillWhite](https://sdk.play.date/inside-playdate/#f-graphics.setImageDrawMode)). For fonts that contain both black and white pixels, you'd most likely rather invert the colors instead of drawing everything in white ([kDrawModeInverted](https://sdk.play.date/inside-playdate/#f-graphics.setImageDrawMode)).
+
+When this setting is enabled, black pixels in the font will be drawn as white and white pixels will be drawn as black.
 
 ### frame
 

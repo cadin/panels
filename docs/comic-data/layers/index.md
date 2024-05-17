@@ -4,6 +4,7 @@ layout: default
 nav_order: 3
 parent: Comic Data
 has_children: true
+has_toc: false
 ---
 
 # Layers
@@ -237,6 +238,37 @@ Example text layer with font family:
 ```
 
 Note that you can also set a default font family to use for all text layers in a panel or all panels in a sequence.
+
+### color
+
+default: Panels.Color.BLACK
+{: .prop-default}
+
+FOR TEXT LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set the color of the text.  
+Note that text will automatically be drawn in white if the layer has a black [background](#background).
+
+Options:
+{: .text-delta}
+
+-   `Panels.Color.WHITE`
+-   `Panels.Color.BLACK`
+
+### invertTextColor
+
+default: false
+{: .prop-default}
+
+FOR TEXT LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set this to `true` to draw the text using inverted colors.
+
+Setting the `color` of a text layer to white will draw the text characters completely in white ([kDrawModeFillWhite](https://sdk.play.date/inside-playdate/#f-graphics.setImageDrawMode)). For fonts that contain both black and white pixels, you'd most likely rather invert the colors instead of drawing everything in white ([kDrawModeInverted](https://sdk.play.date/inside-playdate/#f-graphics.setImageDrawMode)).
+
+When this setting is enabled, black pixels in the font will be drawn as white and white pixels will be drawn as black.
 
 ### rect
 
