@@ -24,7 +24,7 @@ Having elements on separate layers allows Panels to simulate depth by scrolling 
 
 ---
 
-## Properties
+## Properties 
 {: .no_toc}
 
 ### image
@@ -53,12 +53,12 @@ A layer with multiple images will switch between them as the panel scrolls acros
 Only specify one of the following per layer: `image`, `images`, `imageTable`, `text`.  
 You cannot combine them.
 
-### stencil 
+### stencil
 
 default: nil
 {: .prop-default}
 
-An image to use as the [stencil](https://sdk.play.date/Inside%20Playdate.html#_stencil) for this layer. 
+An image to use as the [stencil](https://sdk.play.date/Inside%20Playdate.html#_stencil) for this layer.
 
 Animations and other layer effects apply to the image layer, but not the stencil. This allows you to have an image layer animate within a mask shape represented by the stencil.
 
@@ -67,7 +67,8 @@ Animations and other layer effects apply to the image layer, but not the stencil
     animate = { y = -116, x = 100 }
 },
 ```
-In the example above, the 'shadow' image animates within the area masked by the 'shadowMask' image. 
+
+In the example above, the 'shadow' image animates within the area masked by the 'shadowMask' image.
 
 ### advanceControl
 
@@ -203,7 +204,6 @@ The path to a font to use for this text layer.
 
 Note that you can also set a default font to use for all text layers in a panel or all panels in a sequence.
 
-
 ### fontFamily
 
 default: nil
@@ -218,19 +218,20 @@ Setting a font family allows text layers to use **bold** and _italic_ formatting
 
 Font variants:
 {: .text-delta}
-- `Panels.Font.NORMAL`
-- `Panels.Font.BOLD`
-- `Panels.Font.ITALIC`
+
+-   `Panels.Font.NORMAL`
+-   `Panels.Font.BOLD`
+-   `Panels.Font.ITALIC`
 
 Example text layer with font family:
 {: .text-delta}
 
-```
-{ text = "Normal *Bold*, _Italic_", x = 16, y = 180,
+```lua
+{ text = 'Normal *Bold*, _Italic_', x = 16, y = 180,
     fontFamily = {
-        [Panels.Font.NORMAL] = "fonts/SasserSlab/Sasser-Slab",
-        [Panels.Font.BOLD] = "fonts/SasserSlab/Sasser-Slab-Bold",
-        [Panels.Font.ITALIC] = "fonts/SasserSlab/Sasser-Slab-Italic"
+        [Panels.Font.NORMAL] = 'fonts/SasserSlab/Sasser-Slab',
+        [Panels.Font.BOLD] = 'fonts/SasserSlab/Sasser-Slab-Bold',
+        [Panels.Font.ITALIC] = 'fonts/SasserSlab/Sasser-Slab-Italic'
     },
 },
 ```
@@ -279,7 +280,7 @@ Options:
 default: 0
 {: .prop-default}
 
-The amount of parallax movement to apply to this layer (between `0` and `1`). A layer with a higher value will move more in relation to the frame border. In general, layers closer to the viewer should have a higher parallax value than layers in the distance.
+The amount of parallax movement to apply to this layer (between `0` and `1`). A layer with a higher value will move more in relation to the frame border. In general, layers closer to the viewer should have a lower parallax value than layers in the distance.
 
 ### x
 
@@ -326,7 +327,6 @@ A table describing the layer effect. Choose from blink, shake, or text type-on e
 
 See [Layer Effects]({{site.baseurl}}/docs/comic-data/layers/effects) for more information.
 
-
 ### transitionOffset
 
 default: 0
@@ -336,7 +336,6 @@ A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#i
 
 Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`.
 
-
 ### pixelLock
 
 default: 1
@@ -345,4 +344,3 @@ default: 1
 Certain dither patterns will appear to flicker as they scroll on the Playdate screen. You can often reduce this flickering effect by scrolling the pattern two pixels at a time.
 
 Setting `pixelLock = 2` on a layer with dithering will force it to only render on every other pixel. (A setting of `3` will render the layer on every third pixel and so on.) This may cause some jumpiness in the layer movement, but will significantly reduce flickering.
-
