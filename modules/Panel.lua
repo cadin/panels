@@ -477,7 +477,9 @@ function Panels.Panel.new(data)
 
 				elseif layer.text then
 					if layer.visible then
-						if globalX + ScreenWidth > 0 and globalX < ScreenWidth and globalY + ScreenHeight > 0 and globalY < ScreenHeight then
+						local widthLimit = layer.rect.width or ScreenWidth
+						local heightLimit = layer.rect.height or ScreenHeight
+						if globalX + widthLimit > 0 and globalX < widthLimit and globalY + heightLimit > 0 and globalY < heightLimit then
 							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
 						end
 					end
