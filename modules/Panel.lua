@@ -477,8 +477,11 @@ function Panels.Panel.new(data)
 
 				elseif layer.text then
 					if layer.visible then
-						local widthLimit = layer.rect.width or ScreenWidth
-						local heightLimit = layer.rect.height or ScreenHeight
+						local widthLimit = ScreenWidth
+						local heightLimit = ScreenHeight
+						if layer.rect and layer.rect.width > ScreenWidth then widthLimit = layer.rect.width end
+						if layer.rect and layer.rect.height > ScreenHeight then heightLimit = layer.rect.height end
+
 						if globalX + widthLimit > 0 and globalX < widthLimit and globalY + heightLimit > 0 and globalY < heightLimit then
 							self:drawTextLayer(layer, xPos, yPos, cntrlPct)
 						end
@@ -577,8 +580,8 @@ function Panels.Panel.new(data)
 	local textMarginTop<const> = 1
 	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
 		if(layer.cachedTextImg == nil) then
-			local textW = layer.rect.width or ScreenWidth
-			local textH = layer.rect.height or ScreenHeight
+			local textW = layer.rect and layer.rect.width or ScreenWidth
+			local textH = layer.rect and layer.rect.height or ScreenHeight
 			layer.cachedTextImg = gfx.image.new(textW, textH)
 			layer.needsRedraw = true
 		end
