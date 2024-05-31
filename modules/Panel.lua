@@ -580,8 +580,8 @@ function Panels.Panel.new(data)
 	local textMarginTop<const> = 1
 	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
 		if(layer.cachedTextImg == nil) then
-			local textW = layer.rect and layer.rect.width or ScreenWidth
-			local textH = layer.rect and layer.rect.height or ScreenHeight
+			local textW = layer.rect and layer.rect.width + layer.x or ScreenWidth
+			local textH = layer.rect and layer.rect.height + layer.y or ScreenHeight
 			layer.cachedTextImg = gfx.image.new(textW, textH)
 			layer.needsRedraw = true
 		end
