@@ -170,6 +170,8 @@ local function updateMainMenu(gameDidFinish, gameDidStart)
 		end
 	end
 
+	if #menuOptions == 1 then menuOptions = { "New Game" } end
+
 	mainMenuList = playdate.ui.gridview.new(math.floor((ScreenWidth - 16) / #menuOptions) - 8, 32)
 	mainMenuList:setNumberOfRows(1)
 	mainMenuList:setNumberOfColumns(#menuOptions)

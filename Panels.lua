@@ -973,7 +973,11 @@ function Panels.onMenuDidHide(menu)
 end
 
 function Panels.onMenuDidStartOver()
-	alert:show()
+	if not Panels.Settings.useChapterMenu and gameDidFinish then
+		onAlertDidStartOver()
+	else
+		alert:show()
+	end
 end
 
 function onAlertDidStartOver()
@@ -1019,6 +1023,18 @@ local function updateSystemMenu()
 			end
 		)
 		printError(error, "Error adding Chapters to system menu")
+	end
+
+	if Panels.Settings.showHomeInMenu then
+		local homeMenuItem, error = sysMenu:addMenuItem("Home",
+			function()
+				Panels.creditsMenu:hide()
+				if Panels.chapterMenu then Panels.chapterMenu:hide() end
+				menusAreFullScreen = true
+				Panels.mainMenu:show()
+			end
+		)
+		printError(error, "Error adding Home to system menu")
 	end
 
 
