@@ -16,6 +16,9 @@ Panels = {}
 Panels.comicData = {}
 Panels.credits = {}
 Panels.vars = {}
+Panels.percentageComplete = 0
+Panels.unlockedSequences = {}
+Panels.visitedSequences = {}
 
 import "./modules/Font"
 import "./modules/Audio"
@@ -72,8 +75,8 @@ local previousBGColor = nil
 local transitionFader = nil
 local shouldFadeBG = false
 
-Panels.unlockedSequences = {}
 local gameDidFinish = false
+local numSequencesUnlocked = 0
 
 local alert = nil
 
@@ -488,6 +491,30 @@ local function setSequenceColors()
 	end
 end
 
+local function countVisitedSequences(unlocked)
+	local count = 0
+	for i, v in ipairs(unlocked) do
+		if v then count = count + 1 end
+	end
+	return count
+end
+
+local function calculatePercentageComplete() 
+	numSequencesVisited = countVisitedSequences(Panels.visitedSequences)
+	Panels.percentageComplete = math.floor((numSequencesVisited / #sequences) * 100)
+end
+
+local function markSequenceAsVisited(num)
+	for i = 1, num, 1 do
+		if not Panels.visitedSequences[i]  then
+			Panels.visitedSequences[i] = false
+		end
+	end
+
+	Panels.visitedSequences[num] = true
+	calculatePercentageComplete()
+end
+
 local function unlockSequence(num)
 	for i = 1, num, 1 do
 		if not Panels.unlockedSequences[i]  then
@@ -496,6 +523,7 @@ local function unlockSequence(num)
 	end
 
 	Panels.unlockedSequences[num] = true
+	markSequenceAsVisited(num)
 end
 
 local function loadSequence(num)
@@ -617,11 +645,11 @@ local function nextSequence()
 	if targetSequence then
 		loadSequence(targetSequence)
 		targetSequence = nil
-		updateMenuData(sequences, gameDidFinish)
+		updateMenuData(sequences, gameDidFinish, currentSeqIndex > 1)
 	elseif currentSeqIndex < #sequences and not isDeadEnd then
 		currentSeqIndex = currentSeqIndex + 1
 		loadSequence(currentSeqIndex)
-		updateMenuData(sequences, gameDidFinish)
+		updateMenuData(sequences, gameDidFinish, currentSeqIndex > 1)
 	elseif isCutscene then
 		playdate.inputHandlers.pop()
 		gameDidFinish = true
@@ -630,7 +658,7 @@ local function nextSequence()
 		previousBGColor = nil -- prevent future cross-fade attempt
 	else
 		gameDidFinish = true
-		updateMenuData(sequences, gameDidFinish)
+		updateMenuData(sequences, gameDidFinish, currentSeqIndex > 1)
 		menusAreFullScreen = true
 
 		if Panels.Settings.resetVarsOnGameOver then
@@ -891,13 +919,15 @@ local function loadGameData()
 	if data then
 		currentSeqIndex = data.sequence
 		Panels.unlockedSequences = data.unlockedSequences or {}
+		Panels.visitedSequences = data.visitedSequences or {}
+		calculatePercentageComplete()
 		gameDidFinish = data.gameDidFinish
 		Panels.vars = data.vars or {}
 	end
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
 end
 
 function playdate.gameWillTerminate()
@@ -1129,12 +1159,13 @@ function Panels.start(comicData)
 
 	transitionFader = gfx.image.new(ScreenWidth, ScreenHeight)
 
+	sequences = Panels.comicData
+
 	loadGameData()
 	validateSettings()
 	updateSystemMenu()
 
-	sequences = Panels.comicData
-	createMenus(sequences, gameDidFinish, currentSeqIndex > 1);
+	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
 
 	if shouldShowMainMenu() then
 		menusAreFullScreen = true
