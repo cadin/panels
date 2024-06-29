@@ -639,11 +639,30 @@ local function unloadSequence()
 	previousBGColor = sequence.backgroundColor
 end
 
+local function getIndexForTarget(target)
+	-- if target is a number, return it
+	if type(target) == "number" then
+		return target
+	end
+
+	-- if target is a string, find the index of the sequence with that id
+	if type(target) == "string" then
+		for i, seq in ipairs(sequences) do
+			if seq.id == target then
+				return i
+			end
+		end
+	end
+
+	printError("The target sequence '".. target .."' could not be found.", "Invalid target sequence ID")
+end
+
 local function nextSequence()
 	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
 	if targetSequence then
-		loadSequence(targetSequence)
+		local targetIndex = getIndexForTarget(targetSequence)
+		loadSequence(targetIndex)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish, currentSeqIndex > 1)
 	elseif currentSeqIndex < #sequences and not isDeadEnd then
@@ -653,7 +672,8 @@ local function nextSequence()
 	elseif isCutscene then
 		playdate.inputHandlers.pop()
 		gameDidFinish = true
-		cutsceneFinishCallback(targetSequence)
+		local targetIndex = getIndexForTarget(targetSequence)
+		cutsceneFinishCallback(targetIndex)
 		Panels.Audio.killBGAudio()
 		previousBGColor = nil -- prevent future cross-fade attempt
 	else
@@ -1165,7 +1185,7 @@ function Panels.start(comicData)
 	validateSettings()
 	updateSystemMenu()
 
-	createMenus(sequences, gameDidFinish, currentSeqIndex > 1)
+	createMenus(sequences, gameDidFinish, currentSeqIndex and currentSeqIndex > 1)
 
 	if shouldShowMainMenu() then
 		menusAreFullScreen = true
