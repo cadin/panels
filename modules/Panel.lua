@@ -114,7 +114,7 @@ function Panels.Panel.new(data)
 	local imageFolder = Panels.Settings.imageFolder
 
 	if panel.showAdvanceControl then
-		panel.advanceButton = Panels.ButtonIndicator.new()
+		panel.advanceButton = Panels.ButtonIndicator.new(panel.useSmallButtons)
 		panel.advanceButton:setButton(panel.advanceControl)
 		if panel.advanceControlPosition then
 			panel.advanceButton:setPosition(panel.advanceControlPosition.x, panel.advanceControlPosition.y)

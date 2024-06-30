@@ -194,10 +194,10 @@ end
 local function createButtonIndicators()
 	buttonIndicators = {}
 	if sequence.advanceControls == nil then
-		buttonIndicators = { Panels.ButtonIndicator.new() }
+		buttonIndicators = { Panels.ButtonIndicator.new(sequence.useSmallButtons) }
 	else
 		for i, value in ipairs(sequence.advanceControls) do
-			buttonIndicators[i] = Panels.ButtonIndicator.new()
+			buttonIndicators[i] = Panels.ButtonIndicator.new(sequence.useSmallButtons)
 		end
 	end
 end
@@ -555,7 +555,7 @@ local function loadSequence(num)
 		end
 
 		if sequence.advanceControlPosition == nil then
-			local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(sequence.direction)
+			local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(sequence.direction, sequence.useSmallButtons)
 			control.x = x
 			control.y = y
 		else
