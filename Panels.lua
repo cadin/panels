@@ -1075,8 +1075,8 @@ local function updateSystemMenu()
 		printError(error, "Error adding Chapters to system menu")
 	end
 
-	if Panels.Settings.showHomeInMenu then
-		local homeMenuItem, error = sysMenu:addMenuItem("Home",
+	if Panels.Settings.showMainMenuOption then
+		local homeMenuItem, error = sysMenu:addMenuItem("Main Menu",
 			function()
 				Panels.creditsMenu:hide()
 				if Panels.chapterMenu then Panels.chapterMenu:hide() end
@@ -1084,7 +1084,7 @@ local function updateSystemMenu()
 				Panels.mainMenu:show()
 			end
 		)
-		printError(error, "Error adding Home to system menu")
+		printError(error, "Error adding Main Menu to system menu")
 	end
 
 

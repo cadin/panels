@@ -27,7 +27,7 @@ Panels.Settings = {
 	showMenuOnLaunch = false,
 	skipMenuOnFirstLaunch = false,
 	playMenuSounds = true,
-	showHomeInMenu = false,
+	showMainMenuOption = false,
 
 	-- credits
 	showCreditsOnGameOver = false,
