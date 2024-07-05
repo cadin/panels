@@ -484,6 +484,7 @@ function updateMenus()
 	if Panels.mainMenu and Panels.mainMenu:isActive() then 
 		local val = Panels.mainMenu.animator:currentValue()
 		displayMenuImage(val)	
+		if Panels.mainMenuDrawingCallBack ~= nil then Panels.mainMenuDrawingCallBack(val) end
 		Panels.mainMenu:update() 
 	end
 	
