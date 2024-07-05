@@ -12,10 +12,6 @@ Panels.ControlSize = {
 }
 
 function Panels.ButtonIndicator.getPosititonForScrollDirection(direction, _size)
-	if _size == nil then 
-		_size = Panels.ControlSize.LARGE 
-		print("Button size not provided, using default size: " .. _size)
-	end
 	local size = _size or Panels.ControlSize.LARGE
 
 	local x = ScreenWidth - size - 2

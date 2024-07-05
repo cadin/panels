@@ -512,6 +512,12 @@ function Panels.Panel.new(data)
 
 	end
 
+	function panel:setup() 
+		if self.setupFunction then
+			self:setupFunction()
+		end
+	end
+
 	function panel:reset()
 		if self.resetFunction then
 			self:resetFunction()

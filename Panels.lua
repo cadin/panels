@@ -890,7 +890,11 @@ local function drawComic(offset)
 	end
 
 	for i, panel in ipairs(panels) do
-		if (panel:isOnScreen(offset)) then
+		if panel:isOnScreen(offset) then
+			
+			if panel.wasOnScreen ~= true then
+				panel:setup()
+			end
 			panel:render(offset, sequence.foregroundColor, sequence.backgroundColor)
 		elseif panel.wasOnScreen then
 			if panel.targetSequenceFunction then
