@@ -5,9 +5,19 @@ local ScreenHeight <const> = playdate.display.getHeight()
 
 local gfx <const> = playdate.graphics
 
-function Panels.ButtonIndicator.getPosititonForScrollDirection(direction, isSmall)
-	local size = 40
-	if isSmall then size = 20 end
+Panels.ControlSize = {
+	LARGE = 40,
+	MEDIUM = 30,
+	SMALL = 20,
+}
+
+function Panels.ButtonIndicator.getPosititonForScrollDirection(direction, _size)
+	if _size == nil then 
+		_size = Panels.ControlSize.LARGE 
+		print("Button size not provided, using default size: " .. _size)
+	end
+	local size = _size or Panels.ControlSize.LARGE
+
 	local x = ScreenWidth - size - 2
 		local y = (ScreenHeight - size) / 2
 		if direction == Panels.ScrollDirection.RIGHT_TO_LEFT then
@@ -23,7 +33,7 @@ function Panels.ButtonIndicator.getPosititonForScrollDirection(direction, isSmal
 	return x, y
 end
 
-function Panels.ButtonIndicator.new(isSmall)
+function Panels.ButtonIndicator.new(size)
 	local button = {imageTable = nil, holdFrame = 4}
 	button.currentFrame = 1
 	button.step = 1
@@ -31,7 +41,7 @@ function Panels.ButtonIndicator.new(isSmall)
 	button.x = 0
 	button.y = 0
 	button.button = "0"
-	button.isSmall = isSmall or false
+	button.size = size or Panels.ControlSize.LARGE
 	
 	button.timer = playdate.timer.new(
 		50, 
@@ -65,7 +75,8 @@ function Panels.ButtonIndicator.new(isSmall)
 			end
 
 			local imagePathSuffix = "-table-40-40.png"
-			if self.isSmall then imagePathSuffix = "-SM-table-20-20.png" end
+			if self.size == Panels.ControlSize.SMALL then imagePathSuffix = "-SM-table-20-20.png" end
+			if self.size == Panels.ControlSize.MEDIUM then imagePathSuffix = "-MD-table-30-30.png" end
 			
 			self.imageTable = gfx.imagetable.new(
 				Panels.Settings.path .. "assets/images/" .. imageName .. imagePathSuffix)
@@ -73,7 +84,8 @@ function Panels.ButtonIndicator.new(isSmall)
 	end
 	
 	function button:setPositionForScrollDirection(direction)
-		local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(direction)
+		print("Setting position for scroll direction. size: " .. self.size)
+		local x, y = Panels.ButtonIndicator.getPosititonForScrollDirection(direction, self.size)
 		self:setPosition(x, y)
 	end
 	
