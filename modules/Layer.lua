@@ -5,6 +5,7 @@ local ScreenWidth <const> = playdate.display.getWidth()
 function Panels.renderLayerInPanel(layer, panel, offset)
 
 	local pct = getScrollPercentages(panel.frame, offset, panel.axis)
+	local cntrlPct = calculateControlPercent(pct, panel)
 	local p = layer.parallax or 0
 	local startValues = table.shallow_copy(layer)
 	if layer.isExiting and layer.animate then

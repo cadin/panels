@@ -314,14 +314,19 @@ function Panels.Panel.new(data)
 
 	end
 
+	function calculateControlPercent(scrollPercentages, panel)
+		local cntrlPct = 0
+		if panel.axis == AxisHorizontal then cntrlPct = scrollPercentages.x else cntrlPct = scrollPercentages.y end
+		if panel.scrollingIsReversed then cntrlPct = 1 - cntrlPct end
+		return cntrlPct
+	end
+
 	function panel:drawLayers(offset)
 		local layers = self.layers
 		local frame = self.frame
 		local shake
 		local pct = getScrollPercentages(frame, offset, self.axis)
-		local cntrlPct
-		if self.axis == AxisHorizontal then cntrlPct = pct.x else cntrlPct = pct.y end
-		if self.scrollingIsReversed then cntrlPct = 1 - cntrlPct end
+		local cntrlPct = calculateControlPercent(pct, self)
 
 		if self.effect then
 			if self.effect.type == Panels.Effect.SHAKE_UNISON then
