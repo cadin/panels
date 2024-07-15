@@ -587,8 +587,8 @@ function Panels.Panel.new(data)
 	end
 
 
-	local textMarginLeft<const> = 4
-	local textMarginTop<const> = 1
+	local textMarginHorizontal<const> = 4
+	local textMarginVertical<const> = 1
 	function panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
 		if(layer.cachedTextImg == nil) then
 			local textW = layer.rect and layer.rect.width + layer.x or ScreenWidth
@@ -596,6 +596,11 @@ function Panels.Panel.new(data)
 			layer.cachedTextImg = gfx.image.new(textW, textH)
 			layer.needsRedraw = true
 		end
+
+		local textMarginLeft = layer.margin and (layer.margin.left or layer.margin.h) or textMarginHorizontal
+		local textMarginRight = layer.margin and (layer.margin.right or layer.margin.h) or textMarginHorizontal
+		local textMarginTop = layer.margin and (layer.margin.top or layer.margin.v) or textMarginVertical
+		local textMarginBottom = layer.margin and (layer.margin.bottom or layer.margin.v) or textMarginVertical
 
 		local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
 
@@ -653,12 +658,30 @@ function Panels.Panel.new(data)
 				else
 					w, h = gfx.getTextSize(txt)
 				end
+				local borderColor = Panels.Color.BLACK
 				gfx.setColor(layer.background)
 				if layer.background == Panels.Color.BLACK then
 					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+					borderColor = Panels.Color.WHITE
 				end
 				if w > 0 and h > 0 then
-					gfx.fillRect(0, 0, w + 8, h + 2)
+					if layer.borderRadius then
+						gfx.fillRoundRect(0, 0, w + textMarginLeft + textMarginRight, h + textMarginTop + textMarginBottom, layer.borderRadius)
+					else
+						gfx.fillRect(0, 0, w + textMarginLeft + textMarginRight, h + textMarginTop + textMarginBottom)
+					end
+
+					if layer.border then
+						local borderWidth = layer.border or 1
+						gfx.setColor(borderColor)
+						gfx.setLineWidth(borderWidth)
+						if layer.borderRadius then
+							gfx.drawRoundRect(borderWidth * 0.5, borderWidth * 0.5, w + textMarginLeft + textMarginRight, h + textMarginTop + textMarginBottom, layer.borderRadius)
+						else
+							gfx.drawRect(borderWidth * 0.5, borderWidth * 0.5, w + textMarginLeft + textMarginRight, h + textMarginTop + textMarginBottom)
+						end
+
+					end
 				end
 			end
 
