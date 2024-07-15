@@ -351,11 +351,16 @@ function Panels.Panel.new(data)
 				local rotation = 0
 
 				if layer.renderCondition then
-					print(Panels.vars[layer.renderCondition.var], layer.renderCondition.value)
-					if Panels.vars[layer.renderCondition.var] ~= layer.renderCondition.value then
-						layer.visible = false
-					else
+					if Panels.vars[layer.renderCondition.var] != nil then 
+						if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
+							layer.visible = true
+						else
+							layer.visible = false
+						end
+					elseif layer.renderCondition == false then -- match nil value to false condition
 						layer.visible = true
+					else 
+						layer.visible = false
 					end
 				end	
 
