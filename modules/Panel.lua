@@ -350,6 +350,15 @@ function Panels.Panel.new(data)
 				local yPos = math.floor(startValues.y + (self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p)
 				local rotation = 0
 
+				if layer.renderCondition then
+					print(Panels.vars[layer.renderCondition.var], layer.renderCondition.value)
+					if Panels.vars[layer.renderCondition.var] ~= layer.renderCondition.value then
+						layer.visible = false
+					else
+						layer.visible = true
+					end
+				end	
+
 				if layer.animate or layer.isExiting then
 					local anim = layer.animate
 
