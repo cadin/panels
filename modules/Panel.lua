@@ -601,6 +601,8 @@ function Panels.Panel.new(data)
 		self.audioRepeats = 1
 		self.advanceControlTimerDidEnd = false
 		self.advanceControlTimer = nil
+		self.autoAdvanceDidComplete = false
+		self.autoAdvanceTimerDidStart = false
 
 		if self.advanceControlSequence and #self.advanceControlSequence > 1 then
 			self:nextAdvanceControl(self.advanceControlSequence[1], false)
@@ -783,7 +785,7 @@ function Panels.Panel.new(data)
 		if self.advanceFunction then
 			return self:advanceFunction()
 		else
-			return false
+			return self.autoAdvanceDidComplete
 		end
 	end
 
@@ -828,6 +830,13 @@ function Panels.Panel.new(data)
 
 		if self.updateFunction then
 			self:updateFunction(offset)
+		end
+
+		if self.autoAdvance ~= nil and not self.autoAdvanceTimerDidStart then
+			self.autoAdvanceTimerDidStart = true
+			playdate.timer.performAfterDelay(self.autoAdvance, function() 
+				self.autoAdvanceDidComplete = true 
+			end)
 		end
 
 		gfx.setDrawOffset(math.floor(offset.x + frame.x), math.floor(offset.y + frame.y))
