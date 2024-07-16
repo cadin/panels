@@ -59,7 +59,7 @@ function Panels.ButtonIndicator.new(size)
 			if input == Panels.Input.A then
 				imageName = "buttonA"
 			elseif input == Panels.Input.B then
-				imagename = "buttonB"
+				imageName = "buttonB"
 			elseif input == Panels.Input.UP then
 				imageName = "buttonUP"
 			elseif input == Panels.Input.RIGHT then
@@ -85,6 +85,13 @@ function Panels.ButtonIndicator.new(size)
 		self:setPosition(x, y)
 	end
 	
+	function button:reset() 
+		self.state = "hidden"
+		self.currentFrame = 1
+		self.timer:pause()
+		self.step = 1
+	end
+
 	function button:show()
 		if self.currentFrame == 1 and self.state ~= "showing" then 
 			self.state = "showing"

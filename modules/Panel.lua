@@ -209,6 +209,20 @@ function Panels.Panel.new(data)
 		panel.sfxTrigger = panel.audio.scrollTrigger or 0
 	end
 
+	function panel:nextAdvanceControl(control, show)
+		if control then
+			self.advanceButton:reset()
+			self.advanceButton:setButton(control)
+			self.advanceControl = control
+			
+			if show then 
+				self.advanceButton:show() 
+			else 
+				self.advanceButton:reset()
+			end
+		end
+	end
+
 	function panel:isOnScreen(offset)
 		local isOn = false
 		local f = self.frame
@@ -351,7 +365,7 @@ function Panels.Panel.new(data)
 				local rotation = 0
 
 				if layer.renderCondition then
-					if Panels.vars[layer.renderCondition.var] != nil then 
+					if Panels.vars[layer.renderCondition.var] ~= nil then
 						if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
 							layer.visible = true
 						else
@@ -587,6 +601,10 @@ function Panels.Panel.new(data)
 		self.audioRepeats = 1
 		self.advanceControlTimerDidEnd = false
 		self.advanceControlTimer = nil
+
+		if self.advanceControlSequence and #self.advanceControlSequence > 1 then
+			self:nextAdvanceControl(self.advanceControlSequence[1], false)
+		end
 		if self.prevPct > 0.5 then
 			self.prevPct = 1
 		else
@@ -785,10 +803,9 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:updateAdvanceButton()
-		if self.advanceButton.state == "hidden" and not self.didFinish then
-
+		if self.advanceButton.state == "hidden" then
 			if self.advanceControlPosition and self.advanceControlPosition.delay and self.advanceControlTimer == nil then
-				self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)
+				self.advanceControlTimer = playdate.timer.new(self.advanceControlPosition.delay, nil)	
 			elseif self.advanceControlPosition == nil or self.advanceControlPosition.delay == nil or
 				(self.advanceControlTimer and self.advanceControlTimer.currentTime >= self.advanceControlTimer.duration) then
 				if not self.advanceControlTimerDidEnd then

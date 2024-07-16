@@ -111,7 +111,7 @@ local function setUpPanels(seq)
 		panel.direction = seq.direction
 
 		if panel.advanceControl == nil then
-			if panel.advanceControlSequence and #panel.advanceControlSequence == 1 then
+			if panel.advanceControlSequence and #panel.advanceControlSequence >= 1 then
 				panel.advanceControl = panel.advanceControlSequence[1]
 			else
 				panel.advanceControl = sequence.advanceControl
@@ -798,6 +798,11 @@ local function checkInputs()
 						else
 							scrollToNextPanel()
 						end
+					else 
+						playdate.timer.performAfterDelay(500, function () 
+							p:nextAdvanceControl(p.advanceControlSequence[#p.buttonsPressed + 1], true)
+						end
+						)
 					end
 				end
 			else
