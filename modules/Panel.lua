@@ -111,6 +111,10 @@ function Panels.Panel.new(data)
 		end
 	end
 
+	if panel.advanceControlPositions then
+		panel.advanceControlPosition = panel.advanceControlPositions[1]
+	end
+
 	local imageFolder = Panels.Settings.imageFolder
 
 	if panel.showAdvanceControl then
@@ -209,11 +213,19 @@ function Panels.Panel.new(data)
 		panel.sfxTrigger = panel.audio.scrollTrigger or 0
 	end
 
-	function panel:nextAdvanceControl(control, show)
+	function panel:nextAdvanceControl(controlIndex, show)
+		local control = self.advanceControlSequence[controlIndex]
 		if control then
 			self.advanceButton:reset()
 			self.advanceButton:setButton(control)
 			self.advanceControl = control
+
+			if self.advanceControlPositions then
+				local pos = self.advanceControlPositions[controlIndex]
+				if pos then
+					self.advanceButton:setPosition(pos.x, pos.y)
+				end
+			end
 			
 			if show then 
 				self.advanceButton:show() 
@@ -335,6 +347,24 @@ function Panels.Panel.new(data)
 		return cntrlPct
 	end
 
+	function layerShouldRender(layer)
+		if layer.renderCondition then
+			if Panels.vars[layer.renderCondition.var] ~= nil then
+				if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
+					return true
+				else
+					return false
+				end
+			elseif layer.renderCondition == false then -- match nil value to false condition
+				return true
+			else
+				return false
+			end
+		end
+
+		return true
+	end
+
 	function panel:drawLayers(offset)
 		local layers = self.layers
 		local frame = self.frame
@@ -354,6 +384,8 @@ function Panels.Panel.new(data)
 
 		if layers then
 			for i, layer in ipairs(layers) do
+				if not layerShouldRender(layer) then goto continue end
+
 				local p = layer.parallax or 0
 				local startValues = table.shallow_copy(layer)
 				if layer.isExiting and layer.animate then
@@ -363,20 +395,6 @@ function Panels.Panel.new(data)
 				local xPos = math.floor(startValues.x + (self.parallaxDistance * pct.x - self.parallaxDistance / 2) * p)
 				local yPos = math.floor(startValues.y + (self.parallaxDistance * pct.y - self.parallaxDistance / 2) * p)
 				local rotation = 0
-
-				if layer.renderCondition then
-					if Panels.vars[layer.renderCondition.var] ~= nil then
-						if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
-							layer.visible = true
-						else
-							layer.visible = false
-						end
-					elseif layer.renderCondition == false then -- match nil value to false condition
-						layer.visible = true
-					else 
-						layer.visible = false
-					end
-				end	
 
 				if layer.animate or layer.isExiting then
 					local anim = layer.animate
@@ -538,7 +556,7 @@ function Panels.Panel.new(data)
 						layer.animationLoop:draw(xPos, yPos)
 					end
 				end
-
+				::continue::
 			end
 		end
 		self.prevPct = cntrlPct
@@ -605,7 +623,7 @@ function Panels.Panel.new(data)
 		self.autoAdvanceTimerDidStart = false
 
 		if self.advanceControlSequence and #self.advanceControlSequence > 1 then
-			self:nextAdvanceControl(self.advanceControlSequence[1], false)
+			self:nextAdvanceControl(1, false)
 		end
 		if self.prevPct > 0.5 then
 			self.prevPct = 1

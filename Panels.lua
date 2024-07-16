@@ -800,7 +800,7 @@ local function checkInputs()
 						end
 					else 
 						playdate.timer.performAfterDelay(500, function () 
-							p:nextAdvanceControl(p.advanceControlSequence[#p.buttonsPressed + 1], true)
+							p:nextAdvanceControl(#p.buttonsPressed + 1, true)
 						end
 						)
 					end
@@ -956,7 +956,7 @@ local function loadGameData()
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
+	-- playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
 end
 
 function playdate.gameWillTerminate()
