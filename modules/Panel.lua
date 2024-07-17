@@ -53,7 +53,7 @@ local function calculateShake(strength)
 	}
 end
 
-local function doLayerEffect(layer)
+function doLayerEffect(layer)
 	if layer.effect.type == Panels.Effect.BLINK then
 		if layer.timer == nil then
 			if layer.effect.delay then
@@ -229,8 +229,6 @@ function Panels.Panel.new(data)
 			
 			if show then 
 				self.advanceButton:show() 
-			else 
-				self.advanceButton:reset()
 			end
 		end
 	end
@@ -622,9 +620,19 @@ function Panels.Panel.new(data)
 		self.autoAdvanceDidComplete = false
 		self.autoAdvanceTimerDidStart = false
 
+		if self.autoAdvanceTimer then
+			self.autoAdvanceTimer:remove()
+			self.autoAdvanceTimer = nil
+		end
+
 		if self.advanceControlSequence and #self.advanceControlSequence > 1 then
 			self:nextAdvanceControl(1, false)
 		end
+
+		if self.advanceButton then
+			self.advanceButton:reset()
+		end
+
 		if self.prevPct > 0.5 then
 			self.prevPct = 1
 		else
@@ -842,6 +850,14 @@ function Panels.Panel.new(data)
 		end
 	end
 
+	function panel:autoAdvanceTimerComplete() 
+		if self.autoAdvanceTimerDidStart then 
+			self.autoAdvanceDidComplete = true 
+		else 
+			self.autoAdvanceTimer:remove()
+		end
+	end
+
 	function panel:render(offset, borderColor, bgColor)
 		local frame = self.frame
 		self.wasOnScreen = true
@@ -852,9 +868,7 @@ function Panels.Panel.new(data)
 
 		if self.autoAdvance ~= nil and not self.autoAdvanceTimerDidStart then
 			self.autoAdvanceTimerDidStart = true
-			playdate.timer.performAfterDelay(self.autoAdvance, function() 
-				self.autoAdvanceDidComplete = true 
-			end)
+			self.autoAdvanceTimer = playdate.timer.new(self.autoAdvance, function() self:autoAdvanceTimerComplete() end)
 		end
 
 		gfx.setDrawOffset(math.floor(offset.x + frame.x), math.floor(offset.y + frame.y))
