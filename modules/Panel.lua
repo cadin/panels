@@ -353,10 +353,17 @@ function Panels.Panel.new(data)
 				else
 					return false
 				end
-			elseif layer.renderCondition == false then -- match nil value to false condition
-				return true
 			else
-				return false
+				if not layer.didWarnForInvalidRenderCondition then
+					-- just print this once per layer
+					printError("No value for '" .. layer.renderCondition.var .. "' found in Panels.vars", "Invalid renderCondition")
+					layer.didWarnForInvalidRenderCondition = true
+				end
+				if layer.renderCondition.value == false then -- match nil value to false condition
+					return true
+				else
+					return false
+				end
 			end
 		end
 
