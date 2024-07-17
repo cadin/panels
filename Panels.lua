@@ -637,6 +637,10 @@ local function unloadSequence()
 	Panels.Image.clearCache()
 	sequence.didFinish = false
 	previousBGColor = sequence.backgroundColor
+
+	if targetSequence == nil and sequence.nextSequence then
+		targetSequence = sequence.nextSequence
+	end
 end
 
 local function getIndexForTarget(target)
