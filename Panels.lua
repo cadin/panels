@@ -633,6 +633,14 @@ local function unloadSequence()
 			p:reset()
 		end
 	end
+
+	if(sequence.direction == Panels.ScrollDirection.NONE) then
+		-- because the lack of scroll causes these not to get called
+		local lastPanel = panels[#panels]
+		if lastPanel.targetSequenceFunction then targetSequence = lastPanel.targetSequenceFunction() end
+		if lastPanel.resetFunction then lastPanel.resetFunction() end
+	end
+
 	panelTransitionAnimator = nil
 	Panels.Image.clearCache()
 	sequence.didFinish = false
