@@ -215,7 +215,7 @@ function Panels.Panel.new(data)
 
 	function panel:nextAdvanceControl(controlIndex, show)
 		local control = self.advanceControlSequence[controlIndex]
-		if control then
+		if control and self.advanceButton then
 			self.advanceButton:reset()
 			self.advanceButton:setButton(control)
 			self.advanceControl = control
