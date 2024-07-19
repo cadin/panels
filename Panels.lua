@@ -968,7 +968,7 @@ local function loadGameData()
 end
 
 local function saveGameData()
-	-- playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
 end
 
 function playdate.gameWillTerminate()
