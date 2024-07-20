@@ -1073,7 +1073,7 @@ end
 function shouldShowMainMenu()
 	local should = false
 	if Panels.Settings.showMenuOnLaunch then
-		if currentSeqIndex > 1 or Panels.Settings.skipMenuOnFirstLaunch == false then
+		if (currentSeqIndex and currentSeqIndex > 1) or Panels.Settings.skipMenuOnFirstLaunch == false then
 			should = true
 		end
 	end
