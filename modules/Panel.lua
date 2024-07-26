@@ -37,6 +37,7 @@ local function createFrameFromPartialFrame(frame)
 end
 
 function getScrollPercentages(frame, offset, axis)
+	if offset == nil then return 1 end
 	local xPct = 1 - (frame.x - frame.margin + frame.width + offset.x) / (ScreenWidth + frame.width)
 	local yPct = 1 - (frame.y - frame.margin + frame.height + offset.y) / (ScreenHeight + frame.height)
 
@@ -277,7 +278,10 @@ function Panels.Panel.new(data)
 		end
 	end
 
-	function panel:updatePanelAudio(pct)
+	function panel:updatePanelAudio(offset)
+		local scrollPct = getScrollPercentages(panel.frame, offset, panel.axis)
+		local pct = calculateControlPercent(scrollPct, panel)
+
 		local count = panel.audio.repeatCount or 1
 		if panel.audio.loop then count = 0 end
 		if self.audio.triggerSequence then
@@ -381,10 +385,6 @@ function Panels.Panel.new(data)
 			if self.effect.type == Panels.Effect.SHAKE_UNISON then
 				shake = calculateShake(self.effect.strength)
 			end
-		end
-
-		if self.sfxPlayer then
-			self:updatePanelAudio(cntrlPct)
 		end
 
 		if layers then
@@ -887,6 +887,10 @@ function Panels.Panel.new(data)
 			self:renderFunction(offset)
 		else
 			self:drawLayers(offset)
+		end
+
+		if self.sfxPlayer then
+			self:updatePanelAudio(offset)
 		end
 
 		if not self.borderless then
