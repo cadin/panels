@@ -37,13 +37,13 @@ local function createFrameFromPartialFrame(frame)
 end
 
 function getScrollPercentages(frame, offset, axis)
-	if offset == nil then return 1 end
+	if offset == nil then return {x = 0.5, y - 0.5} end
+
 	local xPct = 1 - (frame.x - frame.margin + frame.width + offset.x) / (ScreenWidth + frame.width)
 	local yPct = 1 - (frame.y - frame.margin + frame.height + offset.y) / (ScreenHeight + frame.height)
 
 	local pct = { x = xPct, y = yPct }
 	if axis == AxisHorizontal then pct.y = 0.5 else pct.x = 0.5 end
-
 	return pct
 end
 
@@ -279,11 +279,11 @@ function Panels.Panel.new(data)
 	end
 
 	function panel:updatePanelAudio(offset)
-		local scrollPct = getScrollPercentages(panel.frame, offset, panel.axis)
-		local pct = calculateControlPercent(scrollPct, panel)
+		local pct = getScrollPercentages(self.frame, offset, self.axis)
+		local cntrlPct = calculateControlPercent(pct, self)
 
-		local count = panel.audio.repeatCount or 1
-		if panel.audio.loop then count = 0 end
+		local count = self.audio.repeatCount or 1
+		if self.audio.loop then count = 0 end
 		if self.audio.triggerSequence then
 			if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
 			local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
@@ -305,7 +305,7 @@ function Panels.Panel.new(data)
 				end
 			end
 
-		elseif (pct < 1 and pct >= self.sfxTrigger) and (self.prevPct <= self.sfxTrigger or self.audio.loop) then
+		elseif (cntrlPct < 1 and cntrlPct >= self.sfxTrigger) and (self.prevPct <= self.sfxTrigger or self.audio.loop) then
 			if not self.sfxPlayer:isPlaying() and not self.soundIsPaused then
 				playdate.timer.performAfterDelay(self.audio.delay or 0, function()
 					self.sfxPlayer:play(count)
@@ -313,7 +313,7 @@ function Panels.Panel.new(data)
 			end
 		end
 
-		self:fadePanelVolume(pct)
+		self:fadePanelVolume(cntrlPct)
 	end
 
 	function panel:layerShouldShake(layer)
@@ -882,15 +882,15 @@ function Panels.Panel.new(data)
 		gfx.setClipRect(0, 0, frame.width, frame.height)
 
 		if self.backgroundColor then gfx.clear(self.backgroundColor) end
+		
+		if self.sfxPlayer then
+			self:updatePanelAudio(offset)
+		end
 
 		if self.renderFunction then
 			self:renderFunction(offset)
 		else
 			self:drawLayers(offset)
-		end
-
-		if self.sfxPlayer then
-			self:updatePanelAudio(offset)
 		end
 
 		if not self.borderless then
