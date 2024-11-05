@@ -777,6 +777,7 @@ local function checkInputs()
 	local p = panels[panelNum]
 	if sequenceIsFinishing then return end
 	if lastPanelIsShowing() then
+		p = panels[#panels] -- make sure we're dealing with the last panel
 		if p.advanceFunction == nil then
 			for i, button in ipairs(buttonIndicators) do
 				if pdButtonJustPressed(sequence.advanceControls[i].input) then
