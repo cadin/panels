@@ -779,23 +779,47 @@ local function checkInputs()
 	if lastPanelIsShowing() then
 		p = panels[#panels] -- make sure we're dealing with the last panel
 		if p.advanceFunction == nil then
-			for i, button in ipairs(buttonIndicators) do
-				if pdButtonJustPressed(sequence.advanceControls[i].input) then
-					if sequence.advanceControls[i].target then
-						targetSequence = sequence.advanceControls[i].target
+
+			if sequence.advanceControlSequence then
+				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
+				if pdButtonJustPressed(trigger) then
+					p.buttonsPressed[#p.buttonsPressed + 1] = trigger
+					if #p.buttonsPressed == #p.advanceControlSequence then
+						if p.advanceDelay then
+							p:exit()
+							playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
+						else
+							finishSequence()
+						end
+					else 
+						playdate.timer.performAfterDelay(500, function () 
+							p:nextAdvanceControl(#p.buttonsPressed + 1, true)
+						end
+						)
 					end
-					button:press()
-					hideOtherAdvanceControls(i)
-					sequenceIsFinishing = true
-					if p.advanceDelay then
-						p:exit()
-						playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
-					else
-						finishSequence()
+				end
+			else
+
+
+				for i, button in ipairs(buttonIndicators) do
+					if pdButtonJustPressed(sequence.advanceControls[i].input) then
+						if sequence.advanceControls[i].target then
+							targetSequence = sequence.advanceControls[i].target
+						end
+						button:press()
+						hideOtherAdvanceControls(i)
+						sequenceIsFinishing = true
+						if p.advanceDelay then
+							p:exit()
+							playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
+						else
+							finishSequence()
+						end
 					end
 				end
 			end
 		end
+		return
 	end
 
 	if sequence.scrollType == Panels.ScrollType.AUTO then
