@@ -582,6 +582,7 @@ function Panels.Panel.new(data)
 		self:killTypingEffects()
 		if self.sfxPlayer then
 			self.sfxPlayer:stop()
+			self.sfxPlayer = nil
 		end
 		if self.layers then
 			for i, layer in ipairs(self.layers) do
@@ -603,6 +604,7 @@ function Panels.Panel.new(data)
 				end
 				if layer.sfxPlayer then
 					layer.sfxPlayer:stop()
+					layer.sfxPlayer = nil
 				end
 				if layer.textAnimator then
 					layer.textAnimator = nil
