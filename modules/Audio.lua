@@ -24,7 +24,9 @@ function Panels.Audio.createTypingSound()
 end
 
 function onBGFinished(player)
-	printError("", "Background audio fileplayer stopped due to buffer underrun")
+	if player:didUnderrun() then 
+		printError("", "Background audio fileplayer stopped due to buffer underrun")
+	end
 end
 
 function Panels.Audio.startBGAudio(path, loop, volume)
