@@ -615,8 +615,19 @@ local function loadSequence(num)
 end
 
 local function unloadSequence()
+	
+	if(sequence.direction == Panels.ScrollDirection.NONE) then
+		-- because the lack of scroll causes these not to get called
+		local lastPanel = panels[#panels]
+		if lastPanel.targetSequenceFunction then targetSequence = lastPanel.targetSequenceFunction() end
+		lastPanel:reset()
+	end
+
 	for i, p in ipairs(panels) do
 		p:killTypingEffects()
+		if p.wasOnScreen then
+			p:reset()
+		end
 		if p.layers then
 			for j, l in ipairs(p.layers) do
 				if l.timer then
@@ -627,18 +638,13 @@ local function unloadSequence()
 				if l.animationLoop then
 					l.animationLoop = nil
 				end
+				l.img = nil
+				l.imgTable = nil
+				l = nil
 			end
+			-- p.layers = nil
 		end
-		if p.wasOnScreen then
-			p:reset()
-		end
-	end
-
-	if(sequence.direction == Panels.ScrollDirection.NONE) then
-		-- because the lack of scroll causes these not to get called
-		local lastPanel = panels[#panels]
-		if lastPanel.targetSequenceFunction then targetSequence = lastPanel.targetSequenceFunction() end
-		if lastPanel.resetFunction then lastPanel.resetFunction() end
+		p = nil
 	end
 
 	panelTransitionAnimator = nil
@@ -672,6 +678,7 @@ end
 local function nextSequence()
 	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
+	
 	if targetSequence then
 		local targetIndex = getIndexForTarget(targetSequence)
 		loadSequence(targetIndex)
