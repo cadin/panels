@@ -16,6 +16,7 @@ Panels = {}
 Panels.comicData = {}
 Panels.credits = {}
 Panels.vars = {}
+Panels.persistentVars = {}
 Panels.percentageComplete = 0
 Panels.unlockedSequences = {}
 Panels.visitedSequences = {}
@@ -996,11 +997,12 @@ local function loadGameData()
 		calculatePercentageComplete()
 		gameDidFinish = data.gameDidFinish
 		Panels.vars = data.vars or {}
+		Panels.persistentVars = data.persistentVars or {}
 	end
 end
 
 local function saveGameData()
-	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars })
+	playdate.datastore.write({ sequence = currentSeqIndex, unlockedSequences = Panels.unlockedSequences, visitedSequences = Panels.visitedSequences, gameDidFinish = gameDidFinish, vars = Panels.vars, persistentVars = Panels.persistentVars })
 end
 
 function playdate.gameWillTerminate()
