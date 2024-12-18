@@ -492,6 +492,8 @@ function Panels.Panel.new(data)
 							end
 						end
 						img = layer.imgs[layer.currentImage]
+					elseif panel.manuallySetImageIndex then
+						img = layer.imgs[layer.currentImage]
 					else
 						local p = cntrlPct
 						p = p - (self.transitionOffset or 0)
