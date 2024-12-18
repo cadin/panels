@@ -492,7 +492,7 @@ function Panels.Panel.new(data)
 							end
 						end
 						img = layer.imgs[layer.currentImage]
-					elseif panel.manuallySetImageIndex then
+					elseif layer.manuallySetImageIndex then
 						img = layer.imgs[layer.currentImage]
 					else
 						local p = cntrlPct
