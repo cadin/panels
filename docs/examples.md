@@ -67,19 +67,27 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
    </div>
 
    <div class="exampleProject">
-      <a href="https://ledbetter-games.itch.io/ghost"><img src="{{site.baseurl}}/assets/images/ghostInTheGallery-screen.png" /></a>
-      <h3><a href="https://ledbetter-games.itch.io/ghost">A Ghost in the Gallery</a></h3>
+      <a href="https://play.date/games/a-ghost-in-the-gallery/"><img src="{{site.baseurl}}/assets/images/ghostInTheGallery-screen.png" /></a>
+      <h3><a href="https://play.date/games/a-ghost-in-the-gallery/">A Ghost in the Gallery</a></h3>
 
       <p>An ART-O-Ween Tale<br />
-      by Ledbetter</p>
+      by Ledbetter Games</p>
    </div>
 
    <div class="exampleProject">
-      <a href="https://lumicreative.itch.io/what-the-crow"><img src="{{site.baseurl}}/assets/images/whatTheCrow-screen.png" /></a>
-      <h3><a href="https://lumicreative.itch.io/what-the-crow">What the Crow?!</a></h3>
+      <a href="https://play.date/games/what-the-crow/"><img src="{{site.baseurl}}/assets/images/whatTheCrow-screen.png" /></a>
+      <h3><a href="https://play.date/games/what-the-crow/">What the Crow?!</a></h3>
 
-      <p>What the Crow?!<br />
-      by Lumi</p>
+      <p>Featuring a Panels intro comic<br />
+      by Lumicreative</p>
+   </div>
+
+   <div class="exampleProject">
+      <a href="https://play.date/games/escape-the-arcade/"><img src="{{site.baseurl}}/assets/images/escapeTheArcade-screen.png" /></a>
+      <h3><a href="https://play.date/games/escape-the-arcade/">Escape the Arcade</a></h3>
+
+      <p>A casual escape room game<br />
+      by Julie Bjørnskov</p>
    </div>
 
 </div>
