@@ -24,7 +24,7 @@ A panel's data defines the look and behavior of this individual scene. It lists 
 ---
 
 ## Properties
-{: .no_toc}
+
 
 ### layers
 
@@ -253,6 +253,8 @@ A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#i
 
 Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`, thus avoiding the flickering problem.
 
+## Auto-Scrolling Properties
+
 ### advanceControl
 
 default: scroll direction (d-pad)
@@ -361,6 +363,19 @@ FOR AUTO-SCROLLING SEQUENCES ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 Prevent the user from navigating back to the previous panel with the D pad. Helpful if you have a custom render function that uses the D pad to do other things.
+
+### autoAdvance 
+
+default: nil
+{: .prop-default}
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+The time (in milliseconds) to wait before making the panel automatically advance to the next panel without requiring user interaction.
+
+
+## Custom Functions
 
 ### renderFunction
 
