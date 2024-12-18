@@ -326,6 +326,28 @@ Properties:
 -   `y` (integer)
 -   `delay` (integer)
 
+### advanceControlPositions
+default: nil
+{: .prop-default}
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+When using an advanceControlSequence, you can specify a different position for each control in the sequence.
+Simply specify a list of [`advanceControlPosition`](#advancecontrolposition) tables.
+
+Example:
+{: .text-delta}
+
+```lua
+advanceControlSequence = { Panels.Input.A, Panels.Input.A, Panels.Input.A },
+advanceControlPositions = {
+    { x = 198, y = 65, delay = 500 }, 
+    { x = 237, y = 84 }, 
+    { x = 236, y = 105 }
+} 
+```
+
 ### advanceControlSequence
 
 default: nil
