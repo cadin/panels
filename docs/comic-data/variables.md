@@ -22,9 +22,9 @@ Any global variable will be accessible in custom functions. Variables stored in 
 
 ## Example
 
-In this example, a custom `hasKey` variable is set on `Panels.vars` in an [update function]() when the user presses the A button.
+In this example, a custom `hasKey` variable is set on `Panels.vars` in an [update function]({{site.baseurl}}/docs/comic-data/custom-functions.html#update) when the user presses the A button.
 
-In a later panel, we can read the variable in a custom render function to conditionally render layers, or to the direct user to a different path in a nonlinear comic.
+In a later panel, we can read the variable in a custom function or use a [`renderCondition`]({{site.baseurl}}/docs/comic-data/layers/#rendercondition) to conditionally render layers, or to the direct user to a different path in a nonlinear comic.
 
 Example:
 {: .text-delta}
@@ -38,6 +38,14 @@ end
 ```
 
 ```lua
+-- use variable in comicData
+layers = {
+    -- only draw this layer when the "hasKey" variable is false
+    { image = "s01/key", renderCondition = { var = "hasKey", value = false } }
+}
+```
+```lua
+-- OR use variable in custom render function
 local function renderPanel6B(panel, offset)
     for i, layer in ipairs(panel.layers) do
         -- conditionally render the "key" layer

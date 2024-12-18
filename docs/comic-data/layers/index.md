@@ -97,6 +97,27 @@ Certain dither patterns will appear to flicker as they scroll on the Playdate sc
 
 Setting `pixelLock = 2` on a layer with dithering will force it to only render on every other pixel. (A setting of `3` will render the layer on every third pixel and so on.) This may cause some jumpiness in the layer movement, but will significantly reduce flickering.
 
+### renderCondition
+
+default: nil
+{: .prop-default}
+
+Set a condition based on the value of a [global variable](/comic-data/variables.html) that determines whether or not this layer should be drawn.
+
+Example:
+{: .text-delta}
+
+```lua
+-- only draw this layer when the "hasKey" variable is false
+{ image = "s01/key", renderCondition = { var = "hasKey", value = false } }
+```
+
+Properties:
+{: .text-delta}
+
+-   `var` (string)
+-   `value` (any)
+
 
 ## Image Layers 
 
