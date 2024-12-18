@@ -287,6 +287,25 @@ A panel does not normally display an advance control indicator. Set this to `tru
 
 When showing the advance control, you should also set [`advanceControlPosition`](#advancecontrolposition) to position it properly within your panel.
 
+
+### advanceControlSize
+
+default: Panels.ControlSize.LARGE
+{: .prop-default}
+
+FOR AUTO-SCROLLING SEQUENCES ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set the size of the advance control indicator when enabled.
+
+Options:
+{: .text-delta}
+
+-   `Panels.ControlSize.LARGE` (40 × 40)
+-   `Panels.ControlSize.MEDIUM` (30 × 30)
+-   `Panels.ControlSize.SMALL` (20 × 20)
+
+
 ### advanceControlPosition
 
 default: nil

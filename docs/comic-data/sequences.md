@@ -182,6 +182,21 @@ Options:
 -   `Panels.Input.A`
 -   `Panels.Input.B`
 
+### advanceControlSize
+
+default: Panels.ControlSize.LARGE
+{: .prop-default}
+
+Set the size of the advance control indicator.
+
+Options:
+{: .text-delta}
+
+-   `Panels.ControlSize.LARGE` (40 × 40)
+-   `Panels.ControlSize.MEDIUM` (30 × 30)
+-   `Panels.ControlSize.SMALL` (20 × 20)
+
+
 ### showAdvanceControl
 
 default: true
@@ -190,6 +205,8 @@ default: true
 Set this property to `false` to hide the advance control indicator on the last panel of the sequence.
 
 Note that this might be confusing for users unless an indication of the control is included somewhere in the content of the final panel itself.
+
+
 
 ### advanceControls
 
@@ -218,6 +235,8 @@ advanceControls = {
     { input = Panels.Input.B, target = 4, x = 180, y = 180},
 },
 ```
+
+
 
 ### showAdvanceControls
 
