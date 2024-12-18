@@ -237,6 +237,14 @@ local fontFamily = {
 Panels.Settings.menuFontFamily = fontFamily
 ```
 
+### showMainMenuOption
+
+default: false
+{: .prop-default}
+
+Add a "Main menu" option to the system menu that takes the user back to your comic's menu screen.  
+This can be useful if your comic doesn't display a Chapters menu. Otherwise, the user has no way to restart the comic from the beginning without playing all the way through.
+
 
 ## Chapter Menu Settings
 
