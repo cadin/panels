@@ -304,9 +304,33 @@ The duration of the panel transition animation in milliseconds.
 ### transitionEase 
 
 default: playdate.easingFunctions.inOutQuad
+{: .prop-default}
 
 FOR AUTO-SCROLLING SEQUENCES ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 The easing function used for the panel transition animation.
 You can set this to any of the [Playdate easing functions](https://sdk.play.date/inside-playdate/#f-easingFunctions), or define your own.
+
+### id
+
+default: nil
+{: .prop-default}
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set a unique string to represent this sequence.  
+You can use this id to link to this sequence from a [target sequence function]({{site.baseurl}}/docs/comic-data/custom-functions.html#target-sequence), a `target` property of an [advance control]({{site.baseurl}}/docs/comic-data/sequences.html#advancecontrols), or a sequence's [`nextSequence`]({{site.baseurl}}/docs/comic-data/sequences.html#nextSequence) property.
+
+
+### nextSequence
+
+default: nil
+{: .prop-default}
+
+FOR NONLINEAR COMICS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+
+Set the [`id`]({{site.baseurl}}/docs/comic-data/sequences.html#id) of the sequence that should come after this one.  
+You might need this in your branching comic if your sequences appear out of order in your comicData table.

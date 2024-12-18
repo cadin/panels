@@ -133,6 +133,23 @@ end
 
 ```
 
+## Setup
+
+Assign a custom setup function to a panel's [`setupFunction`]({{site.baseurl}}/docs/comic-data/panels#setupfunction) property.
+This function will be called once when your panel first enters the screen.
+
+This function can be used to initial values, audio players, or otherwise prepare for a custom rendered panel.
+
+Example:
+{: .text-delta}
+
+```lua
+local function setupPanel06B()
+    zoomLevel = 0 -- set the initial value for the var that determines the advance condition
+    playdate.startAccelerometer() -- start the accelerometer
+end
+```
+
 ## Reset
 
 Assign a custom reset function to a panel's [`resetFunction`]({{site.baseurl}}/docs/comic-data/panels#resetfunction) property.
@@ -158,7 +175,7 @@ FOR NONLINEAR COMICS ONLY
 Assign a custom function to a panel's [`targetSequenceFunction`]({{site.baseurl}}/docs/comic-data/panels#targetsequencefunction) property.
 This function will be called once when your panel leaves the screen.
 
-In a comic with a [branching storyline]({{site.baseurl}}/docs/nonlinear-comics.html), you can define the next sequence to present by returning the sequence number from this function.
+In a comic with a [branching storyline]({{site.baseurl}}/docs/nonlinear-comics.html), you can define the next sequence to present by returning the [sequence `id`](/docs/comic-data/sequences.html#id) from this function.
 
 Example:
 {: .text-delta}
@@ -166,9 +183,9 @@ Example:
 ```lua
 local function targetSequenceForS02()
     if didWinMinigame then
-        return 4
+        return "game-won"
     else 
-        return 5
+        return "game-lost"
     end
 end
 ```

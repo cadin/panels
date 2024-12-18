@@ -31,7 +31,7 @@ Follow the normal instructions for creating [artwork]({{site.baseurl}}/docs/prep
 
 ## Define Branching Behavior
 
-Add a decision point to a sequence by listing an [`advanceControls`]({{site.baseurl}}/docs/comic-data/sequences.html#advancecontrols) table with an input control and target sequence number for each option.
+Add a decision point to a sequence by listing an [`advanceControls`]({{site.baseurl}}/docs/comic-data/sequences.html#advancecontrols) table with an input control and target sequence [`id`]({{site.baseurl}}/docs/comic-data/sequences.html#id) for each option.
 
 These options will be presented to the user on the final panel of the sequence. When the user invokes one of the listed input controls, they will be taken to the corresponding sequence.
 
@@ -40,8 +40,8 @@ Example:
 
 ```lua
 advanceControls = {
-    { input = Panels.Input.A, target = 2 }, -- press A to go to sequence 2
-    { input = Panels.Input.B, target = 4 }, -- press B to go to sequence 4
+    { input = Panels.Input.A, target = "climb-over" }, -- press A to go to the sequence with id "climb-over"
+    { input = Panels.Input.B, target = "go-around" },  -- press B to go to the sequence with id "go-around"
 },
 ```
 
@@ -49,15 +49,15 @@ advanceControls = {
 
 The way you present branching story points to the user is entirely up to you. The layout of the choice panel will be defined by the last [panel]({{site.baseurl}}/docs/comic-data/panels.html) in the comic data for your [sequence]({{site.baseurl}}/docs/comic-data/sequences.html).
 
-You most likely want to explain to the user what each choice does. You can do this by adding [text]({{site.baseurl}}/docs/comic-data/layers/#text) to the panel that describes each choice, or by adding [images]({{site.baseurl}}/docs/comic-data/layers/#image) that graphically illustate the choices.
+You most likely want to explain to the user what each choice does. You can do this by adding [text]({{site.baseurl}}/docs/comic-data/layers/#text) to the panel that describes each choice, or by adding [images]({{site.baseurl}}/docs/comic-data/layers/#image) that graphically illustrate the choices.
 
 ### Position Controls
 Panels will display controls for the inputs listed in your `advanceControls` table. You can position them over your panel by adding `x` and `y` properties:
 
 ```lua
 advanceControls = {
-    { input = Panels.Input.A, target = 2, x = 180, y = 20},
-    { input = Panels.Input.B, target = 4, x = 180, y = 180},
+    { input = Panels.Input.A, target = "climb-over", x = 180, y = 20},
+    { input = Panels.Input.B, target = "go-around",  x = 180, y = 180},
 },
 ```
 
@@ -68,8 +68,8 @@ If you prefer to not display the input controls (perhaps they're already illustr
 ```lua
 showAdvanceControls = false,
 advanceControls = {
-    { input = Panels.Input.A, target = 1 },
-    { input = Panels.Input.B, target = 4 },
+    { input = Panels.Input.A, target = "climb-over" },
+    { input = Panels.Input.B, target = "go-around" },
 },
 ```
 

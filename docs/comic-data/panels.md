@@ -377,6 +377,9 @@ The time (in milliseconds) to wait before making the panel automatically advance
 
 ## Custom Functions
 
+For more information about using these custom panel functions see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
+
+
 ### renderFunction
 
 default: nil
@@ -384,7 +387,31 @@ default: nil
 
 A custom render function for this panel. This function gets called for every frame update and will become reponsible for all the panel behavior and drawing.
 
-For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
+
+
+### setupFunction
+
+default: nil
+{: .prop-default}
+
+A function to set up a custom-rendered panel. This function is called once when the panel first scrolls onto screen. Use this to initialize values or audio and prepare the panel to be displayed.
+
+
+### resetFunction
+
+default: nil
+{: .prop-default}
+
+A function to reset a custom-rendered panel. This function is called when the panel scrolls off screen. Use this to reset values and prepare the panel to be displayed again in the event that the user navigates back to this panel.
+
+
+### updateFunction
+
+default: nil
+{: .prop-default}
+
+A custom update function for this panel. This function gets called for every frame update. It runs independently from rendering, so you can perform custom logic here while still letting Panels handle panel rendering
+
 
 ### advanceFunction
 
@@ -396,16 +423,7 @@ FOR AUTO-SCROLLING SEQUENCES ONLY
 
 A function to determine whether or not an auto-scrolling panel is ready to advance. This function will be called every frame until the panel advances.
 
-For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
 
-### resetFunction
-
-default: nil
-{: .prop-default}
-
-A function to reset a custom-rendered panel. This function is called when the panel scrolls off screen. Use this to reset values and prepare the panel to be displayed again in the event that the user navigates back to this panel.
-
-For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
 
 ### targetSequenceFunction
 
@@ -415,15 +433,4 @@ default: nil
 FOR NONLINEAR COMICS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
-In a comic with a [branching storyline](({{site.baseurl}}/docs/nonlinear-comics)), this function defines the next sequence to present by returning the target sequence number. This function is called when the panel scrolls off screen (before resetting the panel).
-
-For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
-
-### updateFunction
-
-default: nil
-{: .prop-default}
-
-A custom update function for this panel. This function gets called for every frame update. It runs independently from rendering, so you can perform custom logic here while still letting Panels handle panel rendering
-
-For more information see [Custom Functions]({{site.baseurl}}/docs/comic-data/custom-functions).
+In a comic with a [branching storyline](({{site.baseurl}}/docs/nonlinear-comics)), this function defines the next sequence to present by returning the target sequence id. This function is called when the panel scrolls off screen (before resetting the panel).
