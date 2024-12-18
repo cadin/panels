@@ -292,7 +292,7 @@ function Panels.Panel.new(data)
 				self.audioTriggersPressed[#self.audioTriggersPressed + 1] = triggerButton
 				if #self.audioTriggersPressed == #self.audio.triggerSequence then
 					playdate.timer.performAfterDelay(self.audio.delay or 0, function()
-						self.sfxPlayer:play(count)
+						if self.sfxPlayer then self.sfxPlayer:play(count) end
 					end)
 
 					if self.audio.repeats ~= nil then
@@ -308,7 +308,7 @@ function Panels.Panel.new(data)
 		elseif (cntrlPct < 1 and cntrlPct >= self.sfxTrigger) and (self.prevPct <= self.sfxTrigger or self.audio.loop) then
 			if not self.sfxPlayer:isPlaying() and not self.soundIsPaused then
 				playdate.timer.performAfterDelay(self.audio.delay or 0, function()
-					self.sfxPlayer:play(count)
+					if self.sfxPlayer then self.sfxPlayer:play(count) end
 				end)
 			end
 		end
@@ -426,7 +426,7 @@ function Panels.Panel.new(data)
 									local count = anim.audio.repeatCount or 1
 									if anim.audio.loop then count = 0 end
 									playdate.timer.performAfterDelay(anim.delay + (anim.audio.delay or 0), function()
-										layer.sfxPlayer:play(count)
+										if layer.sfxPlayer then layer.sfxPlayer:play(count) end
 									end)
 								end
 							end

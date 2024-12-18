@@ -138,7 +138,7 @@ function Panels.renderLayerInPanel(layer, panel, offset)
 	elseif layer.text then
 		if layer.visible then
 			if globalX + ScreenWidth > 0 and globalX < ScreenWidth and globalY + ScreenHeight > 0 and globalY < ScreenHeight then
-				if layer.alpha == nil or layer.alpha > 0.5 then
+				if layer.alpha == nil or layer.alpha > 0 then
 					panel:drawTextLayer(layer, xPos, yPos, cntrlPct)
 				end
 			end
