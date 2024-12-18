@@ -25,8 +25,80 @@ Having elements on separate layers allows Panels to simulate depth by scrolling 
 
 ---
 
-## Properties 
-{: .no_toc}
+## Properties
+
+### parallax
+
+default: 0
+{: .prop-default}
+
+The amount of parallax movement to apply to this layer (between `0` and `1`). A layer with a higher value will move more in relation to the frame border. In general, layers closer to the viewer should have a lower parallax value than layers in the distance.
+
+### x
+
+default: 0
+{: .prop-default}
+
+The horizontal position of the layer (relative to the top left corner of the panel).
+
+You can avoid setting explicit x and y values for each layer in your comic by cutting images with built-in transparency so they are always positioned at (0,0).
+
+### y
+
+default: 0
+{: .prop-default}
+
+The vertical position of the layer (relative to the top left corner of the panel).
+
+You can avoid setting explicit x and y values for each layer in your comic by cutting images with built-in transparency so they are always positioned at (0,0).
+
+### opacity
+
+default: 1
+{: .prop-default}
+
+The opacity of the layer.
+
+You can use this to set an initial value to animate from. If your layer will remain at a constant opacity value, then you should consider baking the transparency into the image.
+
+### animate
+
+default: nil
+{: .prop-default}
+
+A table describing how to animate the layer. Animate layer position or opacity over a set amount of time or based on panel scroll position.
+
+See [Layer Animations]({{site.baseurl}}/docs/comic-data/layers/animations) for more information.
+
+### effect
+
+default: nil
+{: .prop-default}
+
+A table describing the layer effect. Choose from blink, shake, or text type-on effects.
+
+See [Layer Effects]({{site.baseurl}}/docs/comic-data/layers/effects) for more information.
+
+### transitionOffset
+
+default: 0
+{: .prop-default}
+
+A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#images) will transition between those images as the panel scrolls. This means a layer with two images will swap them when the panel scroll reaches `0.5` (50%).
+
+Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`.
+
+### pixelLock
+
+default: 1
+{: .prop-default}
+
+Certain dither patterns will appear to flicker as they scroll on the Playdate screen. You can often reduce this flickering effect by scrolling the pattern two pixels at a time.
+
+Setting `pixelLock = 2` on a layer with dithering will force it to only render on every other pixel. (A setting of `3` will render the layer on every third pixel and so on.) This may cause some jumpiness in the layer movement, but will significantly reduce flickering.
+
+
+## Image Layers 
 
 ### image
 
@@ -166,6 +238,8 @@ FOR IMAGETABLE LAYERS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 Whether or not to loop the animated imageTable.
+
+## Text Layers
 
 ### text
 
@@ -307,72 +381,43 @@ Options:
 -   `Panels.TextAlignment.CENTER`
 -   `Panels.TextAlignment.RIGHT`
 
-### parallax
+### border 
 
 default: 0
 {: .prop-default}
 
-The amount of parallax movement to apply to this layer (between `0` and `1`). A layer with a higher value will move more in relation to the frame border. In general, layers closer to the viewer should have a lower parallax value than layers in the distance.
+FOR TEXT LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
 
-### x
+Set the size of the border to be drawn around the text.  
+The border will be drawn in the color opposite to the layer's [background]({{site.baseurl}}/docs/comic-data/layers/#background) color.
 
-default: 0
-{: .prop-default}
 
-The horizontal position of the layer (relative to the top left corner of the panel).
-
-You can avoid setting explicit x and y values for each layer in your comic by cutting images with built-in transparency so they are always positioned at (0,0).
-
-### y
+### borderRadius
 
 default: 0
 {: .prop-default}
 
-The vertical position of the layer (relative to the top left corner of the panel).
+FOR TEXT LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
 
-You can avoid setting explicit x and y values for each layer in your comic by cutting images with built-in transparency so they are always positioned at (0,0).
+Set the corner radius of the [border](({{site.baseurl}}/docs/comic-data/layers/#border)) to be drawn around the text.
 
-### opacity
+### margin
 
-default: 1
+default: {top = 1, right = 4, bottom = 1, left = 4}
 {: .prop-default}
 
-The opacity of the layer.
+FOR TEXT LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
 
-You can use this to set an initial value to animate from. If your layer will remain at a constant opacity value, then you should consider baking the transparency into the image.
+A table that specifies the size of the margins to use around the text.  
+This will add spacing between the text and the edges of your [background]({{site.baseurl}}/docs/comic-data/layers/#background) or [border](({{site.baseurl}}/docs/comic-data/layers/#border)).
 
-### animate
+Properties:
+{: .text-delta}
 
-default: nil
-{: .prop-default}
-
-A table describing how to animate the layer. Animate layer position or opacity over a set amount of time or based on panel scroll position.
-
-See [Layer Animations]({{site.baseurl}}/docs/comic-data/layers/animations) for more information.
-
-### effect
-
-default: nil
-{: .prop-default}
-
-A table describing the layer effect. Choose from blink, shake, or text type-on effects.
-
-See [Layer Effects]({{site.baseurl}}/docs/comic-data/layers/effects) for more information.
-
-### transitionOffset
-
-default: 0
-{: .prop-default}
-
-A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#images) will transition between those images as the panel scrolls. This means a layer with two images will swap them when the panel scroll reaches `0.5` (50%).
-
-Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`.
-
-### pixelLock
-
-default: 1
-{: .prop-default}
-
-Certain dither patterns will appear to flicker as they scroll on the Playdate screen. You can often reduce this flickering effect by scrolling the pattern two pixels at a time.
-
-Setting `pixelLock = 2` on a layer with dithering will force it to only render on every other pixel. (A setting of `3` will render the layer on every third pixel and so on.) This may cause some jumpiness in the layer movement, but will significantly reduce flickering.
+-   `top` (integer)
+-   `right` (integer)
+-   `bottom` (integer)
+-   `left` (integer)
