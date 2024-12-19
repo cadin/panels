@@ -147,6 +147,18 @@ A layer with multiple images will switch between them as the panel scrolls acros
 Only specify one of the following per layer: `image`, `images`, `imageTable`, `text`.  
 You cannot combine them.
 
+### manuallySetImageIndex
+
+default: false
+{: .prop-default}
+
+FOR IMAGES LAYERS ONLY
+{: .text-yellow-300 .fs-2 .lh-0}
+  
+Once set, you can manually set the index of the image to display by setting the layer's `currentImage` property in a custom [update function]({{site.baseurl}}/docs/comic-data/custom-functions.html#update).
+
+Without setting this flag, the current image will be set automatically based on scroll percentage.
+
 ### stencil
 
 default: nil
