@@ -629,12 +629,15 @@ local function unloadSequence()
 		if p.wasOnScreen then
 			p:reset()
 		end
+		p.sfxPlayer = nil
 		if p.layers then
 			for j, l in ipairs(p.layers) do
 				if l.timer then
 					l.timer:remove()
 					l.timer = nil
 				end
+
+				l.sfxPlayer = nil
 
 				if l.animationLoop then
 					l.animationLoop = nil
