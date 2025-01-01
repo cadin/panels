@@ -1260,6 +1260,7 @@ end
 -- DEBUG
 
 local function unlockAll()
+	Panels.unlockedSequences = {}
 	for i = 1, #sequences, 1 do
 		table.insert(Panels.unlockedSequences, true)
 	end
