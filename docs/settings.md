@@ -106,7 +106,7 @@ You can override this frame for any individual panel in your comic by specifying
 
 ### snapToPanels
 
-default: true
+default: false
 {: .prop-default }
 
 When set to true, scrolling lightly snaps to the edges of panels.
