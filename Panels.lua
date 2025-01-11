@@ -682,9 +682,10 @@ end
 local function nextSequence()
 	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
-	
+
+	local targetIndex = targetSequence and getIndexForTarget(targetSequence) or nil
+
 	if targetSequence then
-		local targetIndex = getIndexForTarget(targetSequence)
 		loadSequence(targetIndex)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish, currentSeqIndex > 1)
@@ -695,7 +696,6 @@ local function nextSequence()
 	elseif isCutscene then
 		playdate.inputHandlers.pop()
 		gameDidFinish = true
-		local targetIndex = getIndexForTarget(targetSequence)
 		cutsceneFinishCallback(targetIndex)
 		Panels.Audio.killBGAudio()
 		previousBGColor = nil -- prevent future cross-fade attempt
