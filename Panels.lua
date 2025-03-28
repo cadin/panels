@@ -808,10 +808,11 @@ local function checkInputs()
 						end
 						)
 					end
+					-- return here or else the button handling below (for AUTO-scroll sequences)
+					-- will also trigger and conflict with the control sequence detection
+					return
 				end
 			else
-
-
 				for i, button in ipairs(buttonIndicators) do
 					if pdButtonJustPressed(sequence.advanceControls[i].input) then
 						if sequence.advanceControls[i].target then
@@ -830,7 +831,6 @@ local function checkInputs()
 				end
 			end
 		end
-		return
 	end
 
 	if sequence.scrollType == Panels.ScrollType.AUTO then
