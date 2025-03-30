@@ -815,7 +815,7 @@ local function checkInputs()
 		p = panels[#panels] -- make sure we're dealing with the last panel
 		if p.advanceFunction == nil then
 
-			if p.advanceControlSequence then
+			if #p.advanceControlSequence > 1 then
 				local didTrigger = checkAdvanceControlSequence(p, finishSequence)
 				if didTrigger then return end
 			else
