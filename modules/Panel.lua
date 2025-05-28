@@ -352,10 +352,18 @@ function Panels.Panel.new(data)
 	function layerShouldRender(layer)
 		if layer.renderCondition then
 			if Panels.vars[layer.renderCondition.var] ~= nil then
-				if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
-					return true
-				else
-					return false
+				if layer.renderCondition.value then
+					if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
+						return true
+					else
+						return false
+					end
+				elseif layer.renderCondition.valueNot then
+					if Panels.vars[layer.renderCondition.var] ~= layer.renderCondition.valueNot then
+						return true
+					else
+						return false
+					end
 				end
 			else
 				if not layer.didWarnForInvalidRenderCondition then
@@ -363,7 +371,7 @@ function Panels.Panel.new(data)
 					printError("No value for '" .. layer.renderCondition.var .. "' found in Panels.vars", "Invalid renderCondition")
 					layer.didWarnForInvalidRenderCondition = true
 				end
-				if layer.renderCondition.value == false then -- match nil value to false condition
+				if layer.renderCondition.value == false or layer.renderCondition.valueNot ~= nil then -- match nil value to false condition
 					return true
 				else
 					return false
