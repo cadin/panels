@@ -5,6 +5,7 @@ nav_order: 8
 ---
 
 # Examples
+
 {: .no_toc}
 
 <details open markdown="block">
@@ -32,11 +33,10 @@ You can find several examples in the [Panels Project Template](https://github.co
    Play background audio for an entire sequence or a single panel. Trigger a sound effect synced with an animation.
 
 ## Tutorials
+
 This 6-video YouTube series walks you through getting set up, preparing artwork, creating comic data files, animations, audio and more:
 
 **[📺 Making a Panels Comic for Playdate](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv)**
-
-
 
 ## Projects Made with Panels
 
@@ -48,6 +48,7 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
       <p>A sci-fi adventure comic<br />
       by Cadin Batrack</p>
+
    </div>
 
    <div class="exampleProject">
@@ -56,6 +57,7 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
       <p>A sci-fi adventure comic<br />
       by Cadin Batrack</p>
+
    </div>
 
    <div class="exampleProject">
@@ -64,6 +66,7 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
       <p>A free mini-comic<br />
       by Cadin Batrack</p>
+
    </div>
 
    <div class="exampleProject">
@@ -72,14 +75,7 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
       <p>An ART-O-Ween Tale<br />
       by Ledbetter Games</p>
-   </div>
 
-   <div class="exampleProject">
-      <a href="https://play.date/games/what-the-crow/"><img src="{{site.baseurl}}/assets/images/whatTheCrow-screen.png" /></a>
-      <h3><a href="https://play.date/games/what-the-crow/">What the Crow?!</a></h3>
-
-      <p>Featuring a Panels intro comic<br />
-      by Lumicreative</p>
    </div>
 
    <div class="exampleProject">
@@ -88,6 +84,34 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
       <p>A casual escape room game<br />
       by Julie Bjørnskov</p>
+
+   </div>
+
+   <div class="exampleProject">
+      <a href="https://play.date/games/escape-the-boardgame/"><img src="{{site.baseurl}}/assets/images/escapeTheBoardgame-screen.png" /></a>
+      <h3><a href="https://play.date/games/escape-the-boardgame/">Escape the Boardgame</a></h3>
+
+      <p>A casual escape room game<br />
+      by Julie Bjørnskov</p>
+
+   </div>
+
+   <div class="exampleProject">
+      <a href="https://play.date/games/what-the-crow/"><img src="{{site.baseurl}}/assets/images/whatTheCrow-screen.png" /></a>
+      <h3><a href="https://play.date/games/what-the-crow/">What the Crow?!</a></h3>
+
+      <p>Featuring a Panels intro comic<br />
+      by Lumicreative</p>
+
+   </div>
+
+   <div class="exampleProject">
+      <a href="https://play.date/games/wheelsprung/"><img src="{{site.baseurl}}/assets/images/wheelsprung-screen.png" /></a>
+      <h3><a href="https://play.date/games/wheelsprung/">Wheelsprung</a></h3>
+
+      <p>Featuring Panels cutscenes<br />
+      by Nino van Hooff & Julie Bjørnskov</p>
+
    </div>
 
 </div>
