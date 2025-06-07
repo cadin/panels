@@ -994,7 +994,7 @@ end
 local function loadGameData()
 	local data = playdate.datastore.read()
 	if data then
-		currentSeqIndex = data.sequence
+		currentSeqIndex = data.sequence or 1
 		Panels.unlockedSequences = data.unlockedSequences or {}
 		Panels.visitedSequences = data.visitedSequences or {}
 		calculatePercentageComplete()
