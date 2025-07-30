@@ -598,7 +598,9 @@ function Panels.Panel.new(data)
 
 				layer.startDelayTriggered = nil
 				if layer.animationLoop then
-					layer.animationLoop.frame = 1
+					if layer.animationLoop.frame ~= 1 then
+						layer.animationLoop.frame = 1
+					end
 					layer.animationLoop.paused = true
 				end
 				layer.isExiting = false
@@ -682,6 +684,7 @@ function Panels.Panel.new(data)
 		local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
 
 		if(layer.isTyping or layer.needsRedraw) then
+			layer.needsRedraw = false
 			gfx.pushContext(layer.cachedTextImg)
 			gfx.clear(gfx.kColorClear)
 
@@ -711,6 +714,7 @@ function Panels.Panel.new(data)
 								playdate.easingFunctions.linear, layer.effect.delay or 0)
 							playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
 						else
+							layer.needsRedraw = true
 							txt = ""
 						end
 					end
@@ -788,7 +792,7 @@ function Panels.Panel.new(data)
 		else
 			layer.cachedTextImg:draw(xPos - textMarginLeft, yPos - textMarginTop)
 		end
-		layer.needsRedraw = false
+
 	end
 
 	function panel:drawBorder(color, bgColor)

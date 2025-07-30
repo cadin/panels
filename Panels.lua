@@ -1,4 +1,4 @@
--- Panels version 1.8.0
+-- Panels version 2.0.1
 -- https://cadin.github.io/panels/
 
 import "CoreLibs/object"
@@ -39,7 +39,7 @@ import "./modules/TextAlignment"
 import "./modules/Utils"
 import "./modules/Credits"
 
--- PD function shortcuts
+-- PD function shortcuts=
 local pdUpdateTimers = playdate.timer.updateTimers
 local pdEaseInOutQuad = playdate.easingFunctions.inOutQuad
 local pdButtonJustPressed = playdate.buttonJustPressed
@@ -682,9 +682,10 @@ end
 local function nextSequence()
 	local isDeadEnd = sequence.endSequence or false
 	unloadSequence()
-	
+
+	local targetIndex = targetSequence and getIndexForTarget(targetSequence) or nil
+
 	if targetSequence then
-		local targetIndex = getIndexForTarget(targetSequence)
 		loadSequence(targetIndex)
 		targetSequence = nil
 		updateMenuData(sequences, gameDidFinish, currentSeqIndex > 1)
@@ -695,7 +696,6 @@ local function nextSequence()
 	elseif isCutscene then
 		playdate.inputHandlers.pop()
 		gameDidFinish = true
-		local targetIndex = getIndexForTarget(targetSequence)
 		cutsceneFinishCallback(targetIndex)
 		Panels.Audio.killBGAudio()
 		previousBGColor = nil -- prevent future cross-fade attempt
@@ -784,6 +784,30 @@ local function hideOtherAdvanceControls(pressedIndex)
 	end
 end
 
+local function checkAdvanceControlSequence(panel, callback)
+	local didTrigger = false
+	local trigger = panel.advanceControlSequence[#panel.buttonsPressed + 1]
+	if pdButtonJustPressed(trigger) then
+		panel.buttonsPressed[#panel.buttonsPressed + 1] = trigger
+		if #panel.buttonsPressed == #panel.advanceControlSequence then
+			if panel.advanceDelay then
+				panel:exit()
+				playdate.timer.performAfterDelay(panel.advanceDelay, callback)
+			else
+				callback()
+			end
+		else 
+			playdate.timer.performAfterDelay(500, function () 
+				panel:nextAdvanceControl(#panel.buttonsPressed + 1, true)
+			end
+			)
+		end
+		didTrigger = true
+	end
+
+	return didTrigger
+end
+
 local function checkInputs()
 	local p = panels[panelNum]
 	if sequenceIsFinishing then return end
@@ -791,27 +815,10 @@ local function checkInputs()
 		p = panels[#panels] -- make sure we're dealing with the last panel
 		if p.advanceFunction == nil then
 
-			if sequence.advanceControlSequence then
-				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
-				if pdButtonJustPressed(trigger) then
-					p.buttonsPressed[#p.buttonsPressed + 1] = trigger
-					if #p.buttonsPressed == #p.advanceControlSequence then
-						if p.advanceDelay then
-							p:exit()
-							playdate.timer.performAfterDelay(p.advanceDelay, finishSequence)
-						else
-							finishSequence()
-						end
-					else 
-						playdate.timer.performAfterDelay(500, function () 
-							p:nextAdvanceControl(#p.buttonsPressed + 1, true)
-						end
-						)
-					end
-				end
+			if #p.advanceControlSequence > 1 then
+				local didTrigger = checkAdvanceControlSequence(p, finishSequence)
+				if didTrigger then return end
 			else
-
-
 				for i, button in ipairs(buttonIndicators) do
 					if pdButtonJustPressed(sequence.advanceControls[i].input) then
 						if sequence.advanceControls[i].target then
@@ -830,29 +837,12 @@ local function checkInputs()
 				end
 			end
 		end
-		return
 	end
 
 	if sequence.scrollType == Panels.ScrollType.AUTO then
 		if p.advanceFunction == nil then
 			if p.advanceControlSequence then
-				local trigger = p.advanceControlSequence[#p.buttonsPressed + 1]
-				if pdButtonJustPressed(trigger) then
-					p.buttonsPressed[#p.buttonsPressed + 1] = trigger
-					if #p.buttonsPressed == #p.advanceControlSequence then
-						if p.advanceDelay then
-							p:exit()
-							playdate.timer.performAfterDelay(p.advanceDelay, scrollToNextPanel)
-						else
-							scrollToNextPanel()
-						end
-					else 
-						playdate.timer.performAfterDelay(500, function () 
-							p:nextAdvanceControl(#p.buttonsPressed + 1, true)
-						end
-						)
-					end
-				end
+				checkAdvanceControlSequence(p, scrollToNextPanel)
 			else
 				if pdButtonJustPressed(p.advanceControl) then
 					scrollToNextPanel()
