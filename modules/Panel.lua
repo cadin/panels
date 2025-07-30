@@ -681,7 +681,7 @@ function Panels.Panel.new(data)
 
 		local lineHeight = layer.lineHeightAdjustment or self.lineHeightAdjustment or 0
 
-		if(layer.isTyping or layer.needsRedraw or layer.willAnimate) then
+		if(layer.isTyping or layer.needsRedraw) then
 			gfx.pushContext(layer.cachedTextImg)
 			gfx.clear(gfx.kColorClear)
 
@@ -704,18 +704,13 @@ function Panels.Panel.new(data)
 							-- don't replay text animation (and sound) when backing into a frame
 							txt = layer.text
 							layer.needsRedraw = false
-							layer.willAnimate = false
 							layer.textAnimator = gfx.animator.new(1, string.len(layer.text), string.len(layer.text))
 						elseif layer.effect.scrollTrigger == nil or cntrlPct >= layer.effect.scrollTrigger then
-							layer.willAnimate = false
 							layer.isTyping = true
-							layer.textAnimator = gfx.animator.new(
-								layer.effect.duration or 500, 0, string.len(layer.text),
-								playdate.easingFunctions.linear, layer.effect.delay or 0
-							)
+							layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
+								playdate.easingFunctions.linear, layer.effect.delay or 0)
 							playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
 						else
-							layer.willAnimate = true
 							txt = ""
 						end
 					end
