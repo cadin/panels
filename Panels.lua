@@ -620,6 +620,12 @@ local function loadSequence(num)
 		buttonIndicators[i]:setPosition(control.x or (i-1) * 40, control.y or 0)
 	end
 
+	if sequence.scrollType == Panels.ScrollType.MANUAL then 
+		for i, p in ipairs(panels) do
+			p:enableInput(true)
+		end
+	end
+
 	startTransitionIn(sequence.direction, sequence.delay or 0, sequence.transitionDuration, sequence.transitionEase)
 
 end

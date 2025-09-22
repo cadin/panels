@@ -98,6 +98,9 @@ function Panels.Panel.new(data)
 	panel.frame = createFrameFromPartialFrame(panel.frame)
 	panel.buttonsPressed = {}
 
+	panel.willEnableInput = false
+	panel.inputEnabled = false
+
 	if not panel.parallaxDistance then
 		if panel.axis == Panels.ScrollAxis.HORIZONTAL then
 			panel.parallaxDistance = panel.frame.width * 1.2
@@ -643,8 +646,6 @@ function Panels.Panel.new(data)
 		self.advanceControlTimer = nil
 		self.autoAdvanceDidComplete = false
 		self.autoAdvanceTimerDidStart = false
-		self.willEnableInput = false
-		self.inputEnabled = false
 
 		if self.autoAdvanceTimer then
 			self.autoAdvanceTimer:remove()
