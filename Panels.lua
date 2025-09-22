@@ -282,6 +282,7 @@ local function updateScroll()
 		scrollPos = panelTransitionAnimator:currentValue()
 		if panelTransitionAnimator:ended() then
 			panelTransitionAnimator = nil
+			panels[panelNum]:enableInput(true)
 		end
 	else
 		if scrollPos > 0 then
@@ -332,8 +333,12 @@ end
 
 local function scrollToNextPanel()
 	if not isLastPanel(panelNum) then
-		if not sequence.rapidAdvance and panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then return end
+		if not sequence.rapidAdvance and panelTransitionAnimator and panelTransitionAnimator:progress() < 1 then
+			print("aborting scroll to next panel, transition in progress") 
+			return 
+		end
 		local p = panels[panelNum]
+		p:enableInput(false)
 		p.buttonsPressed = {}
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos > p.frame.y * -1 then
@@ -350,7 +355,9 @@ local function scrollToNextPanel()
 		end
 		if sequence.direction == Panels.ScrollDirection.NONE then
 			scrollPos = target
+			panels[panelNum]:enableInput(true)
 		else
+			print("starting panel transition")
 			local duration = sequence.transitionDuration or 500
 			local ease = sequence.transitionEase or pdEaseInOutQuad
 			panelTransitionAnimator = gfx.animator.new(duration, scrollPos, target, ease)
@@ -361,6 +368,7 @@ end
 local function scrollToPreviousPanel()
 	if not isFirstPanel(panelNum) then
 		local p = panels[panelNum]
+		p:enableInput(false)
 		local target = 0
 		if p.frame.height > ScreenHeight and scrollPos < p.frame.y * -1 then
 			target = getPanelScrollLocation(p)
@@ -503,6 +511,7 @@ end
 local function calculatePercentageComplete() 
 	numSequencesVisited = countVisitedSequences(Panels.visitedSequences)
 	Panels.percentageComplete = math.floor((numSequencesVisited / #sequences) * 100)
+	-- print("This comic has " .. #sequences .. " sequences.")
 end
 
 local function markSequenceAsVisited(num)
@@ -728,6 +737,8 @@ local function updateSequenceTransition()
 			sequenceIsFinishing = false
 			transitionInAnimator = nil
 			shouldFadeBG = false
+
+			panels[panelNum]:enableInput(true)
 		end
 	end
 end
@@ -787,7 +798,7 @@ end
 local function checkAdvanceControlSequence(panel, callback)
 	local didTrigger = false
 	local trigger = panel.advanceControlSequence[#panel.buttonsPressed + 1]
-	if pdButtonJustPressed(trigger) then
+	if pdButtonJustPressed(trigger) and panel.inputEnabled then
 		panel.buttonsPressed[#panel.buttonsPressed + 1] = trigger
 		if #panel.buttonsPressed == #panel.advanceControlSequence then
 			if panel.advanceDelay then
@@ -842,9 +853,10 @@ local function checkInputs()
 	if sequence.scrollType == Panels.ScrollType.AUTO then
 		if p.advanceFunction == nil then
 			if p.advanceControlSequence then
-				checkAdvanceControlSequence(p, scrollToNextPanel)
+				local didTrigger = checkAdvanceControlSequence(p, scrollToNextPanel)
+				if didTrigger then return end
 			else
-				if pdButtonJustPressed(p.advanceControl) then
+				if pdButtonJustPressed(p.advanceControl) and p.inputEnabled then
 					scrollToNextPanel()
 				end
 			end
@@ -906,6 +918,7 @@ local function updateComic(offset)
 
 		if panels and panels[panelNum]:shouldAutoAdvance() then
 			if not isLastPanel(panelNum) then
+				print("auto advancing to next panel")
 				scrollToNextPanel()
 			else
 				finishSequence()

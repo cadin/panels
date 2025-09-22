@@ -214,7 +214,12 @@ function Panels.Panel.new(data)
 		panel.sfxTrigger = panel.audio.scrollTrigger or 0
 	end
 
+	function panel:enableInput(isOn)
+		self.willEnableInput = isOn
+	end
+
 	function panel:nextAdvanceControl(controlIndex, show)
+		if not self.inputEnabled then return end
 		local control = self.advanceControlSequence[controlIndex]
 		if control and self.advanceButton then
 			self.advanceButton:reset()
@@ -284,7 +289,7 @@ function Panels.Panel.new(data)
 
 		local count = self.audio.repeatCount or 1
 		if self.audio.loop then count = 0 end
-		if self.audio.triggerSequence then
+		if self.audio.triggerSequence and self.inputEnabled then
 			if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
 			local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
 
@@ -421,11 +426,11 @@ function Panels.Panel.new(data)
 
 						if layer.buttonsPressed == nil then layer.buttonsPressed = {} end
 						local triggerButton = nil
-						if not anim.scrollTrigger then
+						if not anim.scrollTrigger and self.inputEnabled then
 							triggerButton = anim.triggerSequence[#layer.buttonsPressed + 1]
 						end
 
-						if anim.scrollTrigger ~= nil or pdButtonJustPressed(triggerButton) then
+						if anim.scrollTrigger ~= nil or (pdButtonJustPressed(triggerButton) and self.inputEnabled) then
 							layer.buttonsPressed[#layer.buttonsPressed + 1] = triggerButton
 							if (anim.scrollTrigger ~= nil and cntrlPct >= anim.scrollTrigger) or
 								(anim.triggerSequence and #layer.buttonsPressed == #anim.triggerSequence) then
@@ -494,7 +499,7 @@ function Panels.Panel.new(data)
 					img = layer.img
 				elseif layer.imgs then
 					if layer.advanceControl then
-						if pdButtonJustPressed(layer.advanceControl) then
+						if pdButtonJustPressed(layer.advanceControl) and self.inputEnabled then
 							if layer.currentImage < #layer.imgs then
 								layer.currentImage = layer.currentImage + 1
 							end
@@ -554,7 +559,7 @@ function Panels.Panel.new(data)
 					end
 				elseif layer.animationLoop then
 					if layer.visible then
-						if layer.trigger then
+						if layer.trigger and self.inputEnabled then
 							if pdButtonJustPressed(layer.trigger) then
 								layer.animationLoop.paused = false
 							end
@@ -638,6 +643,8 @@ function Panels.Panel.new(data)
 		self.advanceControlTimer = nil
 		self.autoAdvanceDidComplete = false
 		self.autoAdvanceTimerDidStart = false
+		self.willEnableInput = false
+		self.inputEnabled = false
 
 		if self.autoAdvanceTimer then
 			self.autoAdvanceTimer:remove()
@@ -712,7 +719,9 @@ function Panels.Panel.new(data)
 							layer.isTyping = true
 							layer.textAnimator = gfx.animator.new(layer.effect.duration or 500, 0, string.len(layer.text),
 								playdate.easingFunctions.linear, layer.effect.delay or 0)
-							playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+							if layer.effect.playAudio ~= false then
+								playdate.timer.performAfterDelay(layer.effect.delay or 0, startLayerTypingSound, layer)
+							end
 						else
 							layer.needsRedraw = true
 							txt = ""
@@ -865,7 +874,9 @@ function Panels.Panel.new(data)
 
 		else
 			if pdButtonJustPressed(self.advanceControl) then
-				self.advanceButton:press()
+				if(self.inputEnabled) then 
+					self.advanceButton:press()
+				end
 			end
 			self.advanceButton:draw()
 		end
@@ -927,7 +938,12 @@ function Panels.Panel.new(data)
 				subPanel:render(o, borderColor, bgColor)
 			end
 		end
+
+		-- let the frame render before disabling input
+		-- so the button presses get rendered
+		self.inputEnabled = self.willEnableInput or false
 	end
+
 
 	return panel
 end
