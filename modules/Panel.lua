@@ -562,8 +562,8 @@ function Panels.Panel.new(data)
 					end
 				elseif layer.animationLoop then
 					if layer.visible then
-						if layer.trigger and self.inputEnabled then
-							if pdButtonJustPressed(layer.trigger) then
+						if layer.trigger then
+							if pdButtonJustPressed(layer.trigger) and self.inputEnabled then
 								layer.animationLoop.paused = false
 							end
 						elseif layer.startDelay then
