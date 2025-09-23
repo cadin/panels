@@ -292,22 +292,24 @@ function Panels.Panel.new(data)
 
 		local count = self.audio.repeatCount or 1
 		if self.audio.loop then count = 0 end
-		if self.audio.triggerSequence and self.inputEnabled then
-			if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
-			local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
+		if self.audio.triggerSequence then
+			if self.inputEnabled then 
+				if self.audioTriggersPressed == nil then self.audioTriggersPressed = {} end
+				local triggerButton = self.audio.triggerSequence[#self.audioTriggersPressed + 1]
 
-			if pdButtonJustPressed(triggerButton) then
-				self.audioTriggersPressed[#self.audioTriggersPressed + 1] = triggerButton
-				if #self.audioTriggersPressed == #self.audio.triggerSequence then
-					playdate.timer.performAfterDelay(self.audio.delay or 0, function()
-						if self.sfxPlayer then self.sfxPlayer:play(count) end
-					end)
+				if pdButtonJustPressed(triggerButton) then
+					self.audioTriggersPressed[#self.audioTriggersPressed + 1] = triggerButton
+					if #self.audioTriggersPressed == #self.audio.triggerSequence then
+						playdate.timer.performAfterDelay(self.audio.delay or 0, function()
+							if self.sfxPlayer then self.sfxPlayer:play(count) end
+						end)
 
-					if self.audio.repeats ~= nil then
-						if self.audioRepeats == nil then self.audioRepeats = 1 end
-						if self.audio.repeats > self.audioRepeats then
-							self.audioTriggersPressed = {}
-							self.audioRepeats = self.audioRepeats + 1
+						if self.audio.repeats ~= nil then
+							if self.audioRepeats == nil then self.audioRepeats = 1 end
+							if self.audio.repeats > self.audioRepeats then
+								self.audioTriggersPressed = {}
+								self.audioRepeats = self.audioRepeats + 1
+							end
 						end
 					end
 				end
