@@ -362,7 +362,7 @@ function Panels.Panel.new(data)
 	function layerShouldRender(layer)
 		if layer.renderCondition then
 			if Panels.vars[layer.renderCondition.var] ~= nil then
-				if layer.renderCondition.value then
+				if layer.renderCondition.value ~= nil then
 					if Panels.vars[layer.renderCondition.var] == layer.renderCondition.value then
 						return true
 					else
