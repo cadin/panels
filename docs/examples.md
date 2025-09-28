@@ -96,12 +96,17 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
    </div>
 
+</div>
+
+### Featuring Panels Cutscenes
+
+<div class="projectGrid">
+
    <div class="exampleProject">
       <a href="https://play.date/games/what-the-crow/"><img src="{{site.baseurl}}/assets/images/whatTheCrow-screen.png" /></a>
       <h3><a href="https://play.date/games/what-the-crow/">What the Crow?!</a></h3>
 
-      <p>Featuring a Panels intro comic<br />
-      by Lumicreative</p>
+      <p>by Lumicreative</p>
 
    </div>
 
@@ -109,8 +114,15 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
       <a href="https://play.date/games/wheelsprung/"><img src="{{site.baseurl}}/assets/images/wheelsprung-screen.png" /></a>
       <h3><a href="https://play.date/games/wheelsprung/">Wheelsprung</a></h3>
 
-      <p>Featuring Panels cutscenes<br />
-      by Nino van Hooff & Julie Bjørnskov</p>
+      <p>by Nino van Hooff <br />& Julie Bjørnskov</p>
+
+   </div>
+
+   <div class="exampleProject">
+      <a href="https://play.date/games/taria-and-como/"><img src="{{site.baseurl}}/assets/images/taria-como-screen.png" /></a>
+      <h3><a href="https://play.date/games/taria-and-como/">Taria & Como</a></h3>
+
+      <p>by Popseed Studio Inc & <br />JuVee Productions</p>
 
    </div>
 

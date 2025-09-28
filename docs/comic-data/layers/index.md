@@ -8,6 +8,7 @@ has_toc: false
 ---
 
 # Layers
+
 {: .no_toc}
 
 A [panel]({{site.baseurl}}/docs/comic-data/panels) contains one or more layers. Each layer can represent **either** a static image, a set of images, an animated image table, or a string of text.
@@ -110,6 +111,8 @@ Example:
 ```lua
 -- only draw this layer when the "hasKey" variable is false
 { image = "s01/key", renderCondition = { var = "hasKey", value = false } }
+-- only draw this layer when the "killedByDragon" variable is NOT "knight"
+{ image = "s01/skull", renderCondition = { var = "killedByDragon", valueNot = "knight" } }
 ```
 
 Properties:
@@ -117,9 +120,9 @@ Properties:
 
 -   `var` (string)
 -   `value` (any)
+-   `valueNot` (any)
 
-
-## Image Layers 
+## Image Layers
 
 ### image
 
@@ -154,7 +157,7 @@ default: false
 
 FOR IMAGES LAYERS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
-  
+
 Once set, you can manually set the index of the image to display by setting the layer's `currentImage` property in a custom [update function]({{site.baseurl}}/docs/comic-data/custom-functions.html#update).
 
 Without setting this flag, the current image will be set automatically based on scroll percentage.
@@ -414,7 +417,7 @@ Options:
 -   `Panels.TextAlignment.CENTER`
 -   `Panels.TextAlignment.RIGHT`
 
-### border 
+### border
 
 default: 0
 {: .prop-default}
@@ -425,7 +428,6 @@ FOR TEXT LAYERS ONLY
 Set the size of the border to be drawn around the text.  
 The border will be drawn in the color opposite to the layer's [background]({{site.baseurl}}/docs/comic-data/layers/#background) color.
 
-
 ### borderRadius
 
 default: 0
@@ -434,7 +436,7 @@ default: 0
 FOR TEXT LAYERS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
-Set the corner radius of the [border](({{site.baseurl}}/docs/comic-data/layers/#border)) to be drawn around the text.
+Set the corner radius of the [border](<({{site.baseurl}}/docs/comic-data/layers/#border)>) to be drawn around the text.
 
 ### margin
 
@@ -445,7 +447,7 @@ FOR TEXT LAYERS ONLY
 {: .text-yellow-300 .fs-2 .lh-0}
 
 A table that specifies the size of the margins to use around the text.  
-This will add spacing between the text and the edges of your [background]({{site.baseurl}}/docs/comic-data/layers/#background) or [border](({{site.baseurl}}/docs/comic-data/layers/#border)).
+This will add spacing between the text and the edges of your [background]({{site.baseurl}}/docs/comic-data/layers/#background) or [border](<({{site.baseurl}}/docs/comic-data/layers/#border)>).
 
 Properties:
 {: .text-delta}
