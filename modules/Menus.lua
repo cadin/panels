@@ -165,12 +165,16 @@ local function updateMainMenu(gameDidFinish, gameDidStart)
 	if not gameDidFinish then
 		if gameDidStart then
 			menuOptions[#menuOptions+1] = "Resume"
-		else
-			menuOptions[#menuOptions+1] = "Start"
 		end
 	end
 
-	if #menuOptions == 1 then menuOptions = { "New Game" } end
+	if #menuOptions == 1 then 
+		if gameDidFinsish then
+			menuOptions = { "Play Again" } 
+		else
+			menuOptions = { "Start" } 
+		end
+	end
 
 	mainMenuList = playdate.ui.gridview.new(math.floor((ScreenWidth - 16) / #menuOptions) - 8, 32)
 	mainMenuList:setNumberOfRows(1)
