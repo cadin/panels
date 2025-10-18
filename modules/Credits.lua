@@ -83,6 +83,16 @@ local function createGameCredits(credits)
 	local font = gfx.getSystemFont()
 	if credits.font then 
 		font = Panels.Font.get(credits.font)
+		gfx.setFont(font)
+	elseif credits.fontFamily then
+		local family  = Panels.Font.getFamily(credits.fontFamily)
+		gfx.setFontFamily(family)
+
+	elseif Panels.Settings.menuFontFamily then
+		local family  = Panels.Font.getFamily(Panels.Settings.menuFontFamily)
+		gfx.setFontFamily(family)
+	else
+		gfx.setFont(font)
 	end
 	local y = 0
 	
@@ -92,8 +102,8 @@ local function createGameCredits(credits)
 			local f = font
 			if line.font then
 				f = Panels.Font.get(line.font)
+				gfx.setFont(f)
 			end
-			gfx.setFont(f)
 
 			y = y +  (line.spacing or 0)
 			if line.alignment then 
