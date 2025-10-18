@@ -28,8 +28,10 @@ Panels.Settings = {
 	skipMenuOnFirstLaunch = false,
 	playMenuSounds = true,
 	showMainMenuOption = false,
-
+	mainMenuOptionLabel = "Main Menu",
+	
 	-- credits
+	useCreditsMenu = true,
 	showCreditsOnGameOver = false,
 
 	-- debug
