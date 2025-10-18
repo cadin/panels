@@ -590,8 +590,9 @@ local function loadSequence(num)
 	end
 
 	if sequence.audio then
-		if sequence.audio.continuePrevious and Panels.Audio.bgAudioIsPlaying() then
-
+		if sequence.audio.continuePrevious and (Panels.Audio.fileIsPlaying(sequence.audio.file) or sequence.audio.file == nil) then
+			-- only continue playing if the specified file is already playing
+			-- or no file is specified
 		else
 			if sequence.audio.file then
 				Panels.Audio.startBGAudio(
@@ -600,11 +601,11 @@ local function loadSequence(num)
 					sequence.audio.volume or 1
 				)
 			else
-				Panels.Audio.killBGAudio()
+				Panels.Audio.fadeOutAndKill()
 			end
 		end
 	else
-		Panels.Audio.killBGAudio()
+		Panels.Audio.fadeOutAndKill()
 	end
 
 	setUpPanels(sequence)
@@ -1143,7 +1144,7 @@ local function updateSystemMenu()
 	end
 
 	if Panels.Settings.showMainMenuOption then
-		local homeMenuItem, error = sysMenu:addMenuItem("Main Menu",
+		local homeMenuItem, error = sysMenu:addMenuItem(Panels.Settings.mainMenuOptionLabel or "Main Menu",
 			function()
 				Panels.creditsMenu:hide()
 				if Panels.chapterMenu then Panels.chapterMenu:hide() end
@@ -1155,13 +1156,15 @@ local function updateSystemMenu()
 	end
 
 
-	local creditsItem, error2 = sysMenu:addMenuItem("Credits",
-		function()
-			if Panels.chapterMenu then Panels.chapterMenu:hide() end
-			Panels.creditsMenu:show()
-		end
-	)
-	printError(error2, "Error adding Credits to system menu:")
+	if Panels.Settings.useCreditsMenu then
+		local creditsItem, error2 = sysMenu:addMenuItem("Credits",
+			function()
+				if Panels.chapterMenu then Panels.chapterMenu:hide() end
+				Panels.creditsMenu:show()
+			end
+		)
+		printError(error2, "Error adding Credits to system menu:")
+	end
 
 end
 

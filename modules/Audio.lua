@@ -6,6 +6,8 @@ local typingSamplePlayer
 
 local typingIsMuted = false
 
+local bgAudioFile = ""
+
 Panels.Audio = {
 	TypingSound = {
 		DEFAULT = "default",
@@ -29,10 +31,23 @@ function onBGFinished(player)
 	end
 end
 
+
+function Panels.Audio.fileIsPlaying(path)
+	if path == nil then return false end
+
+	if string.sub(path, -4) == ".wav" then
+		path = string.sub(path, 0, -5)
+	end
+	path = Panels.Settings.audioFolder .. path
+	return bgAudioFile == path and bgAudioPlayer and bgAudioPlayer:isPlaying()
+end
+
 function Panels.Audio.startBGAudio(path, loop, volume)
 	if string.sub(path, -4) == ".wav" then
 		path = string.sub(path, 0, -5)
 	end
+
+	bgAudioFile = path
 
 	if bgAudioPlayer then
 		Panels.Audio.fadeOut(bgAudioPlayer)
@@ -68,6 +83,21 @@ function Panels.Audio.killBGAudio()
 		bgAudioPlayer = nil
 	end
 end
+
+function Panels.Audio.fadeOutAndKill()
+	if bgAudioPlayer then
+
+		local function onFadeComplete(player)
+			player:stop()
+			shouldResume = false
+			player = nil
+		end
+
+		bgAudioPlayer:setVolume(0, 0, 0.5, onFadeComplete, bgAudioPlayer)
+
+	end
+end
+
 
 function Panels.Audio.pauseBGAudio()
 	if bgAudioPlayer and (bgAudioPlayer:isPlaying() or shouldResume) then
