@@ -8,7 +8,6 @@ has_toc: false
 ---
 
 # Layers
-
 {: .no_toc}
 
 A [panel]({{site.baseurl}}/docs/comic-data/panels) contains one or more layers. Each layer can represent **either** a static image, a set of images, an animated image table, or a string of text.

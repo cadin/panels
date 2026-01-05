@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Variables
+nav_order: 5
 parent: Comic Data
 ---
 

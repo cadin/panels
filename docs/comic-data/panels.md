@@ -253,6 +253,26 @@ A layer that lists multiple [`images`]({{site.baseurl}}/docs/comic-data/layers#i
 
 Setting `transitionOffset` adjusts the points at which image transitions are triggered. Setting this to `-0.1` would cause the above example to swap images at scroll point `0.4` instead of `0.5`, thus avoiding the flickering problem.
 
+### choiceList
+default: nil
+{: .prop-default}
+
+A list of selectable buttons to display in this panel. Each button in a choice list can set a target [sequence id]({{site.baseurl}}/docs/comic-data/sequences.html#id) and/or a value for a [global variable]({{site.baseurl}}/docs/comic-data/variables.html).
+
+See the [Choice Lists]({{site.baseurl}}/docs/comic-data/choice-lists.html) page for more information.
+
+Example:
+{: .text-delta}
+
+```lua
+choiceList = { 
+  buttons = {
+    { label = "Open the door", target = "roomInterior" },
+    { label = "Leave", target = "street" }
+  }
+}
+```
+
 ## Auto-Scrolling Properties
 
 ### advanceControl
