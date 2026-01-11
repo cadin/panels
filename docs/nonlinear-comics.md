@@ -47,11 +47,41 @@ advanceControls = {
 
 ## Display Choices
 
-The way you present branching story points to the user is entirely up to you. The layout of the choice panel will be defined by the last [panel]({{site.baseurl}}/docs/comic-data/panels.html) in the comic data for your [sequence]({{site.baseurl}}/docs/comic-data/sequences.html).
+The way you present branching story points to the user is entirely up to you. Panels offers two built-in methods for letting the choose their path: choice lists, or advance controls. You can also create your own custom choice display using custom functions.
+
+### Choice Lists
+
+You can define a choice list in any panel in your comic. Providing a `target` for the choice buttons will update the `targetSequence` as the user chooses each option. This will be the next sequence in the comic when the user completes the current sequence.
+
+```lua
+choiceList = { 
+  buttons = {
+    { label = "Open the door", target = "roomInterior" },
+    { label = "Leave", target = "street" }
+  }
+}
+```
+
+The buttons in a choice list can also set a [global variable](({{site.baseurl}}/docs/comic-data/variables.html)) in addition to—or instead of—the target sequence.
+
+```lua
+choiceList = { 
+  buttons = {
+    { label = "Pick up the food", var = { key = "hasFood", value = true} },
+    { label = "Leave it", var = { key = "hasFood", value = false} }
+  }
+}
+```
+
+See the [Choice Lists]({{site.baseurl}}/docs/comic-data/choice-lists.html) page for more information.
+
+### Advance Controls
+
+When using advance controls, the layout of the choice panel will be defined by the last [panel]({{site.baseurl}}/docs/comic-data/panels.html) in the comic data for your [sequence]({{site.baseurl}}/docs/comic-data/sequences.html).
 
 You most likely want to explain to the user what each choice does. You can do this by adding [text]({{site.baseurl}}/docs/comic-data/layers/#text) to the panel that describes each choice, or by adding [images]({{site.baseurl}}/docs/comic-data/layers/#image) that graphically illustrate the choices.
 
-### Position Controls
+#### Position Controls
 Panels will display controls for the inputs listed in your `advanceControls` table. You can position them over your panel by adding `x` and `y` properties:
 
 ```lua
@@ -61,7 +91,7 @@ advanceControls = {
 },
 ```
 
-### Hide Controls
+#### Hide Controls
 
 If you prefer to not display the input controls (perhaps they're already illustrated in your panel graphics), you can hide them by setting the  [`showAdvanceControls`]({{site.baseurl}}/docs/comic-data/sequences.html#showadvancecontrols) property:
 
@@ -115,5 +145,13 @@ This project contains multiple sequences with examples for different use cases:
    Hide Panel's built in button graphics in order to display your own text or graphics for the user.
 4. **[Directional Controls](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s04.lua)**  
    Let the user choose a physical direction to move in.
-5. **[Custom Functions](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s05.lua)**  
+5. **[Dead End](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s05.lua)**  
+   Set a dead end sequence in your comic. Advancing past this sequence will return the user to the menu screen, even if there are sequences listed after it in the `comicData` table.
+6. **[Custom Functions](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s06.lua)**  
    Use a custom render function to draw interactive content (like a mini-game). Use the `targetSequenceFunction` to define a target sequence based on any custom-defined criteria.
+7. **[Choice List](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s07.lua)**  
+   Display branching options to the user with a choice list. Each choice button sets a different target sequence to which the comic will progress when the user completes the current sequence.
+8. [**Choice List** (with variables)](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s08.lua)  
+   In this example, each button also defines a global variable that gets set when the button is chosen.
+9. [**Choice List** (with callback function)](https://github.com/cadin/panels-nonlinear-example/blob/main/source/comicData/s09.lua)  
+   An advanced example showing how you can use a callback function to run custom logic whenever the chosen button is changed.
