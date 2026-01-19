@@ -217,6 +217,18 @@ function Panels.Panel.new(data)
 		panel.sfxTrigger = panel.audio.scrollTrigger or 0
 	end
 
+	if panel.choiceList then 
+		-- Create a wrapper function that preserves the panel context
+		local function selectionCallback(index, button)
+			panel.onChoiceListSelectionChange(index, button)
+		end
+		if panel.choiceList.fontFamily == nil then
+			panel.choiceList.fontFamily = panel.fontFamily
+		end
+
+		panel.choices = Panels.ChoiceList.new(panel.choiceList, panel.frame, selectionCallback)
+	end
+
 	function panel:enableInput(isOn)
 		self.willEnableInput = isOn
 	end
@@ -662,6 +674,11 @@ function Panels.Panel.new(data)
 			self.advanceButton:reset()
 		end
 
+		if self.choices then 
+			self.choices:reset()
+			-- self.choices = nil
+		end
+
 		if self.prevPct > 0.5 then
 			self.prevPct = 1
 		else
@@ -919,6 +936,10 @@ function Panels.Panel.new(data)
 			self:renderFunction(offset)
 		else
 			self:drawLayers(offset)
+		end
+
+		if self.choices then 
+			self.choices:render()
 		end
 
 		if not self.borderless then

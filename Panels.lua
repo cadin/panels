@@ -34,6 +34,7 @@ import "./modules/Menus"
 import "./modules/Alert"
 import "./modules/Panel"
 import "./modules/Layer"
+import "./modules/ChoiceList"
 
 import "./modules/TextAlignment"
 import "./modules/Utils"
@@ -140,6 +141,24 @@ local function setUpPanels(seq)
 		end
 
 		local p = Panels.Panel.new(panel)
+
+		if panel.choiceList then
+			p.onChoiceListSelectionChange = function(index, button)
+				-- when the choice list selection changes, we can run a callback
+				-- to update any panel state based on the selected choice
+				if button.var then 
+					Panels.vars[button.var.key] = button.var.value
+				end
+
+				if button.target then 
+					sequence.nextSequence = button.target
+				end
+
+				if panel.choiceList.onSelectionChangeUserCallback then
+					panel.choiceList.onSelectionChangeUserCallback(index, button)
+				end
+			end
+		end
 
 		if p.frame.margin then
 			pos = pos + p.frame.margin
@@ -1272,6 +1291,7 @@ end
 -- DEBUG
 
 local function unlockAll()
+	print("Levels unlocked. Restart game.")
 	Panels.unlockedSequences = {}
 	for i = 1, #sequences, 1 do
 		table.insert(Panels.unlockedSequences, true)
@@ -1282,7 +1302,6 @@ end
 
 function playdate.keyPressed(key)
 	if key == "0" then
-		print("Levels unlocked. Restart game.")
 		if Panels.Settings.debugControlsEnabled then unlockAll() end
 	end
 end
