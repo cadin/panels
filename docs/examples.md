@@ -96,6 +96,15 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
 
    </div>
 
+   <div class="exampleProject">
+      <a href="https://play.date/games/fauna/"><img src="{{site.baseurl}}/assets/images/fauna-screen.png" /></a>
+      <h3><a href="https://play.date/games/fauna/">Fauna</a></h3>
+
+      <p>A pick-your-path comic<br />
+      by Cadin Batrack</p>
+
+   </div>
+
 </div>
 
 ### Featuring Panels Cutscenes
@@ -123,6 +132,14 @@ This 6-video YouTube series walks you through getting set up, preparing artwork,
       <h3><a href="https://play.date/games/taria-and-como/">Taria & Como</a></h3>
 
       <p>by Popseed Studio Inc & <br />JuVee Productions</p>
+
+   </div>
+
+   <div class="exampleProject">
+      <a href="https://mechars.itch.io/pongerground"><img src="{{site.baseurl}}/assets/images/pongerground-screen.png" /></a>
+      <h3><a href="https://mechars.itch.io/pongerground">Pongerground</a></h3>
+
+      <p>by Mechar Software</p>
 
    </div>
 
