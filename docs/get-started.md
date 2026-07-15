@@ -7,7 +7,6 @@ nav_order: 2
 
 Need help getting started?  
 📺 Check out [these video tutorials on YouTube](https://www.youtube.com/playlist?list=PLvk_cJkKCihbN4Q61lopDtSQMbx4vNLvv).  
-🤖 Or chat with the [Panels Partner custom GPT](https://chat.openai.com/g/g-QU76MOCLl-panels-partner).
 
 ---
 
